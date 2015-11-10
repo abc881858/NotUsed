@@ -139,6 +139,10 @@ void MainWindow::yourStartGame()
 
 void MainWindow::myDrawPhase()
 {
+    //do something Animation
+    //for 5 from yourDeck to yourHand
+    //client1收到通知，说要抽牌，正式进入client1的抽卡阶段
+    //抽1张牌后发送client2，询问是否连锁
     QJsonObject jsonObject;
     jsonObject.insert("command",20002);
     QJsonDocument jsonDoucment(jsonObject);
@@ -148,11 +152,17 @@ void MainWindow::myDrawPhase()
 
 void MainWindow::yourDrawPhase()
 {
-    //
+    //回复client1，不连锁，请client1继续准备阶段【SP】
+    QJsonObject jsonObject;
+    jsonObject.insert("command",30001);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::myStandbyPhase()
 {
+
     QJsonObject jsonObject;
     jsonObject.insert("command",30002);
     QJsonDocument jsonDoucment(jsonObject);
@@ -162,45 +172,90 @@ void MainWindow::myStandbyPhase()
 
 void MainWindow::yourStandbyPhase()
 {
-    //
+    //回复client1，不连锁，请client1继续Main1阶段【M1】
+    QJsonObject jsonObject;
+    jsonObject.insert("command",40001);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::myMainPhase1()
 {
-    //
+    QJsonObject jsonObject;
+    jsonObject.insert("command",40002);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::yourMainPhase1()
 {
-    //
+    //回复client1，不连锁，请client1继续往下走战斗阶段【BP】
+    QJsonObject jsonObject;
+    jsonObject.insert("command",50001);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::myBattlePhase()
 {
-    //
+    //当Client点击了M2按钮，或者右键菜单进入M2阶段，告诉client2，并且问他是否连锁
+    QJsonObject jsonObject;
+    jsonObject.insert("command",50002);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::yourBattlePhase()
 {
-    //
+    //回复client1，不连锁，请client1继续Main2阶段【M2】
+    QJsonObject jsonObject;
+    jsonObject.insert("command",60001);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::myMainPhase2()
 {
-    //
+    //client1点击了EP按钮，询问client2，是否在我方结束阶段发动魔陷卡
+    QJsonObject jsonObject;
+    jsonObject.insert("command",60002);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::yourMainPhase2()
 {
-    //
+    //回复client1，不连锁，请client1继续结束阶段【EP】
+    QJsonObject jsonObject;
+    jsonObject.insert("command",70001);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::myEndPhase()
 {
-    //
+    //执行动画切换双方phase颜色，并且通知client2，轮到你抽卡阶段了
+    QJsonObject jsonObject;
+    jsonObject.insert("command",70002);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::yourEndPhase()
 {
-    //
+    //收到通知，说要抽牌，进入当前client2的抽卡流程
+    //抽1张牌后发送client1，询问是否连锁
+    QJsonObject jsonObject;
+    jsonObject.insert("command",20002);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
