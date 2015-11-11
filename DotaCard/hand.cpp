@@ -1,6 +1,6 @@
 #include "hand.h"
 
-Hand::Hand()
+Hand::Hand(QObject *parent) : QObject(parent)
 {
 
 }

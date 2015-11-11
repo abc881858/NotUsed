@@ -1,6 +1,6 @@
 #include "field.h"
 
-Field::Field()
+Field::Field(QObject *parent) : QObject(parent)
 {
 
 }

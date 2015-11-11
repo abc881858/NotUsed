@@ -25,9 +25,6 @@ public:
     void yourStartGame();
 
     void myDrawPhase();
-    void yourStartGame();
-
-    void myDrawPhase();
     void yourDrawPhase();
 
     void myStandbyPhase();

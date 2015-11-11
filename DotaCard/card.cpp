@@ -4,4 +4,3 @@ Card::Card(QObject *parent) : QObject(parent)
 {
 
 }
-
