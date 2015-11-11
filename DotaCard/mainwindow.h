@@ -3,10 +3,12 @@
 
 #include <QMainWindow>
 #include <QTcpSocket>
-#include "deck.h"
-#include "hand.h"
-#include "field.h"
-#include "graveyard.h"
+//#include "deck.h"
+//#include "hand.h"
+//#include "field.h"
+//#include "graveyard.h"
+#include <QList>
+#include "card.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,6 +22,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     QTcpSocket *client;
+
+    enum Phase { myDP,mySP,myM1,myBP,myM2,myEP,yourDP,yourSP,yourM1,yourBP,yourM2,yourEP };
+    Q_ENUM(Phase)
+    void setPhase(Phase phase);
+    Phase getphase() const;
 
     void myStartGame();
     void yourStartGame();
@@ -44,6 +51,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    Phase phase;
 
 //    Field description  场地介绍
 //    Deck  卡组
@@ -52,10 +60,7 @@ private:
 //    Graveyard  墓地
 //    Fusion deck  融合卡组
 //    Remove from play  除外
-    Deck myDeck,yourDeck;
-    Hand myHand,yourHand;
-    Field myField,yourField;
-    Graveyard myGraveyard,yourGraveyard;
+    QList<Card> myDeck,yourDeck,myHand,yourHand,myField,yourField,myGraveyard,yourGraveyard;
 
 //    Life point (LP)  生命值
     int myLP;
@@ -72,6 +77,10 @@ private:
 public slots:
     void readFromServer();
     void connected();
+private slots:
+    void on_buttonBP_clicked();
+    void on_buttonM2_clicked();
+    void on_buttonEP_clicked();
 };
 
 #endif // MAINWINDOW_H
