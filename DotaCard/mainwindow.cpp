@@ -28,6 +28,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setPhase(MainWindow::Phase phase)
+{
+    this->phase = phase;
+}
+
+MainWindow::Phase MainWindow::phase() const
+{
+    return this->phase;
+}
+
 void MainWindow::connected()
 {
 //  NOTE: this is a example for testing write QJSON to socket server!
@@ -139,10 +149,12 @@ void MainWindow::yourStartGame()
 
 void MainWindow::myDrawPhase()
 {
-    //do something Animation
+    //do something Animation 刷新对手抽卡动画
     //for 5 from yourDeck to yourHand
     //client1收到通知，说要抽牌，正式进入client1的抽卡阶段
     //抽1张牌后发送client2，询问是否连锁
+    setPhase(myDP);
+
     QJsonObject jsonObject;
     jsonObject.insert("command",20002);
     QJsonDocument jsonDoucment(jsonObject);
@@ -152,17 +164,19 @@ void MainWindow::myDrawPhase()
 
 void MainWindow::yourDrawPhase()
 {
+    setPhase(yourDP);
     //回复client1，不连锁，请client1继续准备阶段【SP】
     QJsonObject jsonObject;
     jsonObject.insert("command",30001);
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
+    setPhase(yourSP);
 }
 
 void MainWindow::myStandbyPhase()
 {
-
+    setPhase(mySP);
     QJsonObject jsonObject;
     jsonObject.insert("command",30002);
     QJsonDocument jsonDoucment(jsonObject);
@@ -172,26 +186,31 @@ void MainWindow::myStandbyPhase()
 
 void MainWindow::yourStandbyPhase()
 {
+    setPhase(yourSP);
     //回复client1，不连锁，请client1继续Main1阶段【M1】
     QJsonObject jsonObject;
     jsonObject.insert("command",40001);
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
+    setPhase(yourM1);
 }
 
 void MainWindow::myMainPhase1()
 {
-    QJsonObject jsonObject;
-    jsonObject.insert("command",40002);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    setPhase(myM1);
+//    QJsonObject jsonObject;
+//    jsonObject.insert("command",40002);
+//    QJsonDocument jsonDoucment(jsonObject);
+//    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+//    client->write(json);
 }
 
 void MainWindow::yourMainPhase1()
 {
-    //回复client1，不连锁，请client1继续往下走战斗阶段【BP】
+    //收到client1点击BP按钮的消息
+    setPhase(yourBP);
+    //回复client1，不连锁，请client1往下走战斗阶段【BP】
     QJsonObject jsonObject;
     jsonObject.insert("command",50001);
     QJsonDocument jsonDoucment(jsonObject);
@@ -202,6 +221,8 @@ void MainWindow::yourMainPhase1()
 void MainWindow::myBattlePhase()
 {
     //当Client点击了M2按钮，或者右键菜单进入M2阶段，告诉client2，并且问他是否连锁
+    setPhase(myBP);
+
     QJsonObject jsonObject;
     jsonObject.insert("command",50002);
     QJsonDocument jsonDoucment(jsonObject);
@@ -211,16 +232,20 @@ void MainWindow::myBattlePhase()
 
 void MainWindow::yourBattlePhase()
 {
+    setPhase(yourBP);
     //回复client1，不连锁，请client1继续Main2阶段【M2】
     QJsonObject jsonObject;
     jsonObject.insert("command",60001);
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
+    setPhase(yourM2);
+    //TODO:...................
 }
 
 void MainWindow::myMainPhase2()
 {
+    setPhase(myM2);
     //client1点击了EP按钮，询问client2，是否在我方结束阶段发动魔陷卡
     QJsonObject jsonObject;
     jsonObject.insert("command",60002);
@@ -231,6 +256,7 @@ void MainWindow::myMainPhase2()
 
 void MainWindow::yourMainPhase2()
 {
+    setPhase(yourM2);
     //回复client1，不连锁，请client1继续结束阶段【EP】
     QJsonObject jsonObject;
     jsonObject.insert("command",70001);
@@ -241,6 +267,7 @@ void MainWindow::yourMainPhase2()
 
 void MainWindow::myEndPhase()
 {
+    setPhase(myEP);
     //执行动画切换双方phase颜色，并且通知client2，轮到你抽卡阶段了
     QJsonObject jsonObject;
     jsonObject.insert("command",70002);
@@ -251,6 +278,7 @@ void MainWindow::myEndPhase()
 
 void MainWindow::yourEndPhase()
 {
+    setPhase(yourEP);
     //收到通知，说要抽牌，进入当前client2的抽卡流程
     //抽1张牌后发送client1，询问是否连锁
     QJsonObject jsonObject;
@@ -258,4 +286,19 @@ void MainWindow::yourEndPhase()
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
+}
+
+void MainWindow::on_buttonBP_clicked()
+{
+    //NOTE: 只有点击BP按钮，才进入BP阶段
+}
+
+void MainWindow::on_buttonM2_clicked()
+{
+
+}
+
+void MainWindow::on_buttonEP_clicked()
+{
+
 }
