@@ -26,7 +26,11 @@ public:
     enum Phase { myDP,mySP,myM1,myBP,myM2,myEP,yourDP,yourSP,yourM1,yourBP,yourM2,yourEP };
     Q_ENUM(Phase)
     void setPhase(Phase phase);
+<<<<<<< HEAD
     Phase getphase() const;
+=======
+    Phase phase() const;
+>>>>>>> 3b8df1be8704d290a51a5ddda77214b1c4e32f40
 
     void myStartGame();
     void yourStartGame();

@@ -33,7 +33,11 @@ void MainWindow::setPhase(MainWindow::Phase phase)
     this->phase = phase;
 }
 
+<<<<<<< HEAD
 MainWindow::Phase MainWindow::getphase() const
+=======
+MainWindow::Phase MainWindow::phase() const
+>>>>>>> 3b8df1be8704d290a51a5ddda77214b1c4e32f40
 {
     return this->phase;
 }
