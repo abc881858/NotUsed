@@ -3,21 +3,19 @@
 
 #include <QObject>
 
-class Card : public QObject
-{
+class Card : public QObject {
     Q_OBJECT
+    Q_ENUMS(Primary)
+
 public:
-    explicit Card(QObject *parent = 0);
+    explicit Card(QObject* parent = 0, int value = -1);
+    QString description;
 
-    QString name;
-    enum Primary{ null, strength, intelligence, agility }; //主属性 无、力量、智力、敏捷
-    Q_ENUM(Primary)
-    int star; //0-8
-    QString imagePath; //图片路径
-//    enum Type{ null, strength, intelligence, agility }; //种族
-//    Q_ENUM(Primary)
-    QString description; //效果描述
+    int getISDN() const;
+    void setISDN(int value);
 
+private:
+    int ISDN;
 
 signals:
 
