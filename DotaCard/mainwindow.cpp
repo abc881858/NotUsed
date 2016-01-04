@@ -4,23 +4,24 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QFile>
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget* parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     client = new QTcpSocket;
     client->connectToHost(QHostAddress::LocalHost, 7720);
     connect(client, SIGNAL(connected()), this, SLOT(connected()));
     connect(client, SIGNAL(readyRead()), this, SLOT(readFromServer()));
-//    connect(client, SIGNAL(disconnected()), this, SLOT(disconnected()));
-//    connect(client, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
+    //  connect(client, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    //  connect(client, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
 
     myLP = 8000;
     yourLP = 8000;
-    ui->myLcdNumber->display(8000);
-    ui->yourLcdNumber->display(8000);
+    ui->myLcdNumber->display(myLP);
+    ui->yourLcdNumber->display(yourLP);
 }
 
 MainWindow::~MainWindow()
@@ -33,19 +34,15 @@ void MainWindow::setPhase(MainWindow::Phase phase)
     this->phase = phase;
 }
 
-<<<<<<< HEAD
 MainWindow::Phase MainWindow::getphase() const
-=======
-MainWindow::Phase MainWindow::phase() const
->>>>>>> 3b8df1be8704d290a51a5ddda77214b1c4e32f40
 {
     return this->phase;
 }
 
 void MainWindow::connected()
 {
-//  NOTE: this is a example for testing write QJSON to socket server!
-/*
+    //  NOTE: this is a example for testing write QJSON to socket server!
+    /*
     QJsonObject jsonObject;
     jsonObject.insert("test",QString("just tell server connected"));
     qDebug() << jsonObject;
@@ -53,6 +50,27 @@ void MainWindow::connected()
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
 */
+
+    QFile file("test1.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream text_stream(&file);
+    while (!text_stream.atEnd()) {
+        myDeck << new Card(0, text_stream.readLine().toInt());
+    }
+    file.close();
+
+    QJsonObject jsonObject;
+    QJsonArray cards;
+    foreach (Card* card, myDeck) {
+        cards << card->getISDN();
+    }
+
+    jsonObject.insert("command", 1000);
+    jsonObject.insert("cards", cards);
+
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
 
 void MainWindow::readFromServer()
@@ -62,48 +80,53 @@ void MainWindow::readFromServer()
     QJsonObject jsonObject = jsonDoucment.object();
     qDebug() << jsonObject;
     int command = jsonObject["command"].toInt();
-    switch (command)
-    {
-    case 10001:
+    switch (command) {
+    case 2000:
+        firstSetupEnemyDeck(jsonObject["deck"].toArray());
+        break;
+    case 3000:
+        secondSetupEnemyDeck(jsonObject["deck"].toArray());
+        break;
+    case 10000:
         myStartGame();
         break;
-    case 10002:
+    case 10001:
         yourStartGame();
         break;
-    case 20001:
+    case 10002:
         myDrawPhase();
         break;
-    case 20002:
+    case 20001:
         yourDrawPhase();
         break;
-    case 30001:
+    case 20002:
         myStandbyPhase();
         break;
-    case 30002:
+    case 30001:
         yourStandbyPhase();
         break;
-    case 40001:
+    case 30002:
         myMainPhase1();
         break;
-    case 40002:
+    case 40001:
         yourMainPhase1();
         break;
-    case 50001:
+    case 40002:
         myBattlePhase();
         break;
-    case 50002:
+    case 50001:
         yourBattlePhase();
         break;
-    case 60001:
+    case 50002:
         myMainPhase2();
         break;
-    case 60002:
+    case 60001:
         yourMainPhase2();
         break;
-    case 70001:
+    case 60002:
         myEndPhase();
         break;
-    case 70002:
+    case 70001:
         yourEndPhase();
         break;
     default:
@@ -111,20 +134,43 @@ void MainWindow::readFromServer()
     }
 }
 
+//only send int(command) to server
+QByteArray MainWindow::getJsonFromInt(int command)
+{
+    QJsonObject jsonObject;
+    jsonObject.insert("command", command);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    return json;
+}
+
+void MainWindow::firstSetupEnemyDeck(QJsonArray jsonArray)
+{
+    foreach (const QJsonValue& value, jsonArray) {
+        int ISDN = value.toInt();
+        yourDeck << new Card(0, ISDN);
+    }
+}
+
+void MainWindow::secondSetupEnemyDeck(QJsonArray jsonArray)
+{
+    foreach (const QJsonValue& value, jsonArray) {
+        int ISDN = value.toInt();
+        yourDeck << new Card(0, ISDN);
+    }
+    client->write(getJsonFromInt(1001));
+}
+
 void MainWindow::myStartGame()
 {
-    //drawCards(5);
-    //do something Animation
-    //for 5 from myDeck to myHand
-    //返回5个int值，代表卡牌的ISDN, 唯一标识符
     QJsonObject jsonObject;
     QJsonArray cards;
-    cards.append(601);
-    cards.append(602);
-    cards.append(603);
-    cards.append(604);
-    cards.append(605);
-    jsonObject.insert("command", 10002);
+    for (int i = 0; i < 5; i++) {
+        Card* card = myDeck.takeFirst();
+        myHand << card;
+        cards << card->getISDN();
+    }
+    jsonObject.insert("command", 10001);
     jsonObject.insert("cards", cards);
     qDebug() << jsonObject;
     QJsonDocument jsonDoucment(jsonObject);
@@ -134,16 +180,19 @@ void MainWindow::myStartGame()
 
 void MainWindow::yourStartGame()
 {
-    //do something Animation
-    //for 5 from yourDeck to yourHand
+    for (int i = 0; i < 5; i++) {
+        Card* card = yourDeck.takeFirst();
+        yourHand << card;
+    }
+
     QJsonObject jsonObject;
     QJsonArray cards;
-    cards.append(701);
-    cards.append(702);
-    cards.append(703);
-    cards.append(704);
-    cards.append(705);
-    jsonObject.insert("command", 20001);
+    for (int i = 0; i < 5; i++) {
+        Card* card = myDeck.takeFirst();
+        myHand << card;
+        cards << card->getISDN();
+    }
+    jsonObject.insert("command", 10002);
     jsonObject.insert("cards", cards);
     qDebug() << jsonObject;
     QJsonDocument jsonDoucment(jsonObject);
@@ -153,14 +202,16 @@ void MainWindow::yourStartGame()
 
 void MainWindow::myDrawPhase()
 {
-    //do something Animation 刷新对手抽卡动画
-    //for 5 from yourDeck to yourHand
-    //client1收到通知，说要抽牌，正式进入client1的抽卡阶段
-    //抽1张牌后发送client2，询问是否连锁
+    for (int i = 0; i < 5; i++) {
+        Card* card = yourDeck.takeFirst();
+        yourHand << card;
+    }
     setPhase(myDP);
 
     QJsonObject jsonObject;
-    jsonObject.insert("command",20002);
+    Card* card = myDeck.takeFirst();
+    myHand << card;
+    jsonObject.insert("command", 20001);
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
@@ -169,80 +220,49 @@ void MainWindow::myDrawPhase()
 void MainWindow::yourDrawPhase()
 {
     setPhase(yourDP);
-    //回复client1，不连锁，请client1继续准备阶段【SP】
-    QJsonObject jsonObject;
-    jsonObject.insert("command",30001);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(20002));
     setPhase(yourSP);
 }
 
 void MainWindow::myStandbyPhase()
 {
     setPhase(mySP);
-    QJsonObject jsonObject;
-    jsonObject.insert("command",30002);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(30001));
 }
 
 void MainWindow::yourStandbyPhase()
 {
     setPhase(yourSP);
-    //回复client1，不连锁，请client1继续Main1阶段【M1】
-    QJsonObject jsonObject;
-    jsonObject.insert("command",40001);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(30002));
     setPhase(yourM1);
 }
 
 void MainWindow::myMainPhase1()
 {
     setPhase(myM1);
-//    QJsonObject jsonObject;
-//    jsonObject.insert("command",40002);
-//    QJsonDocument jsonDoucment(jsonObject);
-//    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-//    client->write(json);
+    //    QJsonObject jsonObject;
+    //    jsonObject.insert("command",40001);
+    //    QJsonDocument jsonDoucment(jsonObject);
+    //    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    //    client->write(json);
 }
 
 void MainWindow::yourMainPhase1()
 {
-    //收到client1点击BP按钮的消息
     setPhase(yourBP);
-    //回复client1，不连锁，请client1往下走战斗阶段【BP】
-    QJsonObject jsonObject;
-    jsonObject.insert("command",50001);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(40002));
 }
 
 void MainWindow::myBattlePhase()
 {
-    //当Client点击了M2按钮，或者右键菜单进入M2阶段，告诉client2，并且问他是否连锁
     setPhase(myBP);
-
-    QJsonObject jsonObject;
-    jsonObject.insert("command",50002);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(50001));
 }
 
 void MainWindow::yourBattlePhase()
 {
     setPhase(yourBP);
-    //回复client1，不连锁，请client1继续Main2阶段【M2】
-    QJsonObject jsonObject;
-    jsonObject.insert("command",60001);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(50002));
     setPhase(yourM2);
     //TODO:...................
 }
@@ -250,59 +270,36 @@ void MainWindow::yourBattlePhase()
 void MainWindow::myMainPhase2()
 {
     setPhase(myM2);
-    //client1点击了EP按钮，询问client2，是否在我方结束阶段发动魔陷卡
-    QJsonObject jsonObject;
-    jsonObject.insert("command",60002);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(60001));
 }
 
 void MainWindow::yourMainPhase2()
 {
     setPhase(yourM2);
-    //回复client1，不连锁，请client1继续结束阶段【EP】
-    QJsonObject jsonObject;
-    jsonObject.insert("command",70001);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(60002));
 }
 
 void MainWindow::myEndPhase()
 {
     setPhase(myEP);
-    //执行动画切换双方phase颜色，并且通知client2，轮到你抽卡阶段了
-    QJsonObject jsonObject;
-    jsonObject.insert("command",70002);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+    client->write(getJsonFromInt(70001));
 }
 
 void MainWindow::yourEndPhase()
 {
     setPhase(yourEP);
-    //收到通知，说要抽牌，进入当前client2的抽卡流程
-    //抽1张牌后发送client1，询问是否连锁
-    QJsonObject jsonObject;
-    jsonObject.insert("command",20002);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+
+    client->write(getJsonFromInt(20002));
 }
 
 void MainWindow::on_buttonBP_clicked()
 {
-    //NOTE: 只有点击BP按钮，才进入BP阶段
 }
 
 void MainWindow::on_buttonM2_clicked()
 {
-
 }
 
 void MainWindow::on_buttonEP_clicked()
 {
-
 }
