@@ -10,8 +10,3 @@ int Card::getISDN() const
 {
     return ISDN;
 }
-
-void Card::setISDN(int value)
-{
-    ISDN = value;
-}

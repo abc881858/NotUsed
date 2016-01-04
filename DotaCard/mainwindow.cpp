@@ -202,44 +202,50 @@ void MainWindow::yourStartGame()
 
 void MainWindow::myDrawPhase()
 {
+    //玩家2开局抽5张牌
     for (int i = 0; i < 5; i++) {
         Card* card = yourDeck.takeFirst();
         yourHand << card;
     }
+
+    //玩家1进入DP流程
     setPhase(myDP);
 
-    QJsonObject jsonObject;
+
     Card* card = myDeck.takeFirst();
     myHand << card;
-    jsonObject.insert("command", 20001);
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
+
+    client->write(getJsonFromInt(20001));
 }
 
 void MainWindow::yourDrawPhase()
 {
     setPhase(yourDP);
+
+    Card* card = yourDeck.takeFirst();
+    yourHand << card;
+
     client->write(getJsonFromInt(20002));
-    setPhase(yourSP);
 }
 
 void MainWindow::myStandbyPhase()
 {
     setPhase(mySP);
+
     client->write(getJsonFromInt(30001));
 }
 
 void MainWindow::yourStandbyPhase()
 {
     setPhase(yourSP);
+
     client->write(getJsonFromInt(30002));
-    setPhase(yourM1);
 }
 
 void MainWindow::myMainPhase1()
 {
     setPhase(myM1);
+
     //    QJsonObject jsonObject;
     //    jsonObject.insert("command",40001);
     //    QJsonDocument jsonDoucment(jsonObject);
@@ -250,38 +256,43 @@ void MainWindow::myMainPhase1()
 void MainWindow::yourMainPhase1()
 {
     setPhase(yourBP);
+
     client->write(getJsonFromInt(40002));
 }
 
 void MainWindow::myBattlePhase()
 {
     setPhase(myBP);
+
     client->write(getJsonFromInt(50001));
 }
 
 void MainWindow::yourBattlePhase()
 {
     setPhase(yourBP);
+
     client->write(getJsonFromInt(50002));
-    setPhase(yourM2);
     //TODO:...................
 }
 
 void MainWindow::myMainPhase2()
 {
     setPhase(myM2);
+
     client->write(getJsonFromInt(60001));
 }
 
 void MainWindow::yourMainPhase2()
 {
     setPhase(yourM2);
+
     client->write(getJsonFromInt(60002));
 }
 
 void MainWindow::myEndPhase()
 {
     setPhase(myEP);
+
     client->write(getJsonFromInt(70001));
 }
 
