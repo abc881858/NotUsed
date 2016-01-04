@@ -14,23 +14,29 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
+    Q_ENUMS(Phase)
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
-    QTcpSocket *client;
+    QTcpSocket* client;
 
-    enum Phase { myDP,mySP,myM1,myBP,myM2,myEP,yourDP,yourSP,yourM1,yourBP,yourM2,yourEP };
-    Q_ENUM(Phase)
+    enum Phase { myDP,
+        mySP,
+        myM1,
+        myBP,
+        myM2,
+        myEP,
+        yourDP,
+        yourSP,
+        yourM1,
+        yourBP,
+        yourM2,
+        yourEP };
     void setPhase(Phase phase);
-<<<<<<< HEAD
     Phase getphase() const;
-=======
-    Phase phase() const;
->>>>>>> 3b8df1be8704d290a51a5ddda77214b1c4e32f40
 
     void myStartGame();
     void yourStartGame();
@@ -53,30 +59,18 @@ public:
     void myEndPhase();
     void yourEndPhase();
 
+    QByteArray getJsonFromInt(int command);
+    void firstSetupEnemyDeck(QJsonArray jsonArray);
+    void secondSetupEnemyDeck(QJsonArray jsonArray);
+
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
     Phase phase;
 
-//    Field description  场地介绍
-//    Deck  卡组
-//    Hand  手牌
-//    Field  场地
-//    Graveyard  墓地
-//    Fusion deck  融合卡组
-//    Remove from play  除外
-    QList<Card> myDeck,yourDeck,myHand,yourHand,myField,yourField,myGraveyard,yourGraveyard;
+    QList<Card *> myDeck, yourDeck, myHand, yourHand, myField, yourField, myGraveyard, yourGraveyard;
 
-//    Life point (LP)  生命值
     int myLP;
     int yourLP;
-
-//    Turn  回合
-//    Draw phase  抽卡阶段
-//    Standby phase  准备阶段
-//    Main phase 1  主要阶段1
-//    Battle phase  战斗阶段
-//    Main phase 2  主要阶段2
-//    End phase  结束阶段
 
 public slots:
     void readFromServer();
