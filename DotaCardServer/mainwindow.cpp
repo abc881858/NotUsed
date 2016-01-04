@@ -10,7 +10,8 @@ MainWindow::MainWindow(QWidget* parent)
     server = new QTcpServer;
     server->listen(QHostAddress::Any, 7720);
     connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-    //    connect(server, SIGNAL(acceptError(QAbstractSocket::SocketError)), this, SLOT(acceptError(QAbstractSocket::SocketError)));
+    //    connect(server, SIGNAL(acceptError(QAbstractSocket::SocketError)), this,
+    //    SLOT(acceptError(QAbstractSocket::SocketError)));
 }
 
 MainWindow::~MainWindow()
@@ -36,7 +37,8 @@ void MainWindow::newConnection()
         qDebug() << "current clients count: " << clients.count();
         qDebug() << "room is full, now we disconnect newConnection slot";
         disconnect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-        qDebug() << "the two players are ready, we start the game. First in, first go!";
+        qDebug()
+            << "the two players are ready, we start the game. First in, first go!";
     }
 }
 
@@ -83,7 +85,7 @@ void MainWindow::readFromSecondClient()
         clients[1]->write(json2);
     }
     else if (jsonObject["command"].toInt() == 1001) {
-        //two plays have read deck each other, begin the game!
+        // two plays have read deck each other, begin the game!
         startGame();
     }
     else {
@@ -93,7 +95,8 @@ void MainWindow::readFromSecondClient()
 
 void MainWindow::startGame()
 {
-    //  TODO: may do finger-guessing game Animation later. first player first go Now.
+    //  TODO: may do finger-guessing game Animation later. first player first go
+    //  Now.
     //  FIXME: will do clients[0]->write(getJsonFromInt(3000));
     clients[0]->write(getJsonFromInt(10000));
 }
