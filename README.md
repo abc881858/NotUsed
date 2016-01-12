@@ -6,9 +6,9 @@
 
 ## 服务端 ##
 
-- 收到其他的Json，都原封不动传给对方玩家
+*收到其他的Json，都原封不动传给对方玩家*
 
-        。。。。。。
+----------
 
 - 收到玩家1的command 1000消息后，推送玩家2的卡组信息
 
@@ -28,7 +28,11 @@
 
 
 ## 客户端 ##
- 
+
+*以下都是客户端主动发送的消息，并不是客户端接受到的消息*
+
+----------
+
 - connected server后, 把本地从txt中读取的卡组信息发送给服务端
 
     	"command", 1000 "cards", cards
@@ -47,7 +51,50 @@
     	"command", 10002
     	"cards", cards
 
-- 玩家1进入DP流程
+- 玩家1进入myDP流程
 
     	"command", 20001
-    	"cards", cards
+
+- 玩家2进入yourDP流程
+
+    	"command", 20002
+
+- 玩家1进入mySP流程
+
+    	"command", 30001
+
+- 玩家2进入yourSP流程
+
+    	"command", 30002
+
+- 玩家1进入myM1流程
+
+    	"command", 40001
+
+- 玩家2进入yourM1流程
+
+    	"command", 40002
+
+- 玩家1进入myBP流程
+
+    	"command", 50001
+
+- 玩家2进入yourBP流程
+
+    	"command", 50002
+
+- 玩家1进入myM2流程
+
+    	"command", 60001
+
+- 玩家2进入yourM2流程
+
+    	"command", 60002
+
+- 玩家1进入myEP流程
+
+    	"command", 70001
+
+- 玩家2进入yourEP流程
+
+    	"command", 70002
