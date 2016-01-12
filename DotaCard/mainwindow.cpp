@@ -244,37 +244,16 @@ void MainWindow::myMainPhase1()
 void MainWindow::yourMainPhase1()
 {
     setPhase(yourM2);
-    //client->write(getJsonFromInt(40002));
-}
-
-void MainWindow::myBattlePhase()
-{
-    setPhase(myBP);
-    client->write(getJsonFromInt(50001));
 }
 
 void MainWindow::yourBattlePhase()
 {
     setPhase(yourBP);
-//    client->write(getJsonFromInt(50002));
-}
-
-void MainWindow::myMainPhase2()
-{
-    setPhase(myM2);
-    client->write(getJsonFromInt(60001));
 }
 
 void MainWindow::yourMainPhase2()
 {
     setPhase(yourM2);
-//    client->write(getJsonFromInt(60002));
-}
-
-void MainWindow::myEndPhase()
-{
-    setPhase(myEP);
-    client->write(getJsonFromInt(70001));
 }
 
 void MainWindow::yourEndPhase()
@@ -282,6 +261,7 @@ void MainWindow::yourEndPhase()
     setPhase(yourEP);
     //TODO: 也许对方结束阶段我要触发什么陷阱卡
     //暂时玩家2直接进入他的抽卡阶段
+
     setPhase(myDP);
 
     Card* card = myDeck.takeFirst();
@@ -292,12 +272,18 @@ void MainWindow::yourEndPhase()
 
 void MainWindow::on_buttonBP_clicked()
 {
+    setPhase(myBP);
+    client->write(getJsonFromInt(50001));
 }
 
 void MainWindow::on_buttonM2_clicked()
 {
+    setPhase(myM2);
+    client->write(getJsonFromInt(60001));
 }
 
 void MainWindow::on_buttonEP_clicked()
 {
+    setPhase(myEP);
+    client->write(getJsonFromInt(70001));
 }
