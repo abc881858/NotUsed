@@ -15,16 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     card.cpp \
-    deck.cpp \
-    hand.cpp \
-    field.cpp \
-    graveyard.cpp
+    roomscene.cpp \
+    area.cpp
 
 HEADERS  += mainwindow.h \
     card.h \
-    deck.h \
-    hand.h \
-    field.h \
-    graveyard.h
+    roomscene.h \
+    area.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    res.qrc

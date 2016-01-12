@@ -5,12 +5,19 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
+#include <QPalette>
+#include <QBrush>
+#include <QPixmap>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, QBrush(QPixmap(":/png/png/back.jpg")));
+    this->setPalette(palette);
+
     client = new QTcpSocket(this);
     client->connectToHost(QHostAddress::LocalHost, 7720);
     connect(client, SIGNAL(connected()), this, SLOT(connected()));
@@ -22,6 +29,19 @@ MainWindow::MainWindow(QWidget* parent)
     yourLP = 8000;
     ui->myLcdNumber->display(myLP);
     ui->yourLcdNumber->display(yourLP);
+
+    roomScene = new RoomScene(ui->roomWidget);
+    ui->roomView->setScene(roomScene);
+    ui->roomView->setSceneRect(0, 0, 550, 600);
+
+    this->myDeck = roomScene->deckarea->myDeck;
+    this->myHand = roomScene->handarea->myHand;
+    this->myFieldyard = roomScene->fieldyardarea->myFieldyard;
+    this->myFieldground = roomScene->fieldgroundarea->myFieldground;
+    this->yourDeck = roomScene->enemydeckarea->yourDeck;
+    this->yourHand = roomScene->enemyhandarea->yourHand;
+    this->yourFieldyard = roomScene->enemyfieldyardarea->yourFieldyard;
+    this->yourFieldground = roomScene->enemyfieldgroundarea->yourFieldground;
 }
 
 MainWindow::~MainWindow()
@@ -41,27 +61,27 @@ MainWindow::Phase MainWindow::getphase() const
 
 void MainWindow::connected()
 {
-    //  NOTE: this is a example for testing write QJSON to socket server!
     /*
-    QJsonObject jsonObject;
-    jsonObject.insert("test",QString("just tell server connected"));
-    qDebug() << jsonObject;
-    QJsonDocument jsonDoucment(jsonObject);
-    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-    client->write(json);
-*/
-
+ *  NOTE: this is a example for testing write QJSON to socket server!
+ *  QJsonObject jsonObject;
+ *  jsonObject.insert("test",QString("just tell server connected"));
+ *  qDebug() << jsonObject;
+ *  QJsonDocument jsonDoucment(jsonObject);
+ *  QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+ *  client->write(json);
+ */
     QFile file("test1.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream text_stream(&file);
     while (!text_stream.atEnd()) {
-        myDeck << new Card(0, text_stream.readLine().toInt());
+        myDeck << new Card(text_stream.readLine().toInt());
     }
     file.close();
 
     QJsonObject jsonObject;
     QJsonArray cards;
     foreach (Card* card, myDeck) {
+        connect(card,SIGNAL(hover(QString)),this,SLOT(setBigImage(QString)));
         cards << card->getISDN();
     }
 
@@ -71,6 +91,11 @@ void MainWindow::connected()
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
+}
+
+void MainWindow::setBigImage(QString s)
+{
+    ui->label->setStyleSheet(QString("image: url(%1)").arg(s));
 }
 
 void MainWindow::readFromServer()
@@ -139,7 +164,7 @@ void MainWindow::firstSetupEnemyDeck(QJsonArray jsonArray)
 {
     foreach (const QJsonValue& value, jsonArray) {
         int ISDN = value.toInt();
-        yourDeck << new Card(0, ISDN);
+        yourDeck << new Card(ISDN);
     }
 }
 
@@ -147,7 +172,7 @@ void MainWindow::secondSetupEnemyDeck(QJsonArray jsonArray)
 {
     foreach (const QJsonValue& value, jsonArray) {
         int ISDN = value.toInt();
-        yourDeck << new Card(0, ISDN);
+        yourDeck << new Card(ISDN);
     }
     client->write(getJsonFromInt(1001));
 }
@@ -158,7 +183,7 @@ void MainWindow::myStartGame()
     QJsonArray cards;
     for (int i = 0; i < 5; i++) {
         Card* card = myDeck.takeFirst();
-        myHand << card;
+        roomScene->handarea->addCard(card);
         cards << card->getISDN();
     }
     jsonObject.insert("command", 10001);
@@ -173,14 +198,14 @@ void MainWindow::yourStartGame()
 {
     for (int i = 0; i < 5; i++) {
         Card* card = yourDeck.takeFirst();
-        yourHand << card;
+        roomScene->enemyhandarea->addCard(card);
     }
 
     QJsonObject jsonObject;
     QJsonArray cards;
     for (int i = 0; i < 5; i++) {
         Card* card = myDeck.takeFirst();
-        myHand << card;
+        roomScene->handarea->addCard(card);
         cards << card->getISDN();
     }
     jsonObject.insert("command", 10002);
@@ -195,12 +220,12 @@ void MainWindow::myDrawPhase()
 {
     for (int i = 0; i < 5; i++) {
         Card* card = yourDeck.takeFirst();
-        yourHand << card;
+        roomScene->enemyhandarea->addCard(card);
     }
     setPhase(myDP);
 
     Card* card = myDeck.takeFirst();
-    myHand << card;
+    roomScene->handarea->addCard(card);
 
     client->write(getJsonFromInt(20001));
 }
@@ -208,7 +233,7 @@ void MainWindow::myDrawPhase()
 void MainWindow::yourDrawPhase()
 {
     Card* card = yourDeck.takeFirst();
-    yourHand << card;
+    roomScene->enemyhandarea->addCard(card);
 
     setPhase(yourDP);
     client->write(getJsonFromInt(20002));
@@ -256,7 +281,7 @@ void MainWindow::yourEndPhase()
     setPhase(myDP);
 
     Card* card = myDeck.takeFirst();
-    myHand << card;
+    roomScene->handarea->addCard(card);
 
     client->write(getJsonFromInt(20001));
 }
