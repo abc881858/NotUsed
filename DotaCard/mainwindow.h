@@ -50,13 +50,10 @@ public:
     void myMainPhase1();
     void yourMainPhase1();
 
-    void myBattlePhase();
     void yourBattlePhase();
 
-    void myMainPhase2();
     void yourMainPhase2();
 
-    void myEndPhase();
     void yourEndPhase();
 
     QByteArray getJsonFromInt(int command);

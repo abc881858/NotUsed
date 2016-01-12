@@ -68,25 +68,13 @@
 
     	"command", 40001
 
-- 玩家2进入yourM1流程
-
-    	"command", 40002
-
 - 玩家1进入myBP流程
 
     	"command", 50001
 
-- 玩家2进入yourBP流程
-
-    	"command", 50002
-
 - 玩家1进入myM2流程
 
     	"command", 60001
-
-- 玩家2进入yourM2流程
-
-    	"command", 60002
 
 - 玩家1进入myEP流程
 
