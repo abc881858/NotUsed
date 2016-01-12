@@ -1,6 +1,3 @@
-# DotaCardDuel
-游戏王 for DotA with Qt GUI Framework
-
 # DotaCard 网络传输协议 #
 ---
 
