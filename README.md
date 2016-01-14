@@ -68,13 +68,25 @@
 
     	"command", 40001
 
+- 玩家2进入yourM1流程
+
+    	"command", 40002
+
 - 玩家1进入myBP流程
 
     	"command", 50001
 
+- 玩家2进入yourBP流程
+
+    	"command", 50002
+
 - 玩家1进入myM2流程
 
     	"command", 60001
+
+- 玩家2进入yourM2流程
+
+    	"command", 60002
 
 - 玩家1进入myEP流程
 
@@ -83,3 +95,111 @@
 - 玩家2进入yourEP流程
 
     	"command", 70002
+
+- 玩家在主要流程可以进行的操作
+	
+	- click on hand
+
+		- normal summon
+
+		 		"command", 41001
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+		- special summon
+
+		 		"command", 41002
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+		- ~~tribute summon~~
+
+		 		"command", 41003
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+		- active monster
+
+		 		"command", 41011
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+		- active spell
+
+		 		"command", 41012
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+		- set monster
+
+		 		"command", 41021
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+		- set spell
+
+		 		"command", 41022
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+		- set trap
+
+		 		"command", 41023
+				"card" int
+				"place" int (手牌中第几张 from 0)
+
+	- click on field
+
+		- flip summon
+
+		 		"command", 42001
+				"card" int
+				"place" int (前场中第几张 from 0 to 4)
+
+		- active monster
+
+		 		"command", 42011
+				"card" int
+				"place" int (前场中第几张 from 0 to 4)
+
+		- active spell
+
+		 		"command", 42012
+				"card" int
+				"place" int (后场中第几张 from 5 to 9)
+
+		- active trap
+
+		 		"command", 42013
+				"card" int
+				"place" int (后场中第几张 from 5 to 9)
+
+		- change from offensive to defensive
+
+		 		"command", 42021
+				"card" int
+				"place" int (前场中第几张 from 0 to 4)
+
+		- change from defensive to offensive
+
+		 		"command", 42022
+				"card" int
+				"place" int (前场中第几张 from 0 to 4)
+
+	- ~~click in grave~~
+
+	- ~~click in deck~~
+
+- 玩家在战斗流程可以进行的操作
+
+	- 发动速攻魔法卡
+
+			"command", 50001
+			"card" int
+			"place" int (后场中第几张 from 5 to 9)
+
+	- 发动陷阱卡
+
+	 		"command", 50002
+			"card" int
+			"place" int (后场中第几张 from 5 to 9)
