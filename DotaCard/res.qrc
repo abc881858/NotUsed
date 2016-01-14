@@ -72,7 +72,6 @@
         <file>pic/spell/诅咒.jpg</file>
     </qresource>
     <qresource prefix="/png">
-        <file>png/2.png</file>
         <file>png/b.png</file>
         <file>png/back.jpg</file>
         <file>png/field.png</file>
