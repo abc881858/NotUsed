@@ -21,9 +21,6 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QS
     case QtFatalMsg:
         txt = QString("Fatal: %1").arg(msg);
         abort();
-    case QtInfoMsg:
-        txt = QString("Info: %1").arg(msg);
-        break;
     }
 
     QFile outFile("debuglog.txt");
