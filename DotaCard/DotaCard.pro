@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     card.cpp \
     roomscene.cpp \
-    area.cpp
+    area.cpp \
+    engine.cpp
 
 HEADERS  += mainwindow.h \
     card.h \
     roomscene.h \
-    area.h
+    area.h \
+    engine.h
 
 FORMS    += mainwindow.ui
 
