@@ -1,76 +1,5 @@
 <RCC>
-    <qresource prefix="/pic/spell">
-        <file>pic/spell/guinsoo的邪恶镰刀.jpg</file>
-        <file>pic/spell/阿托斯之棍.jpg</file>
-        <file>pic/spell/暗影护符.jpg</file>
-        <file>pic/spell/白银之锋.jpg</file>
-        <file>pic/spell/达贡之神力Lv1.jpg</file>
-        <file>pic/spell/达贡之神力Lv2.jpg</file>
-        <file>pic/spell/达贡之神力Lv3.jpg</file>
-        <file>pic/spell/达贡之神力Lv4.jpg</file>
-        <file>pic/spell/达贡之神力Lv5.jpg</file>
-        <file>pic/spell/地卜师-忽悠.jpg</file>
-        <file>pic/spell/动力鞋.jpg</file>
-        <file>pic/spell/洞察烟斗.jpg</file>
-        <file>pic/spell/恶魔刀锋.jpg</file>
-        <file>pic/spell/封野.jpg</file>
-        <file>pic/spell/弗拉迪米尔的祭品.jpg</file>
-        <file>pic/spell/辉耀.jpg</file>
-        <file>pic/spell/净魂之刃Lv1.jpg</file>
-        <file>pic/spell/净魂之刃Lv2.jpg</file>
-        <file>pic/spell/静谧之鞋.jpg</file>
-        <file>pic/spell/恐鳌之心.jpg</file>
-        <file>pic/spell/拉野.jpg</file>
-        <file>pic/spell/雷神之锤.jpg</file>
-        <file>pic/spell/玲珑心.jpg</file>
-        <file>pic/spell/龙骑士-真龙形态.jpg</file>
-        <file>pic/spell/迈达斯之手.jpg</file>
-        <file>pic/spell/梅肯斯姆.jpg</file>
-        <file>pic/spell/秘法鞋.jpg</file>
-        <file>pic/spell/祈求者-超震声波.jpg</file>
-        <file>pic/spell/祈求者-混沌陨石.jpg</file>
-        <file>pic/spell/祈求者-急速冷却.jpg</file>
-        <file>pic/spell/祈求者-灵动迅捷.jpg</file>
-        <file>pic/spell/祈求者-强袭飓风.jpg</file>
-        <file>pic/spell/祈求者-熔炉精灵.jpg</file>
-        <file>pic/spell/祈求者-阳炎冲击.jpg</file>
-        <file>pic/spell/祈求者-幽灵漫步.jpg</file>
-        <file>pic/spell/强袭装甲.jpg</file>
-        <file>pic/spell/全阵容选择.jpg</file>
-        <file>pic/spell/散华.jpg</file>
-        <file>pic/spell/散夜对剑.jpg</file>
-        <file>pic/spell/神符-幻象.jpg</file>
-        <file>pic/spell/神符-恢复.jpg</file>
-        <file>pic/spell/神符-双倍伤害.jpg</file>
-        <file>pic/spell/圣堂刺客-灵能之刃.jpg</file>
-        <file>pic/spell/圣者遗物.jpg</file>
-        <file>pic/spell/死灵书Lv1.jpg</file>
-        <file>pic/spell/死灵书Lv2.jpg</file>
-        <file>pic/spell/死灵书Lv3.jpg</file>
-        <file>pic/spell/天堂之戟.jpg</file>
-        <file>pic/spell/跳刀.jpg</file>
-        <file>pic/spell/微光斗篷.jpg</file>
-        <file>pic/spell/卫士胫甲.jpg</file>
-        <file>pic/spell/无所保留的辅助.jpg</file>
-        <file>pic/spell/希瓦的守护.jpg</file>
-        <file>pic/spell/先手.jpg</file>
-        <file>pic/spell/先知-高台打野.jpg</file>
-        <file>pic/spell/漩涡.jpg</file>
-        <file>pic/spell/血精石.jpg</file>
-        <file>pic/spell/压制之刃.jpg</file>
-        <file>pic/spell/炎阳纹章.jpg</file>
-        <file>pic/spell/夜叉.jpg</file>
-        <file>pic/spell/银月之晶.jpg</file>
-        <file>pic/spell/影刃.jpg</file>
-        <file>pic/spell/影之灵龛.jpg</file>
-        <file>pic/spell/勇气勋章.jpg</file>
-        <file>pic/spell/幽冥权杖.jpg</file>
-        <file>pic/spell/原力法杖.jpg</file>
-        <file>pic/spell/战鼓.jpg</file>
-        <file>pic/spell/振奋宝石.jpg</file>
-        <file>pic/spell/装备合成卷轴.jpg</file>
-        <file>pic/spell/诅咒.jpg</file>
-    </qresource>
+    <qresource prefix="/pic/spell"/>
     <qresource prefix="/png">
         <file>png/b.png</file>
         <file>png/back.jpg</file>
@@ -80,37 +9,6 @@
         <file>png/NULL.jpg</file>
     </qresource>
     <qresource prefix="/">
-        <file>pic/monster/dota-大地之灵.jpg</file>
-        <file>pic/monster/dota-德鲁伊.jpg</file>
-        <file>pic/monster/dota-地卜师.jpg</file>
-        <file>pic/monster/dota-地精工程师.jpg</file>
-        <file>pic/monster/dota-地精修补匠.jpg</file>
-        <file>pic/monster/dota-凤凰.jpg</file>
-        <file>pic/monster/dota-寒冰飞龙.jpg</file>
-        <file>pic/monster/dota-弧光守望者.jpg</file>
-        <file>pic/monster/dota-剧毒术士.jpg</file>
-        <file>pic/monster/dota-军团指挥官.jpg</file>
-        <file>pic/monster/dota-恐怖利刃.jpg</file>
-        <file>pic/monster/dota-龙骑士.jpg</file>
-        <file>pic/monster/dota-魅惑魔女.jpg</file>
-        <file>pic/monster/dota-敏捷亚龙.jpg</file>
-        <file>pic/monster/dota-娜迦海妖.jpg</file>
-        <file>pic/monster/dota-祈求者.jpg</file>
-        <file>pic/monster/dota-全能骑士.jpg</file>
-        <file>pic/monster/dota-山岭巨人.jpg</file>
-        <file>pic/monster/dota-圣堂刺客.jpg</file>
-        <file>pic/monster/dota-嗜血狂魔.jpg</file>
-        <file>pic/monster/dota-噬尸鬼.jpg</file>
-        <file>pic/monster/dota-受折磨的灵魂.jpg</file>
-        <file>pic/monster/dota-双头龙.jpg</file>
-        <file>pic/monster/dota-天怒法师.jpg</file>
-        <file>pic/monster/dota-屠夫.jpg</file>
-        <file>pic/monster/dota-巫妖.jpg</file>
-        <file>pic/monster/dota-巫医.jpg</file>
-        <file>pic/monster/dota-仙女龙.jpg</file>
-        <file>pic/monster/dota-先知.jpg</file>
-        <file>pic/monster/dota-幽鬼.jpg</file>
-        <file>pic/monster/巫医守卫.jpg</file>
         <file>pic/monster/dota-CentaurWarrunner.jpg</file>
         <file>pic/monster/dota-KeeperoftheLight.jpg</file>
         <file>pic/monster/dota-Lion.jpg</file>
@@ -122,12 +20,5 @@
         <file>pic/monster/dota-VengefulSpirit.jpg</file>
         <file>pic/monster/dota-Zeus.jpg</file>
     </qresource>
-    <qresource prefix="/pic/trap">
-        <file>pic/trap/TP支援.jpg</file>
-        <file>pic/trap/诡计之雾.jpg</file>
-        <file>pic/trap/排眼.jpg</file>
-        <file>pic/trap/祈求者-电磁脉冲.jpg</file>
-        <file>pic/trap/祈求者-寒冰之墙.jpg</file>
-        <file>pic/trap/战争迷雾.jpg</file>
-    </qresource>
+    <qresource prefix="/pic/trap"/>
 </RCC>
