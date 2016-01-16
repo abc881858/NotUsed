@@ -5,44 +5,12 @@
 Card::Card(int value)
     : pixmap(":/png/png/NULL.jpg")
 {
-    ISDN = value;
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
-
-    switch (ISDN) {
-    case 601:
-        name = "dota-CentaurWarrunner";
-        break;
-    case 602:
-        name = "dota-KeeperoftheLight";
-        break;
-    case 603:
-        name = "dota-Lion";
-        break;
-    case 604:
-        name = "dota-Magnus";
-        break;
-    case 605:
-        name = "dota-NyxAssassin";
-        break;
-    case 606:
-        name = "dota-Rubick";
-        break;
-    case 607:
-        name = "dota-Tusk";
-        break;
-    case 608:
-        name = "dota-Undying";
-        break;
-    case 609:
-        name = "dota-VengefulSpirit";
-        break;
-    case 610:
-        name = "dota-Zeus";
-        break;
-    default:
-        break;
-    }
+    ISDN = value;
+    name = allnames.value(ISDN);
+    area = parentObject()->metaObject()->className();
+    image = QString(":/pic/monster/%1.jpg").arg(name);
 }
 
 int Card::getISDN() const
@@ -57,35 +25,29 @@ QRectF Card::boundingRect() const
 
 void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    if(QString(parentObject()->metaObject()->className())!="EnemyHandArea")
+    if(area!="EnemyHandArea")
     {
-        pixmap = QPixmap(getPixmapPath());
+        pixmap = QPixmap(image);
     }
     pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     painter->drawPixmap(0, 0, pixmap);
 }
 
-QString Card::getPixmapPath()
-{
-    return QString(":/pic/monster/%1.jpg").arg(name);
-}
-
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
-    if(QString(parentObject()->metaObject()->className())=="HandArea")
+    if(area=="HandArea")
     {
         setY(-35);
     }
-    else if(QString(parentObject()->metaObject()->className())=="EnemyHandArea")
+    else if(area=="EnemyHandArea")
     {
         setY(35);
     }
-    emit hover(getPixmapPath());
+    emit hover(image);
 }
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
-    QString area(parentObject()->metaObject()->className());
     if(area=="HandArea" || area=="EnemyHandArea")
     {
         setY(0);
