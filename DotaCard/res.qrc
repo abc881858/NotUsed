@@ -1,5 +1,4 @@
 <RCC>
-    <qresource prefix="/pic/spell"/>
     <qresource prefix="/png">
         <file>png/b.png</file>
         <file>png/back.jpg</file>
@@ -19,6 +18,6 @@
         <file>pic/monster/dota-Undying.jpg</file>
         <file>pic/monster/dota-VengefulSpirit.jpg</file>
         <file>pic/monster/dota-Zeus.jpg</file>
+        <file>pic/monster/NULL.jpg</file>
     </qresource>
-    <qresource prefix="/pic/trap"/>
 </RCC>
