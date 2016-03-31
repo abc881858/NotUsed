@@ -1,8 +1,10 @@
-#include "mainwindow.h"
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
 #include <QtDebug>
+
+#include "mainwindow.h"
+#include "engine.h"
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
@@ -17,6 +19,9 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QS
         break;
     case QtCriticalMsg:
         txt = QString("Critical: %1").arg(msg);
+        break;
+    case QtInfoMsg:
+        txt = QString("InfoMsg: %1").arg(msg);
         break;
     case QtFatalMsg:
         txt = QString("Fatal: %1").arg(msg);
@@ -34,9 +39,12 @@ int main(int argc, char* argv[])
     qInstallMessageHandler(myMessageOutput);
 
     QApplication a(argc, argv);
-    MainWindow w;
-    w.setWindowTitle("Dota Card");
-    w.show();
+
+    Engine::instance()->loadAllCards();
+
+    MainWindow *mainwindow = new MainWindow;
+    mainwindow->setWindowTitle("Dota Card");
+    mainwindow->show();
 
     return a.exec();
 }
