@@ -1,26 +1,22 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <QObject>
-#include "card.h"
 #include <QHash>
 #include <QMetaObject>
+#include <QList>
 
-class Engine : public QObject
+#include "card.h"
+
+class Engine
 {
-    Q_OBJECT
-
 public:
-    explicit Engine(QObject *parent = 0);
-    QHash<QString, const QMetaObject> metaobjects;
+    static Engine *instance();
+    void loadAllCards();
     Card* cloneCard(int ISDN);
 
-signals:
-
-public slots:
-
+private:
+    QHash<int, const QMetaObject*> metaobjects;
+    QList<Card*> allcards;
 };
-
-extern Engine *Youxiwang;
 
 #endif // ENGINE_H
