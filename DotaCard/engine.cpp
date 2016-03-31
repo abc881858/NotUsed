@@ -1,15 +1,24 @@
 #include "engine.h"
 
-Engine *Youxiwang = NULL;
+Q_GLOBAL_STATIC(Engine, engine)
 
-Engine::Engine(QObject *parent) : QObject(parent)
+Engine *Engine::instance()
 {
-    metaobjects.insert(601, Lion::staticMetaObject());
+    return engine();
+}
+
+void Engine::loadAllCards()
+{
+    allcards << new Lion();
+
+    foreach (Card* card, allcards)
+    {
+        metaobjects.insert(card->getISDN(),card->metaObject());
+    }
 }
 
 Card* Engine::cloneCard(int ISDN)
 {
-    QMetaObject meta = metaobjects.value(ISDN);
-    Card *card = qobject_cast<Card *>(meta.newInstance());
-    return card;
+    const QMetaObject *meta = metaobjects.value(ISDN);
+    return qobject_cast<Card *>(meta->newInstance());
 }
