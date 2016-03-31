@@ -2,14 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTcpSocket>
-//#include "deck.h"
-//#include "hand.h"
-//#include "field.h"
-//#include "graveyard.h"
 #include <QList>
-#include "card.h"
 #include "roomscene.h"
+#include "net.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,7 +17,6 @@ class MainWindow : public QMainWindow {
 public:
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
-    QTcpSocket* client;
 
     enum Phase { myDP,
         mySP,
@@ -39,22 +33,6 @@ public:
     void setPhase(Phase phase);
     Phase getphase() const;
 
-    void myStartGame();
-    void yourStartGame();
-    void myDrawPhase();
-    void yourDrawPhase();
-    void myStandbyPhase();
-    void yourStandbyPhase();
-    void myMainPhase1();
-    void yourMainPhase1();
-    void yourBattlePhase();
-    void yourMainPhase2();
-    void yourEndPhase();
-
-    QByteArray getJsonFromInt(int command);
-    void firstSetupEnemyDeck(QJsonArray jsonArray);
-    void secondSetupEnemyDeck(QJsonArray jsonArray);
-
 private:
     Ui::MainWindow* ui;
     Phase phase;
@@ -65,16 +43,24 @@ private:
     int yourLP;
 
     RoomScene* roomScene;
-
-public slots:
-    void readFromServer();
-    void connected();
+    Net *net;
 
 private slots:
-    void on_buttonBP_clicked();
-    void on_buttonM2_clicked();
-    void on_buttonEP_clicked();
+//    void on_buttonBP_clicked();
+//    void on_buttonM2_clicked();
+//    void on_buttonEP_clicked();
     void setBigImage(QString s);
+    void startMyGame();
+    void startYourGame();
+    void drawMyPhase();
+    void drawYourPhase();
+    void standbyMyPhase();
+    void standbyYourPhase();
+    void mainMyPhase1();
+    void mainYourPhase1();
+    void battleYourPhase();
+    void mainYourPhase2();
+    void endYourPhase();
 };
 
 #endif // MAINWINDOW_H
