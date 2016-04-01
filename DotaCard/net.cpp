@@ -126,114 +126,26 @@ void Net::firstSetupEnemyDeck(QJsonArray jsonArray)
 void Net::secondSetupEnemyDeck(QJsonArray jsonArray)
 {
     firstSetupEnemyDeck(jsonArray);
-    client->write(getJsonFromInt(1001));
+    sendMessage(1001);
 }
 
-//void Net::myStartGame()
-//{
-//    QJsonObject jsonObject;
-//    QJsonArray cards;
-//    for (int i = 0; i < 5; i++) {
-//        Card* card = myDeck.takeFirst();
-//        roomScene->handarea->addCard(card);
-//        cards << card->getISDN();
-//    }
-//    jsonObject.insert("command", 10001);
-//    jsonObject.insert("cards", cards);
-//    qDebug() << jsonObject;
-//    QJsonDocument jsonDoucment(jsonObject);
-//    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-//    client->write(json);
-//}
+void Net::sendMessage(int command)
+{
+    client->write(getJsonFromInt(command));
+}
 
-//void Net::yourStartGame()
-//{
-//    for (int i = 0; i < 5; i++) {
-//        Card* card = yourDeck.takeFirst();
-//        roomScene->enemyhandarea->addCard(card);
-//    }
+void Net::sendMessage(int command, QList<int> list)
+{
+    QJsonObject jsonObject;
+    QJsonArray cards;
+    foreach (int card, list) {
+        cards << QJsonValue(card);
+    }
 
-//    QJsonObject jsonObject;
-//    QJsonArray cards;
-//    for (int i = 0; i < 5; i++) {
-//        Card* card = myDeck.takeFirst();
-//        roomScene->handarea->addCard(card);
-//        cards << card->getISDN();
-//    }
-//    jsonObject.insert("command", 10002);
-//    jsonObject.insert("cards", cards);
-//    qDebug() << jsonObject;
-//    QJsonDocument jsonDoucment(jsonObject);
-//    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-//    client->write(json);
-//}
+    jsonObject.insert("command", command);
+    jsonObject.insert("cards", cards);
 
-//void Net::myDrawPhase()
-//{
-//    for (int i = 0; i < 5; i++) {
-//        Card* card = yourDeck.takeFirst();
-//        roomScene->enemyhandarea->addCard(card);
-//    }
-//    setPhase(myDP);
-
-//    Card* card = myDeck.takeFirst();
-//    roomScene->handarea->addCard(card);
-
-//    client->write(getJsonFromInt(20001));
-//}
-
-//void Net::yourDrawPhase()
-//{
-//    Card* card = yourDeck.takeFirst();
-//    roomScene->enemyhandarea->addCard(card);
-
-//    setPhase(yourDP);
-//    client->write(getJsonFromInt(20002));
-//}
-
-//void Net::myStandbyPhase()
-//{
-//    setPhase(mySP);
-//    client->write(getJsonFromInt(30001));
-//}
-
-//void Net::yourStandbyPhase()
-//{
-//    setPhase(yourSP);
-//    client->write(getJsonFromInt(30002));
-//}
-
-//void Net::myMainPhase1()
-//{
-//    setPhase(myM1);
-//    client->write(getJsonFromInt(40001));
-//}
-
-//void Net::yourMainPhase1()
-//{
-//    setPhase(yourM2);
-//}
-
-//void Net::yourBattlePhase()
-//{
-//    setPhase(yourBP);
-//}
-
-//void Net::yourMainPhase2()
-//{
-//    setPhase(yourM2);
-//}
-
-//void Net::yourEndPhase()
-//{
-//    setPhase(yourEP);
-//    //TODO: 也许对方结束阶段我要触发什么陷阱卡
-//    //暂时玩家2直接进入他的抽卡阶段
-
-//    setPhase(myDP);
-
-//    Card* card = myDeck.takeFirst();
-//    roomScene->handarea->addCard(card);
-
-//    client->write(getJsonFromInt(20001));
-//}
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
+}
