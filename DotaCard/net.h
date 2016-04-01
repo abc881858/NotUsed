@@ -14,6 +14,8 @@ public:
     void firstSetupEnemyDeck(QJsonArray jsonArray);
     void secondSetupEnemyDeck(QJsonArray jsonArray);
 
+    void sendMessage(int command, QList<int> list);
+    void sendMessage(int command);
 private:
     QTcpSocket* client;
 
