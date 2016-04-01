@@ -87,55 +87,98 @@ void MainWindow::setBigImage(QString s)
 
 void MainWindow::startMyGame()
 {
-
+    QList<int> list;
+    for (int i = 0; i < 5; i++) {
+        Card* card = myDeck.takeFirst();
+        roomScene->handarea->addCard(card);
+        list << card->getISDN();
+    }
+    net->sendMessage(10001, list);
 }
 
 void MainWindow::startYourGame()
 {
+    //client2 start his game
+    for (int i = 0; i < 5; i++) {
+        Card* card = yourDeck.takeFirst();
+        roomScene->enemyhandarea->addCard(card);
+    }
 
+    QList<int> list;
+    for (int i = 0; i < 5; i++) {
+        Card* card = myDeck.takeFirst();
+        roomScene->handarea->addCard(card);
+        list << card->getISDN();
+    }
+    net->sendMessage(10002, list);
 }
 
 void MainWindow::drawMyPhase()
 {
+    for (int i = 0; i < 5; i++) {
+        Card* card = yourDeck.takeFirst();
+        roomScene->enemyhandarea->addCard(card);
+    }
+    setPhase(myDP);
 
+    Card* card = myDeck.takeFirst();
+    roomScene->handarea->addCard(card);
+
+    net->sendMessage(20001);
 }
 
 void MainWindow::drawYourPhase()
 {
+    Card* card = yourDeck.takeFirst();
+    roomScene->enemyhandarea->addCard(card);
 
+    setPhase(yourDP);
+    net->sendMessage(20002);
 }
 
 void MainWindow::standbyMyPhase()
 {
-
+    setPhase(mySP);
+    net->sendMessage(30001);
 }
 
 void MainWindow::standbyYourPhase()
 {
-
+    setPhase(yourSP);
+    net->sendMessage(30002);
 }
 
 void MainWindow::mainMyPhase1()
 {
-
+    setPhase(myM1);
+    net->sendMessage(40001);
 }
 
 void MainWindow::mainYourPhase1()
 {
-
+    setPhase(yourM2);
 }
 
 void MainWindow::battleYourPhase()
 {
-
+    setPhase(yourBP);
 }
 
 void MainWindow::mainYourPhase2()
 {
-
+    setPhase(yourM2);
 }
 
 void MainWindow::endYourPhase()
 {
+    setPhase(yourEP);
+    //TODO: 也许对方结束阶段我要触发什么陷阱卡
+    //暂时玩家2直接进入他的抽卡阶段
 
+    setPhase(myDP);
+
+    Card* card = myDeck.takeFirst();
+    roomScene->handarea->addCard(card);
+
+    net->sendMessage(20001);
 }
