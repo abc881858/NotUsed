@@ -7,10 +7,9 @@
 
 #include "card.h"
 
-class Engine
-{
+class Engine {
 public:
-    static Engine *instance();
+    static Engine* instance();
     void loadAllCards();
     Card* cloneCard(int ISDN);
 
