@@ -2,9 +2,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QtDebug>
-
-#include "mainwindow.h"
 #include "engine.h"
+#include "mainwindow.h"
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
@@ -42,7 +41,7 @@ int main(int argc, char* argv[])
 
     Engine::instance()->loadAllCards();
 
-    MainWindow *mainwindow = new MainWindow;
+    MainWindow* mainwindow = new MainWindow;
     mainwindow->setWindowTitle("Dota Card");
     mainwindow->show();
 
