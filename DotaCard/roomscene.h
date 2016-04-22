@@ -8,22 +8,26 @@ class RoomScene : public QGraphicsScene {
     Q_OBJECT
 public:
     RoomScene(QObject* parent = 0);
+    QList<int> startMyGame();
+    QList<int> startYourGame();
+    void drawMyPhase();
+    void drawYourPhase();
+    void endYourPhase();
+    void setupDeck(QList<int> list);
+    void setupEnemyDeck(QList<int> list);
+
+private:
     DeckArea* deckarea;
     HandArea* handarea;
     FieldyardArea* fieldyardarea;
     FieldgroundArea* fieldgroundarea;
-    //    GraveyardArea * graveyardarea;
-    //    RemoveArea * removearea;
-    //    FusionArea * fusionarea;
-    //    EnvironmentArea * environmentarea;
     EnemyDeckArea* enemydeckarea;
     EnemyHandArea* enemyhandarea;
     EnemyFieldyardArea* enemyfieldyardarea;
     EnemyFieldgroundArea* enemyfieldgroundarea;
-    //    EnemyGraveyardArea * enemygraveyardarea;
-    //    EnemyRemoveArea * enemyremovearea;
-    //    EnemyFusionArea * enemyfusionarea;
-    //    EnemyEnvironmentArea * enemyenvironmentarea;
+
+signals:
+    void hoverCard(QString);
 };
 
 #endif // ROOMSCENE_H
