@@ -37,19 +37,15 @@ private:
     Ui::MainWindow* ui;
     Phase phase;
 
-    QList<Card *> myDeck, yourDeck, myHand, yourHand, myFieldyard, yourFieldyard, myFieldground, yourFieldground;
-
     int myLP;
     int yourLP;
 
     RoomScene* roomScene;
-    Net *net;
+    Net* net;
 
 private slots:
-//    void on_buttonBP_clicked();
-//    void on_buttonM2_clicked();
-//    void on_buttonEP_clicked();
-    void setBigImage(QString s);
+    void setupDeck(QList<int> list);
+    void setupEnemyDeck(QList<int> list);
     void startMyGame();
     void startYourGame();
     void drawMyPhase();
@@ -61,6 +57,9 @@ private slots:
     void battleYourPhase();
     void mainYourPhase2();
     void endYourPhase();
+
+public slots:
+    void hoverCard(QString name);
 };
 
 #endif // MAINWINDOW_H
