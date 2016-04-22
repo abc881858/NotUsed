@@ -10,6 +10,12 @@ static QRectF EnemyHandAreaRect(0, 0, 512, 70);
 static QRectF EnemyFieldyardAreaRect(0, 0, 384, 92);
 static QRectF EnemyFieldgroundAreaRect(0, 0, 384, 92);
 
+/**
+  * @brief 我方卡组区域
+  * @author wudongliang
+  * @date 2016/4/22
+  */
+
 DeckArea::DeckArea()
     : pixmap(":/png/png/temp.png")
 {
@@ -25,7 +31,28 @@ void DeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
     painter->drawPixmap(0, 0, pixmap);
 }
 
-///////////////////////////////////////////////////////////////
+void DeckArea::addCard(Card* card)
+{
+    card->setParentItem(this);
+
+    card->setFace(false);
+    card->setStand(true);
+    card->setArea("DeckArea");
+
+    myDeck << card;
+    //    adjustCards();
+}
+
+Card* DeckArea::takeFirstCard()
+{
+    return myDeck.takeFirst();
+}
+
+/**
+  * @brief 我方手牌区域
+  * @author wudongliang
+  * @date 2016/4/22
+  */
 
 HandArea::HandArea()
     : pixmap(":/png/png/hand.png")
@@ -56,10 +83,12 @@ void HandArea::adjustCards()
 
 void HandArea::addCard(Card* card)
 {
-    //    card->setFace(true);
-    //    card->setArea(CardItem::HandArea);
     card->setParentItem(this);
-    //    card->setFlags(ItemIsFocusable);
+
+    card->setFace(true);
+    card->setStand(true);
+    card->setArea("HandArea");
+
     myHand << card;
     adjustCards();
 }
@@ -102,7 +131,11 @@ void FieldgroundArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, 
     painter->drawPixmap(0, 0, pixmap);
 }
 
-///////////////////////////////////////////////////////////////
+/**
+  * @brief 敌方卡组区域
+  * @author wudongliang
+  * @date 2016/4/22
+  */
 
 EnemyDeckArea::EnemyDeckArea()
     : pixmap(":/png/png/temp.png")
@@ -119,7 +152,28 @@ void EnemyDeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QW
     painter->drawPixmap(0, 0, pixmap);
 }
 
-///////////////////////////////////////////////////////////////
+void EnemyDeckArea::addCard(Card* card)
+{
+    card->setParentItem(this);
+
+    card->setFace(false);
+    card->setStand(true);
+    card->setArea("EnemyDeckArea");
+
+    yourDeck << card;
+    //    adjustCards();
+}
+
+Card* EnemyDeckArea::takeFirstCard()
+{
+    return yourDeck.takeFirst();
+}
+
+/**
+  * @brief 敌方手牌区域
+  * @author wudongliang
+  * @date 2016/4/22
+  */
 
 EnemyHandArea::EnemyHandArea()
     : pixmap(":/png/png/hand.png")
@@ -150,10 +204,12 @@ void EnemyHandArea::adjustCards()
 
 void EnemyHandArea::addCard(Card* card)
 {
-    //    card->setFace(false);
-    //    card->setArea(CardItem::EnemyHandArea);
     card->setParentItem(this);
-    //    card_item->setFlags(ItemIsFocusable);
+
+    card->setStand(true);
+    card->setFace(false);
+    card->setArea("EnemyHandArea");
+
     yourHand << card;
     adjustCards();
 }
