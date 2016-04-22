@@ -4,18 +4,18 @@
 #include <QTcpSocket>
 #include "card.h"
 
-class Net : public QObject
-{
+class Net : public QObject {
     Q_OBJECT
 
 public:
-    Net(QObject *parent);
+    Net(QObject* parent);
     QByteArray getJsonFromInt(int command);
     void firstSetupEnemyDeck(QJsonArray jsonArray);
     void secondSetupEnemyDeck(QJsonArray jsonArray);
 
     void sendMessage(int command, QList<int> list);
     void sendMessage(int command);
+
 private:
     QTcpSocket* client;
 
@@ -24,8 +24,8 @@ public slots:
     void connected();
 
 signals:
-    void loadDeck(QList<Card*> myDeck);
-    void setupEnemyDeck(QList<Card*> yourDeck);
+    void setupDeck(QList<int> myDeck);
+    void setupEnemyDeck(QList<int> yourDeck);
     void myStartGame();
     void yourStartGame();
     void myDrawPhase();
