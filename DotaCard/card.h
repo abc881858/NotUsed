@@ -4,57 +4,111 @@
 #include <QGraphicsObject>
 #include <QHash>
 
-//const static QHash<int, QString> allnames = {
-//    { 601, "dota-Lion" },
-//    { 602, "dota-Rubick" },
-//    { 603, "dota-Tusk" },
-//    { 604, "dota-Magnus" },
-//    { 605, "dota-NyxAssassin" },
-//    { 606, "dota-KeeperoftheLight" },
-//    { 607, "dota-CentaurWarrunner" },
-//    { 608, "dota-Undying" },
-//    { 609, "dota-VengefulSpirit" },
-//    { 610, "dota-Zeus" }
-//};
-
 class Card : public QGraphicsObject {
     Q_OBJECT
 public:
-    explicit Card(int value = -1);
+    Card();
     int getISDN() const;
     void setISDN(int value);
 
     QString getName() const;
-    void setName(const QString &value);
+    void setName(const QString& value);
 
     QString getImage() const;
-    void setImage(const QString &value);
+    void setImage(const QString& value);
+
+    QString getArea() const;
+    void setArea(const QString &value);
+
+    QString getDescription() const;
+    void setDescription(const QString &value);
+
+    bool getFace() const;
+    void setFace(bool value);
+
+    bool getStand() const;
+    void setStand(bool value);
 
 protected:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
-//    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+
 private:
     QPixmap pixmap;
     int ISDN;
     QString name;
-    QString area;
     QString image;
+    QString area;
     QString description;
+    bool face;
+    bool stand;
+
 signals:
     void hover(QString);
-//    void left_click();
-//    void right_click();
+};
+
+///////////////////////////////////////////////
+
+class CentaurWarrunner : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE CentaurWarrunner();
+};
+
+class KeeperoftheLight : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE KeeperoftheLight();
 };
 
 class Lion : public Card {
     Q_OBJECT
 public:
     Q_INVOKABLE Lion();
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+};
+
+class Magnus : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE Magnus();
+};
+
+class NyxAssassin : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE NyxAssassin();
+};
+
+class Rubick : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE Rubick();
+};
+
+class Tusk : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE Tusk();
+};
+
+class Undying : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE Undying();
+};
+
+class VengefulSpirit : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE VengefulSpirit();
+};
+
+class Zeus : public Card {
+    Q_OBJECT
+public:
+    Q_INVOKABLE Zeus();
 };
 
 #endif // CARD_H
