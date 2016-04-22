@@ -12,21 +12,24 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
     QPalette palette;
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/png/png/back.jpg")));
-    this->setPalette(palette);
+    setPalette(palette);
 
     net = new Net(this);
 
-    connect(net,SIGNAL(myStartGame()),this,SLOT(startMyGame()));
-    connect(net,SIGNAL(yourStartGame()),this,SLOT(startYourGame()));
-    connect(net,SIGNAL(myDrawPhase()),this,SLOT(drawMyPhase()));
-    connect(net,SIGNAL(yourDrawPhase()),this,SLOT(drawYourPhase()));
-    connect(net,SIGNAL(myStandbyPhase()),this,SLOT(standbyMyPhase()));
-    connect(net,SIGNAL(yourStandbyPhase()),this,SLOT(standbyYourPhase()));
-    connect(net,SIGNAL(myMainPhase1()),this,SLOT(mainMyPhase1()));
-    connect(net,SIGNAL(yourMainPhase1()),this,SLOT(mainYourPhase1()));
-    connect(net,SIGNAL(yourBattlePhase()),this,SLOT(battleYourPhase()));
-    connect(net,SIGNAL(yourMainPhase2()),this,SLOT(mainYourPhase2()));
-    connect(net,SIGNAL(yourEndPhase()),this,SLOT(endYourPhase()));
+    connect(net, SIGNAL(setupDeck(QList<int>)), this, SLOT(setupDeck(QList<int>)));
+    connect(net, SIGNAL(setupEnemyDeck(QList<int>)), this, SLOT(setupEnemyDeck(QList<int>)));
+
+    connect(net, SIGNAL(myStartGame()), this, SLOT(startMyGame()));
+    connect(net, SIGNAL(yourStartGame()), this, SLOT(startYourGame()));
+    connect(net, SIGNAL(myDrawPhase()), this, SLOT(drawMyPhase()));
+    connect(net, SIGNAL(yourDrawPhase()), this, SLOT(drawYourPhase()));
+    connect(net, SIGNAL(myStandbyPhase()), this, SLOT(standbyMyPhase()));
+    connect(net, SIGNAL(yourStandbyPhase()), this, SLOT(standbyYourPhase()));
+    connect(net, SIGNAL(myMainPhase1()), this, SLOT(mainMyPhase1()));
+    connect(net, SIGNAL(yourMainPhase1()), this, SLOT(mainYourPhase1()));
+    connect(net, SIGNAL(yourBattlePhase()), this, SLOT(battleYourPhase()));
+    connect(net, SIGNAL(yourMainPhase2()), this, SLOT(mainYourPhase2()));
+    connect(net, SIGNAL(yourEndPhase()), this, SLOT(endYourPhase()));
 
     myLP = 8000;
     yourLP = 8000;
@@ -37,14 +40,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->roomView->setScene(roomScene);
     ui->roomView->setSceneRect(0, 0, 550, 600);
 
-//    this->myDeck = roomScene->deckarea->myDeck;
-//    this->myHand = roomScene->handarea->myHand;
-//    this->myFieldyard = roomScene->fieldyardarea->myFieldyard;
-//    this->myFieldground = roomScene->fieldgroundarea->myFieldground;
-//    this->yourDeck = roomScene->enemydeckarea->yourDeck;
-//    this->yourHand = roomScene->enemyhandarea->yourHand;
-//    this->yourFieldyard = roomScene->enemyfieldyardarea->yourFieldyard;
-//    this->yourFieldground = roomScene->enemyfieldgroundarea->yourFieldground;
+    connect(roomScene, SIGNAL(hoverCard(QString)), this, SLOT(hoverCard(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -52,23 +48,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//void MainWindow::on_buttonBP_clicked()
-//{
-//    setPhase(myBP);
-//    client->write(getJsonFromInt(50001));
-//}
+void MainWindow::setupDeck(QList<int> list)
+{
+    roomScene->setupDeck(list);
+}
 
-//void MainWindow::on_buttonM2_clicked()
-//{
-//    setPhase(myM2);
-//    client->write(getJsonFromInt(60001));
-//}
-
-//void MainWindow::on_buttonEP_clicked()
-//{
-//    setPhase(myEP);
-//    client->write(getJsonFromInt(70001));
-//}
+void MainWindow::setupEnemyDeck(QList<int> list)
+{
+    roomScene->setupEnemyDeck(list);
+}
 
 void MainWindow::setPhase(MainWindow::Phase phase)
 {
@@ -80,59 +68,37 @@ MainWindow::Phase MainWindow::getphase() const
     return this->phase;
 }
 
-void MainWindow::setBigImage(QString s)
+void MainWindow::hoverCard(QString name)
 {
-    ui->label->setStyleSheet(QString("image: url(%1)").arg(s));
+    //首先一张卡被hover，左上角大图肯定要更新
+    //但对方的（除前后场的face-up卡）不该显示，我方卡组也不该显示
+    ui->label->setStyleSheet(QString("image: url(:/pic/monster/%1.jpg)").arg(name));
 }
 
 void MainWindow::startMyGame()
 {
-    QList<int> list;
-    for (int i = 0; i < 5; i++) {
-        Card* card = myDeck.takeFirst();
-        roomScene->handarea->addCard(card);
-        list << card->getISDN();
-    }
+    QList<int> list = roomScene->startMyGame();
     net->sendMessage(10001, list);
 }
 
 void MainWindow::startYourGame()
 {
     //client2 start his game
-    for (int i = 0; i < 5; i++) {
-        Card* card = yourDeck.takeFirst();
-        roomScene->enemyhandarea->addCard(card);
-    }
-
-    QList<int> list;
-    for (int i = 0; i < 5; i++) {
-        Card* card = myDeck.takeFirst();
-        roomScene->handarea->addCard(card);
-        list << card->getISDN();
-    }
+    QList<int> list = roomScene->startYourGame();
     net->sendMessage(10002, list);
 }
 
 void MainWindow::drawMyPhase()
 {
-    for (int i = 0; i < 5; i++) {
-        Card* card = yourDeck.takeFirst();
-        roomScene->enemyhandarea->addCard(card);
-    }
     setPhase(myDP);
-
-    Card* card = myDeck.takeFirst();
-    roomScene->handarea->addCard(card);
-
+    roomScene->drawMyPhase();
     net->sendMessage(20001);
 }
 
 void MainWindow::drawYourPhase()
 {
-    Card* card = yourDeck.takeFirst();
-    roomScene->enemyhandarea->addCard(card);
-
     setPhase(yourDP);
+    roomScene->drawYourPhase();
     net->sendMessage(20002);
 }
 
@@ -176,9 +142,6 @@ void MainWindow::endYourPhase()
     //暂时玩家2直接进入他的抽卡阶段
 
     setPhase(myDP);
-
-    Card* card = myDeck.takeFirst();
-    roomScene->handarea->addCard(card);
-
+    roomScene->endYourPhase();
     net->sendMessage(20001);
 }
