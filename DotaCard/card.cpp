@@ -1,114 +1,189 @@
-#ifndef CARD_H
-#define CARD_H
+#include "card.h"
+#include <QPainter>
+#include <QMetaObject>
+#include <QGraphicsSceneMouseEvent>
 
-#include <QGraphicsObject>
-#include <QHash>
+Card::Card()
+{
+    setAcceptHoverEvents(true);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
+    pixmap = QString(":/png/png/NULL.jpg");
+}
 
-class Card : public QGraphicsObject {
-    Q_OBJECT
-public:
-    Card();
-    int getISDN() const;
-    void setISDN(int value);
+int Card::getISDN() const
+{
+    return ISDN;
+}
 
-    QString getName() const;
-    void setName(const QString& value);
+QRectF Card::boundingRect() const
+{
+    return QRectF(0, 0, 100, 145);
+}
 
-    QString getImage() const;
-    void setImage(const QString& value);
+void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+{
+    if (area == "DeckArea" || area == "EnemyDeckArea")
+    {
+        return;
+    }
+    if (area != "EnemyHandArea") {
+        pixmap = QPixmap(image);
+    }
+    pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    painter->drawPixmap(0, 0, pixmap);
+}
 
-    QString getArea() const;
-    void setArea(const QString &value);
+void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
+{
+    if (area == "HandArea") {
+        setY(-35);
+    }
+    else if (area == "EnemyHandArea") {
+        setY(35);
+    }
+    emit hover(name);
+}
 
-    QString getDescription() const;
-    void setDescription(const QString &value);
+void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+{
+    if (area == "HandArea" || area == "EnemyHandArea") {
+        setY(0);
+    }
+}
 
-    bool getFace() const;
-    void setFace(bool value);
+bool Card::getStand() const
+{
+    return stand;
+}
 
-    bool getStand() const;
-    void setStand(bool value);
+void Card::setStand(bool value)
+{
+    stand = value;
+}
 
-protected:
-    QRectF boundingRect() const;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
-    void hoverEnterEvent(QGraphicsSceneHoverEvent*);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
+bool Card::getFace() const
+{
+    return face;
+}
 
-private:
-    QPixmap pixmap;
-    int ISDN;
-    QString name;
-    QString image;
-    QString area;
-    QString description;
-    bool face;
-    bool stand;
+void Card::setFace(bool value)
+{
+    face = value;
+}
 
-signals:
-    void hover(QString);
-};
+QString Card::getDescription() const
+{
+    return description;
+}
 
-///////////////////////////////////////////////
+void Card::setDescription(const QString &value)
+{
+    description = value;
+}
 
-class CentaurWarrunner : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE CentaurWarrunner();
-};
+QString Card::getArea() const
+{
+    return area;
+}
 
-class KeeperoftheLight : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE KeeperoftheLight();
-};
+void Card::setArea(const QString &value)
+{
+    area = value;
+}
 
-class Lion : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE Lion();
-};
+QString Card::getImage() const
+{
+    return image;
+}
 
-class Magnus : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE Magnus();
-};
+void Card::setImage(const QString& value)
+{
+    image = value;
+}
 
-class NyxAssassin : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE NyxAssassin();
-};
+QString Card::getName() const
+{
+    return name;
+}
 
-class Rubick : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE Rubick();
-};
+void Card::setName(const QString& value)
+{
+    name = value;
+}
 
-class Tusk : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE Tusk();
-};
+void Card::setISDN(int value)
+{
+    ISDN = value;
+}
 
-class Undying : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE Undying();
-};
+///////////////////////////////////////////////////////////
 
-class VengefulSpirit : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE VengefulSpirit();
-};
+CentaurWarrunner::CentaurWarrunner()//半人马酋长
+{
+    setISDN(601);
+    setName("dota-CentaurWarrunner");
+    setImage(":/pic/monster/dota-CentaurWarrunner.jpg");
+}
 
-class Zeus : public Card {
-    Q_OBJECT
-public:
-    Q_INVOKABLE Zeus();
-};
+KeeperoftheLight::KeeperoftheLight()//光之守卫
+{
+    setISDN(602);
+    setName("dota-KeeperoftheLight");
+    setImage(":/pic/monster/dota-KeeperoftheLight.jpg");
+}
 
-#endif // CARD_H
+Lion::Lion()//恶魔巫师
+{
+    setISDN(603);
+    setName("dota-Lion");
+    setImage(":/pic/monster/dota-Lion.jpg");
+}
+
+Magnus::Magnus()//半人猛犸
+{
+    setISDN(604);
+    setName("dota-Magnus");
+    setImage(":/pic/monster/dota-Magnus.jpg");
+}
+
+NyxAssassin::NyxAssassin()//地穴刺客
+{
+    setISDN(605);
+    setName("dota-NyxAssassin");
+    setImage(":/pic/monster/dota-NyxAssassin.jpg");
+}
+
+Rubick::Rubick()//大魔导师
+{
+    setISDN(606);
+    setName("dota-Rubick");
+    setImage(":/pic/monster/dota-Rubick.jpg");
+}
+
+Tusk::Tusk()//巨牙海民
+{
+    setISDN(607);
+    setName("dota-Tusk");
+    setImage(":/pic/monster/dota-Tusk.jpg");
+}
+
+Undying::Undying()//不朽尸王
+{
+    setISDN(608);
+    setName("dota-Undying");
+    setImage(":/pic/monster/dota-Undying.jpg");
+}
+
+VengefulSpirit::VengefulSpirit()//复仇之魂
+{
+    setISDN(609);
+    setName("dota-VengefulSpirit");
+    setImage(":/pic/monster/dota-VengefulSpirit.jpg");
+}
+
+Zeus::Zeus()//奥林匹斯之王
+{
+    setISDN(610);
+    setName("dota-Zeus");
+    setImage(":/pic/monster/dota-Zeus.jpg");
+}
