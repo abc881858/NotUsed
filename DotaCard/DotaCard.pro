@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     card.cpp \
     roomscene.cpp \
     area.cpp \
-    engine.cpp
+    engine.cpp \
+    net.cpp
 
 HEADERS  += mainwindow.h \
     card.h \
     roomscene.h \
     area.h \
-    engine.h
+    engine.h \
+    net.h
 
 FORMS    += mainwindow.ui
 
