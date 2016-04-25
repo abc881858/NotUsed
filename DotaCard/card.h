@@ -8,6 +8,19 @@ class Card : public QGraphicsObject {
     Q_OBJECT
 public:
     Card();
+
+    //可以发动怪兽效果、翻转召唤、防守表示、攻击表示
+    enum StatusFlag {
+        LaunchEffect = 0x1,
+        FlipSummon = 0x2,
+        DefencePosition = 0x4,
+        AttackPosition = 0x8
+    };
+    Q_DECLARE_FLAGS(Status, StatusFlag)
+
+    // State
+    inline Status getStatus() const { return cardStatus; }
+
     int getISDN() const;
     void setISDN(int value);
 
@@ -29,6 +42,9 @@ public:
     bool getStand() const;
     void setStand(bool value);
 
+    bool getInActive() const;
+    void setInActive(bool value);
+
 protected:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
@@ -44,10 +60,15 @@ private:
     QString description;
     bool face;
     bool stand;
+    bool inActive;
+    // State
+    Status cardStatus;
 
 signals:
     void hover(QString);
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Card::Status)
 
 ///////////////////////////////////////////////
 
