@@ -1,0 +1,89 @@
+﻿一、卡牌相关
+1、 卡牌种类
+
+怪兽 Monster
+通常怪兽 Normal monster
+效果怪兽 Effect monster
+仪式怪兽 Ritual monster
+融合怪兽 Fusion monster
+同调怪兽 Synchro monster
+二重怪兽 Gemini monster
+灵魂怪兽 Spirit monster
+卡通怪兽 Toon monster
+调整/协调（怪兽） Turner
+同盟怪兽 Union monster
+超量怪兽 XYZ monster
+
+魔法 Spell
+通常魔法 Normal spell
+永续魔法 Continuous spell
+装备魔法 Equip spell
+速攻魔法 Quickly-play spell
+场地魔法 Field spell
+仪式魔法Ritual spell
+
+陷阱 Trap
+通常陷阱 Normal trap
+永续陷阱 Continuous trap
+反击陷阱 Counter trap
+
+2、卡片信息相关
+
+种族 Type
+属性 Attribute
+等级 Lv 或者 Level
+阶级（超量怪兽） Rank
+攻击力 ATK
+防御力 DEF
+
+部分名称易不明的种族：
+水族 Aqua
+幻神兽族（巨神兵那三只）Divine-beast
+恶魔族 Fiend
+念动力族 Psychic
+炎族 Pyro
+爬虫类族 Reptile
+海龙族 Sea serper
+魔法师族/魔法使用族Spell caster
+鸟兽族 Winged beast
+天使族 Fairy
+
+二、行动相关
+
+1、 阶段
+抽卡阶段 Draw Phase
+准备阶段 Standby Phase
+主要阶段（1）Main Phase(1)
+战斗阶段 Battle Phase
+主要阶段（2）Main Phase(2)
+结束阶段 End Phase
+注意，这里的Phase 读作【face】
+
+2、 行动
+通常召唤 Normal summon
+盖放（怪兽/卡片）Set （monster/card）
+特殊召唤 Special summon
+翻转召唤 Flip summon
+守备表示 Defence position
+攻击表示 Attack position
+攻击 Attack
+连锁 Chain或chain link
+发动效果 Effect
+
+3、 效果处理
+卡组 Deck
+墓地 Graveyard
+额外 Extra deck
+抽卡 Draw
+除外 Banish/Remove
+丢弃 Discard
+解放 Tribute
+去除（XYZ素材）Detach（XYZ Material）
+正面表示 Face-up
+发动（魔法陷阱） Activate
+无效 negate
+对应（夜摄之类不能“对应”发动的效果）in response to
+获得控制权 take control
+超量/同调素材Synchro /XYZ Material monster
+选择（一般出现此词语时证明取对象） Target
+造成X00点基本分伤害 inflict X00 damage
