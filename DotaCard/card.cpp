@@ -4,15 +4,32 @@
 #include <QGraphicsSceneMouseEvent>
 
 Card::Card()
+    : myflags(0)
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     pixmap = QString(":/png/png/NULL.jpg");
 }
 
-int Card::getISDN() const
+Card::CardFlags Card::getCardFlags() const
 {
-    return ISDN;
+    return CardFlags(myflags);
+}
+
+void Card::setCardFlag(Card::CardFlag flag, bool enabled)
+{
+    if (enabled)
+        setCardFlags(CardFlags(myflags) | flag);
+    else
+        setCardFlags(CardFlags(myflags) & ~flag);
+}
+
+void Card::setCardFlags(CardFlags flags)
+{
+    if (myflags == quint32(flags))
+        return;
+
+    myflags = quint32(flags);
 }
 
 QRectF Card::boundingRect() const
@@ -22,11 +39,11 @@ QRectF Card::boundingRect() const
 
 void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    if (area == "DeckArea" || area == "EnemyDeckArea")
+    if (area == DeckArea || area == EnemyDeckArea)
     {
         return;
     }
-    if (area != "EnemyHandArea") {
+    if (area != EnemyHandArea) {
         pixmap = QPixmap(image);
     }
     pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -35,70 +52,50 @@ void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
-    if (area == "HandArea") {
+    switch (area) {
+    case HandArea:
         setY(-35);
-    }
-    else if (area == "EnemyHandArea") {
+        break;
+    case EnemyHandArea:
         setY(35);
+        break;
+    case FieldyardArea:
+        break;
+    default:
+        break;
     }
+
     emit hover(name);
 }
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
-    if (area == "HandArea" || area == "EnemyHandArea") {
+    if (area == HandArea || area == EnemyHandArea) {
         setY(0);
     }
 }
 
-bool Card::getStand() const
+void Card::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    return stand;
+    if(event->button()==Qt::RightButton)
+    {
+        setCursor(nextCurrent());
+    }
 }
 
-void Card::setStand(bool value)
+QCursor Card::nextCurrent()
 {
-    stand = value;
+    return Qt::CrossCursor;
 }
 
-bool Card::getFace() const
+int Card::getISDN() const
 {
-    return face;
+    return ISDN;
 }
 
-void Card::setFace(bool value)
+void Card::setISDN(int value)
 {
-    face = value;
-}
-
-QString Card::getDescription() const
-{
-    return description;
-}
-
-void Card::setDescription(const QString &value)
-{
-    description = value;
-}
-
-QString Card::getArea() const
-{
-    return area;
-}
-
-void Card::setArea(const QString &value)
-{
-    area = value;
-}
-
-QString Card::getImage() const
-{
-    return image;
-}
-
-void Card::setImage(const QString& value)
-{
-    image = value;
+    ISDN = value;
 }
 
 QString Card::getName() const
@@ -111,9 +108,64 @@ void Card::setName(const QString& value)
     name = value;
 }
 
-void Card::setISDN(int value)
+QString Card::getImage() const
 {
-    ISDN = value;
+    return image;
+}
+
+void Card::setImage(const QString& value)
+{
+    image = value;
+}
+
+int Card::getArea() const
+{
+    return area;
+}
+
+void Card::setArea(int value)
+{
+    area = value;
+}
+
+QString Card::getDescription() const
+{
+    return description;
+}
+
+void Card::setDescription(const QString &value)
+{
+    description = value;
+}
+
+bool Card::getFace() const
+{
+    return face;
+}
+
+void Card::setFace(bool value)
+{
+    face = value;
+}
+
+bool Card::getStand() const
+{
+    return stand;
+}
+
+void Card::setStand(bool value)
+{
+    stand = value;
+}
+
+bool Card::getInActive() const
+{
+    return inActive;
+}
+
+void Card::setInActive(bool value)
+{
+    inActive = value;
 }
 
 ///////////////////////////////////////////////////////////
