@@ -3,23 +3,39 @@
 
 #include <QGraphicsObject>
 #include <QHash>
+#include <QMouseEvent>
+#include <QCursor>
 
 class Card : public QGraphicsObject {
     Q_OBJECT
 public:
-    Card();
+    explicit Card();
 
-    //可以发动怪兽效果、翻转召唤、防守表示、攻击表示
-    enum StatusFlag {
-        LaunchEffect = 0x1,
-        FlipSummon = 0x2,
-        DefencePosition = 0x4,
-        AttackPosition = 0x8
+    enum CardFlag {
+        Effect = 0x1, //可以发动怪兽效果
+        FlipSummon = 0x2, //可以翻转召唤
+        DefencePosition = 0x4, //可以防守表示
+        AttackPosition = 0x8, //可以攻击表示
+        NormalSummon = 0x10,
+        SetCard = 0x20,
+        SpecialSummon = 0x40,
+        Attack = 0x80,
+        Chain = 0x100
     };
-    Q_DECLARE_FLAGS(Status, StatusFlag)
+    Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
-    // State
-    inline Status getStatus() const { return cardStatus; }
+    enum {
+        NoArea,
+        DeckArea,
+        HandArea,
+        EnemyDeckArea,
+        EnemyHandArea,
+        FieldyardArea
+    };
+
+    CardFlags getCardFlags() const;
+    void setCardFlag(CardFlag flag, bool enabled = true);
+    void setCardFlags(CardFlags flags);
 
     int getISDN() const;
     void setISDN(int value);
@@ -30,11 +46,11 @@ public:
     QString getImage() const;
     void setImage(const QString& value);
 
-    QString getArea() const;
-    void setArea(const QString &value);
+    int getArea() const;
+    void setArea(int value);
 
     QString getDescription() const;
-    void setDescription(const QString &value);
+    void setDescription(const QString& value);
 
     bool getFace() const;
     void setFace(bool value);
@@ -45,30 +61,34 @@ public:
     bool getInActive() const;
     void setInActive(bool value);
 
+    QCursor nextCurrent();
+
 protected:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
+    void mousePressEvent(QGraphicsSceneMouseEvent* event);
 
 private:
     QPixmap pixmap;
     int ISDN;
     QString name;
     QString image;
-    QString area;
+    int area;
     QString description;
     bool face;
     bool stand;
     bool inActive;
-    // State
-    Status cardStatus;
+    quint32 myflags: 20;
+//    Status cardStatus; //右键可以显示的全部cursor
+//    Status currentStatus; //当前如果鼠标移上去该显示的cursor
 
 signals:
     void hover(QString);
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Card::Status)
+Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
 
 ///////////////////////////////////////////////
 
