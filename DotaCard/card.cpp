@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QMetaObject>
 #include <QGraphicsSceneMouseEvent>
+#include "rule.h"
 
 Card::Card()
     : myflags(0)
@@ -11,25 +12,58 @@ Card::Card()
     pixmap = QString(":/png/png/NULL.jpg");
 }
 
+bool Card::testEffect()
+{
+    return false;
+}
+
+bool Card::testFlipSummon()
+{
+    if (!face && !stand) //FIXME: 后续可以去掉stand
+    {
+        //TODO: 后续增加被其他卡影响，无法翻转召唤的判断
+        if (Rule::instance()->getOneTurnOneNormalSummon()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Card::testDefencePosition()
+{
+    if (face && stand) {
+        return changePosition;
+    }
+    return false;
+}
+
+bool Card::testAttackPosition()
+{
+    if (face && !stand) {
+        return changePosition;
+    }
+    return false;
+}
+
 Card::CardFlags Card::getCardFlags() const
 {
-    return CardFlags(myflags);
+    return myflags;
 }
 
 void Card::setCardFlag(Card::CardFlag flag, bool enabled)
 {
     if (enabled)
-        setCardFlags(CardFlags(myflags) | flag);
+        setCardFlags(myflags | flag);
     else
-        setCardFlags(CardFlags(myflags) & ~flag);
+        setCardFlags(myflags & ~flag);
 }
 
 void Card::setCardFlags(CardFlags flags)
 {
-    if (myflags == quint32(flags))
+    if (myflags == flags)
         return;
 
-    myflags = quint32(flags);
+    myflags = flags;
 }
 
 QRectF Card::boundingRect() const
@@ -81,6 +115,16 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         setCursor(nextCurrent());
     }
+}
+
+bool Card::getChangePosition() const
+{
+    return changePosition;
+}
+
+void Card::setChangePosition(bool value)
+{
+    changePosition = value;
 }
 
 QCursor Card::nextCurrent()
