@@ -16,6 +16,8 @@ public:
     void setupDeck(QList<int> list);
     void setupEnemyDeck(QList<int> list);
 
+    void refreshFieldyard();
+    void initializeFieldyard();
 private:
     DeckArea* deckarea;
     HandArea* handarea;
