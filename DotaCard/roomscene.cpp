@@ -107,3 +107,13 @@ void RoomScene::endYourPhase()
     Card* card = deckarea->takeFirstCard();
     handarea->addCard(card);
 }
+
+void RoomScene::refreshFieldyard()
+{
+    fieldyardarea->refreshCardFlags();
+}
+
+void RoomScene::initializeFieldyard()
+{
+    fieldyardarea->initializeCards();
+}
