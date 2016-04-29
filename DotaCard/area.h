@@ -39,6 +39,9 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
 
+    void refreshCardFlags();
+
+    void initializeCards();
 private:
     QPixmap pixmap;
     QList<Card*> myFieldyard;
