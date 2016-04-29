@@ -37,7 +37,7 @@ void DeckArea::addCard(Card* card)
 
     card->setFace(false);
     card->setStand(true);
-    card->setArea("DeckArea");
+    card->setArea(Card::DeckArea);
 
     myDeck << card;
     //    adjustCards();
@@ -87,7 +87,7 @@ void HandArea::addCard(Card* card)
 
     card->setFace(true);
     card->setStand(true);
-    card->setArea("HandArea");
+    card->setArea(Card::HandArea);
 
     myHand << card;
     adjustCards();
@@ -112,6 +112,43 @@ QRectF FieldyardArea::boundingRect() const
 void FieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
     painter->drawPixmap(0, 0, pixmap);
+}
+
+void FieldyardArea::refreshCardFlags()
+{
+    foreach (Card* card, myFieldyard) {
+        if(card->testEffect()) {
+            card->setCardFlag(Card::Effect, true);
+        }
+        else {
+            card->setCardFlag(Card::Effect, false);
+        }
+        if (card->testFlipSummon()) {
+            card->setCardFlag(Card::FlipSummon, true);
+        }
+        else {
+            card->setCardFlag(Card::FlipSummon, false);
+        }
+        if (card->testDefencePosition()) {
+            card->setCardFlag(Card::DefencePosition, true);
+        }
+        else {
+            card->setCardFlag(Card::DefencePosition, false);
+        }
+        if (card->testAttackPosition()) {
+            card->setCardFlag(Card::AttackPosition, true);
+        }
+        else {
+            card->setCardFlag(Card::DefencePosition, false);
+        }
+    }
+}
+
+void FieldyardArea::initializeCards()
+{
+    foreach (Card* card, myFieldyard) {
+        card->setChangePosition(true);
+    }
 }
 
 ///////////////////////////////////////////////////////////////
@@ -158,7 +195,7 @@ void EnemyDeckArea::addCard(Card* card)
 
     card->setFace(false);
     card->setStand(true);
-    card->setArea("EnemyDeckArea");
+    card->setArea(Card::EnemyDeckArea);
 
     yourDeck << card;
     //    adjustCards();
@@ -208,7 +245,7 @@ void EnemyHandArea::addCard(Card* card)
 
     card->setStand(true);
     card->setFace(false);
-    card->setArea("EnemyHandArea");
+    card->setArea(Card::EnemyHandArea);
 
     yourHand << card;
     adjustCards();
