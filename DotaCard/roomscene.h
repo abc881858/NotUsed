@@ -7,7 +7,7 @@
 class RoomScene : public QGraphicsScene {
     Q_OBJECT
 public:
-    RoomScene(QObject* parent = 0);
+    explicit RoomScene(QObject* parent = 0);
     QList<int> startMyGame();
     QList<int> startYourGame();
     void drawMyPhase();
@@ -16,7 +16,6 @@ public:
     void setupDeck(QList<int> list);
     void setupEnemyDeck(QList<int> list);
 
-    void refreshFieldyard();
     void initializeFieldyard();
 private:
     DeckArea* deckarea;
@@ -29,7 +28,7 @@ private:
     EnemyFieldgroundArea* enemyfieldgroundarea;
 
 signals:
-    void hoverCard(QString);
+    void cardHover();
 };
 
 #endif // ROOMSCENE_H
