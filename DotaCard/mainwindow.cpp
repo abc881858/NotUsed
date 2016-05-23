@@ -5,6 +5,8 @@
 #include <QBrush>
 #include <QPixmap>
 
+#include "rule.h"
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -40,7 +42,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->roomView->setScene(roomScene);
     ui->roomView->setSceneRect(0, 0, 550, 600);
 
-    connect(roomScene, SIGNAL(hoverCard(QString)), this, SLOT(hoverCard(QString)));
+    connect(roomScene, SIGNAL(cardHover()), this, SLOT(hoverCard()));
 }
 
 MainWindow::~MainWindow()
@@ -117,6 +119,8 @@ void MainWindow::standbyYourPhase()
 void MainWindow::mainMyPhase1()
 {
     setPhase(myM1);
+    Rule::instance()->setOneTurnOneNormalSummon(true);
+    roomScene->initializeFieldyard();
     net->sendMessage(40001);
 }
 
