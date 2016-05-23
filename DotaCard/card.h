@@ -12,15 +12,15 @@ public:
     explicit Card();
 
     enum CardFlag {
-        Effect = 0x1, //可以发动怪兽效果
-        FlipSummon = 0x2, //可以翻转召唤
-        DefencePosition = 0x4, //可以防守表示
-        AttackPosition = 0x8, //可以攻击表示
-        NormalSummon = 0x10,
-        SetCard = 0x20,
-        SpecialSummon = 0x40,
-        Attack = 0x80,
-        Chain = 0x100
+        Chain = 0x1, //连锁
+        Effect = 0x2, //可以发动怪兽效果
+        SpecialSummon = 0x4,
+        NormalSummon = 0x8,
+        SetCard = 0x10,
+        FlipSummon = 0x20, //可以翻转召唤
+        DefencePosition = 0x40, //可以防守表示
+        AttackPosition = 0x80, //可以攻击表示
+        Attack = 0x100
     };
     Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
@@ -36,6 +36,7 @@ public:
     CardFlags getCardFlags() const;
     void setCardFlag(CardFlag flag, bool enabled = true);
     void setCardFlags(CardFlags flags);
+    void setCurrentflag(Card::CardFlag flag);
 
     int getISDN() const;
     void setISDN(int value);
@@ -61,12 +62,18 @@ public:
     bool getInActive() const;
     void setInActive(bool value);
 
-    QCursor nextCurrent();
+    void nextCursor();
 
+    void testAll();
+    bool testChain();
+    bool testSpecialSummon();
+    bool testNormalSummon();
+    bool testSetCard();
     bool testFlipSummon();
     bool testDefencePosition();
     bool testAttackPosition();
     bool testEffect();
+    bool testAttack();
 
     bool getChangePosition() const;
     void setChangePosition(bool value);
@@ -91,10 +98,10 @@ private:
 
     bool inActive;
     CardFlags myflags; //右键可以显示的全部cursor
-    CardFlags currentflag; //当前如果鼠标移上去该显示的cursor
+    CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
 signals:
-    void hover(QString);
+    void hover();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
