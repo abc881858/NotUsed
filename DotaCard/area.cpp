@@ -1,290 +1,476 @@
-#include "area.h"
+#include "card.h"
 #include <QPainter>
+#include <QMetaObject>
+#include <QGraphicsSceneMouseEvent>
+#include "rule.h"
 
-static QRectF DeckAreaRect(0, 0, 50, 72);
-static QRectF HandAreaRect(0, 0, 512, 70);
-static QRectF FieldyardAreaRect(0, 0, 384, 92);
-static QRectF FieldgroundAreaRect(0, 0, 384, 92);
-static QRectF EnemyDeckAreaRect(0, 0, 50, 72);
-static QRectF EnemyHandAreaRect(0, 0, 512, 70);
-static QRectF EnemyFieldyardAreaRect(0, 0, 384, 92);
-static QRectF EnemyFieldgroundAreaRect(0, 0, 384, 92);
-
-/**
-  * @brief 我方卡组区域
-  * @author wudongliang
-  * @date 2016/4/22
-  */
-
-DeckArea::DeckArea()
-    : pixmap(":/png/png/temp.png")
+Card::Card()
 {
+    setAcceptHoverEvents(true);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
+    pixmap = QString(":/png/png/NULL.jpg");
 }
 
-QRectF DeckArea::boundingRect() const
+/////////////////////////// Begin Test All Card Status /////////////////////////////
+
+void Card::testAll()
 {
-    return DeckAreaRect;
+    testChain() ? setCardFlag(Chain, true) : setCardFlag(Chain, false);
+    testEffect() ? setCardFlag(Effect, true) : setCardFlag(Effect, false);
+    testSpecialSummon() ? setCardFlag(SpecialSummon, true) : setCardFlag(SpecialSummon, false);
+    testNormalSummon() ? setCardFlag(NormalSummon, true) : setCardFlag(NormalSummon, false);
+    testSetCard() ? setCardFlag(SetCard, true) : setCardFlag(SetCard, false);
+    testFlipSummon() ? setCardFlag(Card::FlipSummon, true) : setCardFlag(Card::FlipSummon, false);
+    testDefencePosition() ? setCardFlag(Card::DefencePosition, true) : setCardFlag(Card::DefencePosition, false);
+    testAttackPosition() ? setCardFlag(Card::AttackPosition, true) : setCardFlag(Card::DefencePosition, false);
+    testAttack() ? setCardFlag(Card::Attack, true) : setCardFlag(Card::Attack, false);
 }
 
-void DeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+bool Card::testChain()
 {
-    painter->drawPixmap(0, 0, pixmap);
+    return false;
 }
 
-void DeckArea::addCard(Card* card)
+bool Card::testEffect()
 {
-    card->setParentItem(this);
-
-    card->setFace(false);
-    card->setStand(true);
-    card->setArea(Card::DeckArea);
-
-    myDeck << card;
-    //    adjustCards();
+    return false;
 }
 
-Card* DeckArea::takeFirstCard()
+bool Card::testSpecialSummon()
 {
-    return myDeck.takeFirst();
+    return false;
 }
 
-/**
-  * @brief 我方手牌区域
-  * @author wudongliang
-  * @date 2016/4/22
-  */
-
-HandArea::HandArea()
-    : pixmap(":/png/png/hand.png")
+bool Card::testNormalSummon()
 {
+    //TODO: 后续增加被其他卡影响，无法普通召唤的判断
+    if (Rule::instance()->getOneTurnOneNormalSummon())
+        return true;
+    return false;
 }
 
-QRectF HandArea::boundingRect() const
+bool Card::testSetCard()
 {
-    return HandAreaRect;
+    //TODO: 后续增加被其他卡影响，无法覆盖卡牌的判断
+    //包括【怪兽】和【魔陷】的覆盖
+    if (Rule::instance()->getOneTurnOneNormalSummon())
+        return true;
+    return false;
 }
 
-void HandArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+bool Card::testFlipSummon()
 {
-    painter->drawPixmap(0, 0, pixmap);
+    //    if (!face && !stand) //FIXME: 后续可以去掉stand
+    //    {
+    //        //TODO: 后续增加被其他卡影响，无法翻转召唤的判断
+    //        if (Rule::instance()->getOneTurnOneNormalSummon()) {
+    //            return true;
+    //        }
+    //    }
+    return false;
 }
 
-void HandArea::adjustCards()
+bool Card::testDefencePosition()
 {
-    if (myHand.isEmpty())
+    if (face && stand) {
+        return changePosition;
+    }
+    return false;
+}
+
+bool Card::testAttackPosition()
+{
+    if (face && !stand) {
+        return changePosition;
+    }
+    return false;
+}
+
+bool Card::testAttack()
+{
+    return true;
+}
+
+/////////////////////////// End Test All Card Status /////////////////////////////
+
+Card::CardFlags Card::getCardFlags() const
+{
+    return myflags;
+}
+
+void Card::setCardFlag(Card::CardFlag flag, bool enabled)
+{
+    if (enabled)
+        setCardFlags(myflags | flag);
+    else
+        setCardFlags(myflags & ~flag);
+}
+
+void Card::setCardFlags(CardFlags flags)
+{
+    if (myflags == flags)
         return;
-    int n = myHand.size();
-    int card_skip = (n > 5) ? (412 / (n - 1)) : 102;
-    for (int i = 0; i < n; i++) {
-        myHand[i]->setZValue(0.1 * i);
-        myHand[i]->setPos(QPointF(card_skip * i, 0));
+
+    myflags = flags;
+}
+
+void Card::setCurrentflag(Card::CardFlag flag)
+{
+    currentflag = flag;
+
+    if(currentflag==Chain)
+    {
+        setCursor(Qt::SizeVerCursor);
+    }
+    else if(currentflag==Effect)
+    {
+        setCursor(Qt::SizeHorCursor);
+    }
+    else if(currentflag==SpecialSummon)
+    {
+        setCursor(Qt::SizeBDiagCursor);
+    }
+    else if(currentflag==NormalSummon)
+    {
+        setCursor(Qt::SizeFDiagCursor);
+    }
+    else if(currentflag==SetCard)
+    {
+        setCursor(Qt::SizeAllCursor);
+    }
+    else if(currentflag==FlipSummon)
+    {
+        setCursor(Qt::SplitVCursor);
+    }
+    else if(currentflag==DefencePosition)
+    {
+        setCursor(Qt::SplitHCursor);
+    }
+    else if(currentflag==AttackPosition)
+    {
+        setCursor(Qt::PointingHandCursor);
+    }
+    else if(currentflag==Attack)
+    {
+        setCursor(Qt::ForbiddenCursor);
     }
 }
 
-void HandArea::addCard(Card* card)
+QRectF Card::boundingRect() const
 {
-    card->setParentItem(this);
-
-    card->setFace(true);
-    card->setStand(true);
-    card->setArea(Card::HandArea);
-
-    myHand << card;
-    adjustCards();
+    return QRectF(0, 0, 100, 145);
 }
 
-//Card* HandArea::takeCard(int ISDN)
-//{
-//}
-
-///////////////////////////////////////////////////////////////
-
-FieldyardArea::FieldyardArea()
-    : pixmap(":/png/png/field.png")
+void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-}
-
-QRectF FieldyardArea::boundingRect() const
-{
-    return FieldyardAreaRect;
-}
-
-void FieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
-{
-    painter->drawPixmap(0, 0, pixmap);
-}
-
-void FieldyardArea::refreshCardFlags()
-{
-    foreach (Card* card, myFieldyard) {
-        if(card->testEffect()) {
-            card->setCardFlag(Card::Effect, true);
-        }
-        else {
-            card->setCardFlag(Card::Effect, false);
-        }
-        if (card->testFlipSummon()) {
-            card->setCardFlag(Card::FlipSummon, true);
-        }
-        else {
-            card->setCardFlag(Card::FlipSummon, false);
-        }
-        if (card->testDefencePosition()) {
-            card->setCardFlag(Card::DefencePosition, true);
-        }
-        else {
-            card->setCardFlag(Card::DefencePosition, false);
-        }
-        if (card->testAttackPosition()) {
-            card->setCardFlag(Card::AttackPosition, true);
-        }
-        else {
-            card->setCardFlag(Card::DefencePosition, false);
-        }
-    }
-}
-
-void FieldyardArea::initializeCards()
-{
-    foreach (Card* card, myFieldyard) {
-        card->setChangePosition(true);
-    }
-}
-
-///////////////////////////////////////////////////////////////
-
-FieldgroundArea::FieldgroundArea()
-    : pixmap(":/png/png/field.png")
-{
-}
-
-QRectF FieldgroundArea::boundingRect() const
-{
-    return FieldgroundAreaRect;
-}
-
-void FieldgroundArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
-{
-    painter->drawPixmap(0, 0, pixmap);
-}
-
-/**
-  * @brief 敌方卡组区域
-  * @author wudongliang
-  * @date 2016/4/22
-  */
-
-EnemyDeckArea::EnemyDeckArea()
-    : pixmap(":/png/png/temp.png")
-{
-}
-
-QRectF EnemyDeckArea::boundingRect() const
-{
-    return EnemyDeckAreaRect;
-}
-
-void EnemyDeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
-{
-    painter->drawPixmap(0, 0, pixmap);
-}
-
-void EnemyDeckArea::addCard(Card* card)
-{
-    card->setParentItem(this);
-
-    card->setFace(false);
-    card->setStand(true);
-    card->setArea(Card::EnemyDeckArea);
-
-    yourDeck << card;
-    //    adjustCards();
-}
-
-Card* EnemyDeckArea::takeFirstCard()
-{
-    return yourDeck.takeFirst();
-}
-
-/**
-  * @brief 敌方手牌区域
-  * @author wudongliang
-  * @date 2016/4/22
-  */
-
-EnemyHandArea::EnemyHandArea()
-    : pixmap(":/png/png/hand.png")
-{
-}
-
-QRectF EnemyHandArea::boundingRect() const
-{
-    return EnemyHandAreaRect;
-}
-
-void EnemyHandArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
-{
-    painter->drawPixmap(0, 0, pixmap);
-}
-
-void EnemyHandArea::adjustCards()
-{
-    if (yourHand.isEmpty())
+    if (area == DeckArea || area == EnemyDeckArea) {
         return;
-    int n = yourHand.size();
-    int card_skip = (n > 5) ? (412 / (n - 1)) : 102;
-    for (int i = 0; i < n; i++) {
-        yourHand[i]->setZValue(0.1 * i);
-        yourHand[i]->setPos(QPointF(card_skip * i, 0));
+    }
+    if (area != EnemyHandArea) {
+        pixmap = QPixmap(image);
+    }
+    pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    painter->drawPixmap(0, 0, pixmap);
+}
+
+void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
+{
+    switch (area) {
+    case HandArea:
+        setY(-35);
+        break;
+    case EnemyHandArea:
+        setY(35);
+        break;
+    default:
+        break;
+    }
+
+    testAll();
+
+    if (myflags.testFlag(Chain)) {
+        setCurrentflag(Chain);
+    }
+    else if (myflags.testFlag(Effect)) {
+        setCurrentflag(Effect);
+    }
+    else if (myflags.testFlag(SpecialSummon)) {
+        setCurrentflag(SpecialSummon);
+    }
+    else if (myflags.testFlag(NormalSummon)) {
+        setCurrentflag(NormalSummon);
+    }
+    else if (myflags.testFlag(SetCard)) {
+        setCurrentflag(SetCard);
+    }
+
+    emit hover();
+}
+
+void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
+{
+    if (area == HandArea || area == EnemyHandArea) {
+        setY(0);
+        setCursor(Qt::ArrowCursor);
     }
 }
 
-void EnemyHandArea::addCard(Card* card)
+void Card::nextCursor()
 {
-    card->setParentItem(this);
-
-    card->setStand(true);
-    card->setFace(false);
-    card->setArea(Card::EnemyHandArea);
-
-    yourHand << card;
-    adjustCards();
+    if (currentflag==Chain)
+    {
+        if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+        else if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+        else if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+        else if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+    }
+    else if (currentflag==Effect)
+    {
+        if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+        else if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+        else if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+        else if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+    }
+    else if (currentflag==SpecialSummon)
+    {
+        if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+        else if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+        else if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+        else if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+    }
+    else if (currentflag==NormalSummon)
+    {
+        if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+        else if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+        else if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+        else if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+    }
+    else if (currentflag==SetCard)
+    {
+        if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+        else if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+        else if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+        else if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+    }
 }
 
-//Card* EnemyHandArea::takeCard(int ISDN)
-//{
-//}
-
-///////////////////////////////////////////////////////////////
-
-EnemyFieldyardArea::EnemyFieldyardArea()
-    : pixmap(":/png/png/field.png")
+void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (event->button() == Qt::RightButton) {
+        nextCursor();
+    }
+    else if (event->button() == Qt::LeftButton) {
+        switch (area) {
+        case HandArea:
+            break;
+        case EnemyHandArea:
+            break;
+        case FieldyardArea:
+            break;
+        default:
+            break;
+        }
+    }
 }
 
-QRectF EnemyFieldyardArea::boundingRect() const
+bool Card::getChangePosition() const
 {
-    return EnemyFieldyardAreaRect;
+    return changePosition;
 }
 
-void EnemyFieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+void Card::setChangePosition(bool value)
 {
-    painter->drawPixmap(0, 0, pixmap);
+    changePosition = value;
 }
 
-///////////////////////////////////////////////////////////////
-
-EnemyFieldgroundArea::EnemyFieldgroundArea()
-    : pixmap(":/png/png/field.png")
+int Card::getISDN() const
 {
+    return ISDN;
 }
 
-QRectF EnemyFieldgroundArea::boundingRect() const
+void Card::setISDN(int value)
 {
-    return EnemyFieldgroundAreaRect;
+    ISDN = value;
 }
 
-void EnemyFieldgroundArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+QString Card::getName() const
 {
-    painter->drawPixmap(0, 0, pixmap);
+    return name;
+}
+
+void Card::setName(const QString& value)
+{
+    name = value;
+}
+
+QString Card::getImage() const
+{
+    return image;
+}
+
+void Card::setImage(const QString& value)
+{
+    image = value;
+}
+
+int Card::getArea() const
+{
+    return area;
+}
+
+void Card::setArea(int value)
+{
+    area = value;
+}
+
+QString Card::getDescription() const
+{
+    return description;
+}
+
+void Card::setDescription(const QString& value)
+{
+    description = value;
+}
+
+bool Card::getFace() const
+{
+    return face;
+}
+
+void Card::setFace(bool value)
+{
+    face = value;
+}
+
+bool Card::getStand() const
+{
+    return stand;
+}
+
+void Card::setStand(bool value)
+{
+    stand = value;
+}
+
+bool Card::getInActive() const
+{
+    return inActive;
+}
+
+void Card::setInActive(bool value)
+{
+    inActive = value;
+}
+
+///////////////////////////////////////////////////////////
+
+CentaurWarrunner::CentaurWarrunner() //半人马酋长
+{
+    setISDN(601);
+    setName("dota-CentaurWarrunner");
+    setImage(":/pic/monster/dota-CentaurWarrunner.jpg");
+}
+
+KeeperoftheLight::KeeperoftheLight() //光之守卫
+{
+    setISDN(602);
+    setName("dota-KeeperoftheLight");
+    setImage(":/pic/monster/dota-KeeperoftheLight.jpg");
+}
+
+Lion::Lion() //恶魔巫师
+{
+    setISDN(603);
+    setName("dota-Lion");
+    setImage(":/pic/monster/dota-Lion.jpg");
+}
+
+Magnus::Magnus() //半人猛犸
+{
+    setISDN(604);
+    setName("dota-Magnus");
+    setImage(":/pic/monster/dota-Magnus.jpg");
+}
+
+NyxAssassin::NyxAssassin() //地穴刺客
+{
+    setISDN(605);
+    setName("dota-NyxAssassin");
+    setImage(":/pic/monster/dota-NyxAssassin.jpg");
+}
+
+Rubick::Rubick() //大魔导师
+{
+    setISDN(606);
+    setName("dota-Rubick");
+    setImage(":/pic/monster/dota-Rubick.jpg");
+}
+
+Tusk::Tusk() //巨牙海民
+{
+    setISDN(607);
+    setName("dota-Tusk");
+    setImage(":/pic/monster/dota-Tusk.jpg");
+}
+
+Undying::Undying() //不朽尸王
+{
+    setISDN(608);
+    setName("dota-Undying");
+    setImage(":/pic/monster/dota-Undying.jpg");
+}
+
+VengefulSpirit::VengefulSpirit() //复仇之魂
+{
+    setISDN(609);
+    setName("dota-VengefulSpirit");
+    setImage(":/pic/monster/dota-VengefulSpirit.jpg");
+}
+
+Zeus::Zeus() //奥林匹斯之王
+{
+    setISDN(610);
+    setName("dota-Zeus");
+    setImage(":/pic/monster/dota-Zeus.jpg");
 }
