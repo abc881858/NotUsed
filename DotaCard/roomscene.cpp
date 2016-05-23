@@ -52,7 +52,7 @@ void RoomScene::setupDeck(QList<int> list)
     foreach (int ISDN, list) {
         Card* card = Engine::instance()->cloneCard(ISDN);
         deckarea->addCard(card);
-        connect(card, SIGNAL(hover(QString)), this, SIGNAL(hoverCard(QString)));
+        connect(card, SIGNAL(hover()), this, SIGNAL(cardHover()));
     }
 }
 
@@ -106,11 +106,6 @@ void RoomScene::endYourPhase()
 {
     Card* card = deckarea->takeFirstCard();
     handarea->addCard(card);
-}
-
-void RoomScene::refreshFieldyard()
-{
-    fieldyardarea->refreshCardFlags();
 }
 
 void RoomScene::initializeFieldyard()
