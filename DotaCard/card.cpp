@@ -5,11 +5,30 @@
 #include "rule.h"
 
 Card::Card()
-    : myflags(0)
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     pixmap = QString(":/png/png/NULL.jpg");
+}
+
+/////////////////////////// Begin Test All Card Status /////////////////////////////
+
+void Card::testAll()
+{
+    testChain() ? setCardFlag(Chain, true) : setCardFlag(Chain, false);
+    testEffect() ? setCardFlag(Effect, true) : setCardFlag(Effect, false);
+    testSpecialSummon() ? setCardFlag(SpecialSummon, true) : setCardFlag(SpecialSummon, false);
+    testNormalSummon() ? setCardFlag(NormalSummon, true) : setCardFlag(NormalSummon, false);
+    testSetCard() ? setCardFlag(SetCard, true) : setCardFlag(SetCard, false);
+    testFlipSummon() ? setCardFlag(Card::FlipSummon, true) : setCardFlag(Card::FlipSummon, false);
+    testDefencePosition() ? setCardFlag(Card::DefencePosition, true) : setCardFlag(Card::DefencePosition, false);
+    testAttackPosition() ? setCardFlag(Card::AttackPosition, true) : setCardFlag(Card::DefencePosition, false);
+    testAttack() ? setCardFlag(Card::Attack, true) : setCardFlag(Card::Attack, false);
+}
+
+bool Card::testChain()
+{
+    return false;
 }
 
 bool Card::testEffect()
@@ -17,15 +36,37 @@ bool Card::testEffect()
     return false;
 }
 
+bool Card::testSpecialSummon()
+{
+    return false;
+}
+
+bool Card::testNormalSummon()
+{
+    //TODO: 后续增加被其他卡影响，无法普通召唤的判断
+    if (Rule::instance()->getOneTurnOneNormalSummon())
+        return true;
+    return false;
+}
+
+bool Card::testSetCard()
+{
+    //TODO: 后续增加被其他卡影响，无法覆盖卡牌的判断
+    //包括【怪兽】和【魔陷】的覆盖
+    if (Rule::instance()->getOneTurnOneNormalSummon())
+        return true;
+    return false;
+}
+
 bool Card::testFlipSummon()
 {
-    if (!face && !stand) //FIXME: 后续可以去掉stand
-    {
-        //TODO: 后续增加被其他卡影响，无法翻转召唤的判断
-        if (Rule::instance()->getOneTurnOneNormalSummon()) {
-            return true;
-        }
-    }
+    //    if (!face && !stand) //FIXME: 后续可以去掉stand
+    //    {
+    //        //TODO: 后续增加被其他卡影响，无法翻转召唤的判断
+    //        if (Rule::instance()->getOneTurnOneNormalSummon()) {
+    //            return true;
+    //        }
+    //    }
     return false;
 }
 
@@ -44,6 +85,13 @@ bool Card::testAttackPosition()
     }
     return false;
 }
+
+bool Card::testAttack()
+{
+    return true;
+}
+
+/////////////////////////// End Test All Card Status /////////////////////////////
 
 Card::CardFlags Card::getCardFlags() const
 {
@@ -66,6 +114,48 @@ void Card::setCardFlags(CardFlags flags)
     myflags = flags;
 }
 
+void Card::setCurrentflag(Card::CardFlag flag)
+{
+    currentflag = flag;
+
+    if(currentflag==Chain)
+    {
+        setCursor(Qt::SizeVerCursor);
+    }
+    else if(currentflag==Effect)
+    {
+        setCursor(Qt::SizeHorCursor);
+    }
+    else if(currentflag==SpecialSummon)
+    {
+        setCursor(Qt::SizeBDiagCursor);
+    }
+    else if(currentflag==NormalSummon)
+    {
+        setCursor(Qt::SizeFDiagCursor);
+    }
+    else if(currentflag==SetCard)
+    {
+        setCursor(Qt::SizeAllCursor);
+    }
+    else if(currentflag==FlipSummon)
+    {
+        setCursor(Qt::SplitVCursor);
+    }
+    else if(currentflag==DefencePosition)
+    {
+        setCursor(Qt::SplitHCursor);
+    }
+    else if(currentflag==AttackPosition)
+    {
+        setCursor(Qt::PointingHandCursor);
+    }
+    else if(currentflag==Attack)
+    {
+        setCursor(Qt::ForbiddenCursor);
+    }
+}
+
 QRectF Card::boundingRect() const
 {
     return QRectF(0, 0, 100, 145);
@@ -73,8 +163,7 @@ QRectF Card::boundingRect() const
 
 void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    if (area == DeckArea || area == EnemyDeckArea)
-    {
+    if (area == DeckArea || area == EnemyDeckArea) {
         return;
     }
     if (area != EnemyHandArea) {
@@ -93,27 +182,134 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     case EnemyHandArea:
         setY(35);
         break;
-    case FieldyardArea:
-        break;
     default:
         break;
     }
 
-    emit hover(name);
+    testAll();
+
+    if (myflags.testFlag(Chain)) {
+        setCurrentflag(Chain);
+    }
+    else if (myflags.testFlag(Effect)) {
+        setCurrentflag(Effect);
+    }
+    else if (myflags.testFlag(SpecialSummon)) {
+        setCurrentflag(SpecialSummon);
+    }
+    else if (myflags.testFlag(NormalSummon)) {
+        setCurrentflag(NormalSummon);
+    }
+    else if (myflags.testFlag(SetCard)) {
+        setCurrentflag(SetCard);
+    }
+
+    emit hover();
 }
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
     if (area == HandArea || area == EnemyHandArea) {
         setY(0);
+        setCursor(Qt::ArrowCursor);
     }
 }
 
-void Card::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void Card::nextCursor()
 {
-    if(event->button()==Qt::RightButton)
+    if (currentflag==Chain)
     {
-        setCursor(nextCurrent());
+        if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+        else if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+        else if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+        else if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+    }
+    else if (currentflag==Effect)
+    {
+        if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+        else if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+        else if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+        else if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+    }
+    else if (currentflag==SpecialSummon)
+    {
+        if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+        else if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+        else if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+        else if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+    }
+    else if (currentflag==NormalSummon)
+    {
+        if (myflags.testFlag(SetCard)) {
+            setCurrentflag(SetCard);
+        }
+        else if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+        else if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+        else if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+    }
+    else if (currentflag==SetCard)
+    {
+        if (myflags.testFlag(Chain)) {
+            setCurrentflag(Chain);
+        }
+        else if (myflags.testFlag(Effect)) {
+            setCurrentflag(Effect);
+        }
+        else if (myflags.testFlag(SpecialSummon)) {
+            setCurrentflag(SpecialSummon);
+        }
+        else if (myflags.testFlag(NormalSummon)) {
+            setCurrentflag(NormalSummon);
+        }
+    }
+}
+
+void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (event->button() == Qt::RightButton) {
+        nextCursor();
+    }
+    else if (event->button() == Qt::LeftButton) {
+        switch (area) {
+        case HandArea:
+            break;
+        case EnemyHandArea:
+            break;
+        case FieldyardArea:
+            break;
+        default:
+            break;
+        }
     }
 }
 
@@ -125,11 +321,6 @@ bool Card::getChangePosition() const
 void Card::setChangePosition(bool value)
 {
     changePosition = value;
-}
-
-QCursor Card::nextCurrent()
-{
-    return Qt::CrossCursor;
 }
 
 int Card::getISDN() const
@@ -177,7 +368,7 @@ QString Card::getDescription() const
     return description;
 }
 
-void Card::setDescription(const QString &value)
+void Card::setDescription(const QString& value)
 {
     description = value;
 }
@@ -214,70 +405,70 @@ void Card::setInActive(bool value)
 
 ///////////////////////////////////////////////////////////
 
-CentaurWarrunner::CentaurWarrunner()//半人马酋长
+CentaurWarrunner::CentaurWarrunner() //半人马酋长
 {
     setISDN(601);
     setName("dota-CentaurWarrunner");
     setImage(":/pic/monster/dota-CentaurWarrunner.jpg");
 }
 
-KeeperoftheLight::KeeperoftheLight()//光之守卫
+KeeperoftheLight::KeeperoftheLight() //光之守卫
 {
     setISDN(602);
     setName("dota-KeeperoftheLight");
     setImage(":/pic/monster/dota-KeeperoftheLight.jpg");
 }
 
-Lion::Lion()//恶魔巫师
+Lion::Lion() //恶魔巫师
 {
     setISDN(603);
     setName("dota-Lion");
     setImage(":/pic/monster/dota-Lion.jpg");
 }
 
-Magnus::Magnus()//半人猛犸
+Magnus::Magnus() //半人猛犸
 {
     setISDN(604);
     setName("dota-Magnus");
     setImage(":/pic/monster/dota-Magnus.jpg");
 }
 
-NyxAssassin::NyxAssassin()//地穴刺客
+NyxAssassin::NyxAssassin() //地穴刺客
 {
     setISDN(605);
     setName("dota-NyxAssassin");
     setImage(":/pic/monster/dota-NyxAssassin.jpg");
 }
 
-Rubick::Rubick()//大魔导师
+Rubick::Rubick() //大魔导师
 {
     setISDN(606);
     setName("dota-Rubick");
     setImage(":/pic/monster/dota-Rubick.jpg");
 }
 
-Tusk::Tusk()//巨牙海民
+Tusk::Tusk() //巨牙海民
 {
     setISDN(607);
     setName("dota-Tusk");
     setImage(":/pic/monster/dota-Tusk.jpg");
 }
 
-Undying::Undying()//不朽尸王
+Undying::Undying() //不朽尸王
 {
     setISDN(608);
     setName("dota-Undying");
     setImage(":/pic/monster/dota-Undying.jpg");
 }
 
-VengefulSpirit::VengefulSpirit()//复仇之魂
+VengefulSpirit::VengefulSpirit() //复仇之魂
 {
     setISDN(609);
     setName("dota-VengefulSpirit");
     setImage(":/pic/monster/dota-VengefulSpirit.jpg");
 }
 
-Zeus::Zeus()//奥林匹斯之王
+Zeus::Zeus() //奥林匹斯之王
 {
     setISDN(610);
     setName("dota-Zeus");
