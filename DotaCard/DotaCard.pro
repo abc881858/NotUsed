@@ -8,6 +8,9 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+# With C++14 support
+CONFIG += c++14
+
 TARGET = DotaCard
 TEMPLATE = app
 
@@ -18,14 +21,16 @@ SOURCES += main.cpp\
     roomscene.cpp \
     area.cpp \
     engine.cpp \
-    net.cpp
+    net.cpp \
+    rule.cpp
 
 HEADERS  += mainwindow.h \
     card.h \
     roomscene.h \
     area.h \
     engine.h \
-    net.h
+    net.h \
+    rule.h
 
 FORMS    += mainwindow.ui
 
