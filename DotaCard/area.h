@@ -26,7 +26,7 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void adjustCards();
     void addCard(Card* card);
-    //    Card* takeCard(int ISDN);
+    Card *takeCard(int index);
 private:
     QPixmap pixmap;
     QList<Card*> myHand;
@@ -38,10 +38,10 @@ public:
     FieldyardArea();
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-
     void refreshCardFlags();
-
     void initializeCards();
+    void adjustCards();
+    void addCard(Card *card, bool face = true, bool stand = true);
 private:
     QPixmap pixmap;
     QList<Card*> myFieldyard;
