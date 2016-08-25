@@ -52,7 +52,38 @@ void RoomScene::setupDeck(QList<int> list)
     foreach (int ISDN, list) {
         Card* card = Engine::instance()->cloneCard(ISDN);
         deckarea->addCard(card);
-        connect(card, SIGNAL(hover()), this, SIGNAL(cardHover()));
+
+        QObject::connect(card, &Card::hover, [=] () {
+            QString name = card->getName();
+            emit hover(name);
+        });
+
+        QObject::connect(card, &Card::doNormalSummon, [=] () {
+            QString name = card->getName();
+
+        });
+        QObject::connect(card, &Card::doSetCard, [=] () {
+            QString name = card->getName();
+
+        });
+//        QObject::connect(card, &Card::doChain, [=] () {
+//            QString name = card->getName();
+//            emit hover(name);
+//        });
+//        QObject::connect(card, &Card::doEffect, [=] () {
+//            QString name = card->getName();
+//            emit hover(name);
+//        });
+//        QObject::connect(card, &Card::doSpecialSummon, [=] () {
+//            QString name = card->getName();
+//            emit hover(name);
+//        });
+
+//        connect(card,SIGNAL(doNormalSummon()),this,SLOT(doNormalSummon()));
+//        connect(card,SIGNAL(doSetCard()),this,SLOT(doSetCard()));
+//        connect(card,SIGNAL(doChain()),this,SLOT(doChain()));
+//        connect(card,SIGNAL(doEffect()),this,SLOT(doEffect()));
+//        connect(card,SIGNAL(doSpecialSummon()),this,SLOT(doSpecialSummon()));
     }
 }
 
