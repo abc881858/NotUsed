@@ -34,7 +34,7 @@ void DeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
 void DeckArea::addCard(Card* card)
 {
     card->setParentItem(this);
-
+    card->setIndex(myDeck.size());
     card->setFace(false);
     card->setStand(true);
     card->setArea(Card::DeckArea);
@@ -84,6 +84,7 @@ void HandArea::adjustCards()
 void HandArea::addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(myHand.size());
     card->setFace(true);
     card->setStand(true);
     card->setArea(Card::HandArea);
@@ -124,6 +125,7 @@ void FieldyardArea::initializeCards()
 void FieldyardArea::addCard(Card* card, bool face, bool stand)
 {
     card->setParentItem(this);
+    card->setIndex(myFieldyard.size());
     card->setFace(face);
     card->setStand(stand);
     card->setArea(Card::HandArea);
@@ -184,7 +186,7 @@ void EnemyDeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QW
 void EnemyDeckArea::addCard(Card* card)
 {
     card->setParentItem(this);
-
+    card->setIndex(yourDeck.size());
     card->setFace(false);
     card->setStand(true);
     card->setArea(Card::EnemyDeckArea);
@@ -234,7 +236,7 @@ void EnemyHandArea::adjustCards()
 void EnemyHandArea::addCard(Card* card)
 {
     card->setParentItem(this);
-
+    card->setIndex(yourHand.size());
     card->setStand(true);
     card->setFace(false);
     card->setArea(Card::EnemyHandArea);
