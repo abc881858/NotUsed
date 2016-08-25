@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->roomView->setScene(roomScene);
     ui->roomView->setSceneRect(0, 0, 550, 600);
 
-    connect(roomScene, SIGNAL(cardHover()), this, SLOT(hoverCard()));
+    connect(roomScene, SIGNAL(hover(QString)), this, SLOT(hover(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -70,7 +70,7 @@ MainWindow::Phase MainWindow::getphase() const
     return this->phase;
 }
 
-void MainWindow::hoverCard(QString name)
+void MainWindow::hover(QString name)
 {
     //首先一张卡被hover，左上角大图肯定要更新
     //但对方的（除前后场的face-up卡）不该显示，我方卡组也不该显示
