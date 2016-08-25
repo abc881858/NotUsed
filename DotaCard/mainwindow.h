@@ -59,7 +59,7 @@ private slots:
     void endYourPhase();
 
 public slots:
-    void hoverCard(QString name);
+    void hover(QString);
 };
 
 #endif // MAINWINDOW_H
