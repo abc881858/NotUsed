@@ -4,11 +4,15 @@
 #include <QTcpSocket>
 #include "card.h"
 
+/*!
+ * \brief The Net class
+ */
+
 class Net : public QObject {
     Q_OBJECT
 
 public:
-    Net(QObject* parent);
+    explicit Net(QObject* parent);
     QByteArray getJsonFromInt(int command);
     void firstSetupEnemyDeck(QJsonArray jsonArray);
     void secondSetupEnemyDeck(QJsonArray jsonArray);
