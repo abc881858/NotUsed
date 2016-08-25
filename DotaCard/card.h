@@ -78,6 +78,9 @@ public:
     bool getChangePosition() const;
     void setChangePosition(bool value);
 
+    int getIndex() const;
+    void setIndex(int value);
+
 protected:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
@@ -100,8 +103,15 @@ private:
     CardFlags myflags; //右键可以显示的全部cursor
     CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
+    int index;//从左往右数第几张(第1张是index==0)
+
 signals:
     void hover();
+    void doNormalSummon();
+    void doSetCard();
+    void doChain();
+    void doEffect();
+    void doSpecialSummon();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
