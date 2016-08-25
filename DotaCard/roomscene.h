@@ -28,7 +28,10 @@ private:
     EnemyFieldgroundArea* enemyfieldgroundarea;
 
 signals:
-    void cardHover();
+    void hover(QString);
+
+public slots:
+
 };
 
 #endif // ROOMSCENE_H
