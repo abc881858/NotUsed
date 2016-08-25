@@ -10,6 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # With C++14 support
 CONFIG += c++14
+CONFIG += warn_on
 
 TARGET = DotaCard
 TEMPLATE = app
@@ -36,3 +37,12 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     res.qrc
+
+#QMAKE_TARGET_COMPANY = Home
+#QMAKE_TARGET_DESCRIPTION = Detailed Description
+#QMAKE_TARGET_COPYRIGHT = CopyRight
+#QMAKE_TARGET_PRODUCT = DotaCard
+#RC_CODEPAGE
+#RC_ICONS
+#RC_LANG
+#VERSION = 1.1.0
