@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QMetaObject>
 #include <QGraphicsSceneMouseEvent>
+#include "net.h"
 #include "rule.h"
 
 Card::Card()
@@ -167,13 +168,23 @@ QRectF Card::boundingRect() const
 
 void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    if (area == DeckArea || area == EnemyDeckArea) {
+    if (area == DeckArea || area == EnemyDeckArea)
+    {
         return;
     }
-    if (area != EnemyHandArea) {
+    if (area != EnemyHandArea)
+    {
         pixmap = QPixmap(image);
     }
-    pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    if (area == HandArea || area == EnemyHandArea)
+    {
+        pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    }
+    else
+    {
+        pixmap = pixmap.scaled(50, 72, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    }
+
     painter->drawPixmap(0, 0, pixmap);
 }
 
@@ -308,7 +319,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         case HandArea:
             if (currentflag==NormalSummon) {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
-                emit doNormalSummon();
+                Net::instance()->doNormalSummon(index);
             }
             else if (currentflag==SetCard) {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
