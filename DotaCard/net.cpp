@@ -5,8 +5,14 @@
 #include <QJsonArray>
 #include <QFile>
 
-Net::Net(QObject* parent)
-    : QObject(parent)
+Q_GLOBAL_STATIC(Net, net)
+
+Net* Net::instance()
+{
+    return net();
+}
+
+void Net::initialize()
 {
     client = new QTcpSocket(this);
     client->connectToHost(QHostAddress::LocalHost, 7720);
@@ -43,7 +49,7 @@ void Net::readFromServer()
     QByteArray json = client->readAll();
     QJsonDocument jsonDoucment = QJsonDocument::fromJson(json);
     QJsonObject jsonObject = jsonDoucment.object();
-    qDebug() << jsonObject;
+    qDebug() << "Net's readFromServer" << jsonObject;
     int command = jsonObject["command"].toInt();
     switch (command) {
     case 2000:
@@ -130,6 +136,24 @@ void Net::sendMessage(int command, QList<int> list)
 
     jsonObject.insert("command", command);
     jsonObject.insert("cards", cards);
+
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
+}
+
+void Net::doNormalSummon(int from)
+{
+    qDebug() << "Net's doNormalSummon: from = " << from;
+
+    emit actionCommand(99991,from,-1);
+
+    QJsonObject jsonObject;
+
+    jsonObject.insert("command", 8888);
+    jsonObject.insert("parameter", 88881);
+    jsonObject.insert("from", from);
+    jsonObject.insert("to", -1);
 
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
