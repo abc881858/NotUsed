@@ -1,6 +1,10 @@
 #include "roomscene.h"
 #include "engine.h"
 #include <QDebug>
+#include <QAction>
+#include <QGraphicsSceneContextMenuEvent>
+#include "rule.h"
+#include "net.h"
 
 static const QPointF DeckPos(485, 426);
 static const QPointF HandPos(19, 529);
@@ -15,6 +19,18 @@ RoomScene::RoomScene(QObject* parent)
     : QGraphicsScene(parent)
 {
     setBackgroundBrush(QBrush(QPixmap(":/png/png/b.png")));
+
+    myContextMenu = new QMenu;
+    goBP = new QAction("goBP", myContextMenu);
+    goM2 = new QAction("goM2", myContextMenu);
+    goEP = new QAction("goEP", myContextMenu);
+    myContextMenu->addAction(goBP);
+    myContextMenu->addAction(goM2);
+    myContextMenu->addAction(goEP);
+
+    connect(goBP, SIGNAL(triggered(bool)), this, SLOT(actionBP(bool)));
+    connect(goM2, SIGNAL(triggered(bool)), this, SLOT(actionM2(bool)));
+    connect(goEP, SIGNAL(triggered(bool)), this, SLOT(actionEP(bool)));
 
     // create DeckArea
     deckarea = new DeckArea;
@@ -55,16 +71,18 @@ void RoomScene::setupDeck(QList<int> list)
         Card* card = Engine::instance()->cloneCard(ISDN);
         deckarea->addCard(card);
 
-        connect(card, &Card::hover, [=]() {
-            QString name = card->getName();
-            emit hover(name);
-        });
+        connect(card, &Card::hover, [=]()
+            {
+                QString name = card->getName();
+                emit hover(name);
+            });
     }
 }
 
 void RoomScene::setupEnemyDeck(QList<int> list)
 {
-    foreach (int ISDN, list) {
+    foreach (int ISDN, list)
+    {
         Card* card = Engine::instance()->cloneCard(ISDN);
         enemydeckarea->addCard(card);
     }
@@ -73,7 +91,8 @@ void RoomScene::setupEnemyDeck(QList<int> list)
 QList<int> RoomScene::startMyGame()
 {
     QList<int> list;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         Card* card = deckarea->takeFirstCard();
         handarea->addCard(card);
         list << card->getISDN();
@@ -83,7 +102,8 @@ QList<int> RoomScene::startMyGame()
 
 QList<int> RoomScene::startYourGame()
 {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         Card* card = enemydeckarea->takeFirstCard();
         enemyhandarea->addCard(card);
     }
@@ -93,7 +113,8 @@ QList<int> RoomScene::startYourGame()
 
 void RoomScene::drawMyPhase()
 {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++)
+    {
         Card* card = enemydeckarea->takeFirstCard();
         enemyhandarea->addCard(card);
     }
@@ -119,7 +140,30 @@ void RoomScene::initializeFieldyard()
     fieldyardarea->initializeCards();
 }
 
-void RoomScene::doActionCommand(int parameter,int from,int to)
+void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+{
+    myContextMenu->exec(event->screenPos());
+}
+
+void RoomScene::actionBP(bool)
+{
+    Rule::instance()->setPhase(Rule::myBP);
+    Net::instance()->sendMessage(50001);
+}
+
+void RoomScene::actionM2(bool)
+{
+    Rule::instance()->setPhase(Rule::myM2);
+    Net::instance()->sendMessage(60001);
+}
+
+void RoomScene::actionEP(bool)
+{
+    Rule::instance()->setPhase(Rule::myEP);
+    Net::instance()->sendMessage(70001);
+}
+
+void RoomScene::doActionCommand(int parameter, int from, int)
 {
     //对方发起了命令，我方对应要执行的操作
     switch (parameter)
@@ -143,6 +187,13 @@ void RoomScene::doActionCommand(int parameter,int from,int to)
         Card* card = handarea->takeCard(from);
         qDebug() << "card isdn from: " << card->getISDN();
         fieldyardarea->addCard(card);
+        break;
+    }
+    case 88881:
+    {
+        Card* card = enemyhandarea->takeCard(from);
+        qDebug() << "card isdn from: " << card->getISDN();
+        enemyfieldyardarea->addCard(card);
         break;
     }
     case 8001:
@@ -273,4 +324,3 @@ void RoomScene::doActionCommand(int parameter,int from,int to)
         break;
     }
 }
-
