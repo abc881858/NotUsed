@@ -5,6 +5,7 @@
 #include <QBrush>
 #include <QPixmap>
 
+#include "net.h"
 #include "rule.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -16,22 +17,24 @@ MainWindow::MainWindow(QWidget* parent)
     palette.setBrush(QPalette::Background, QBrush(QPixmap(":/png/png/back.jpg")));
     setPalette(palette);
 
-    net = new Net(this);
+    Net::instance()->initialize();
 
-    connect(net, SIGNAL(setupDeck(QList<int>)), this, SLOT(setupDeck(QList<int>)));
-    connect(net, SIGNAL(setupEnemyDeck(QList<int>)), this, SLOT(setupEnemyDeck(QList<int>)));
+    connect(Net::instance(), SIGNAL(setupDeck(QList<int>)), this, SLOT(setupDeck(QList<int>)));
+    connect(Net::instance(), SIGNAL(setupEnemyDeck(QList<int>)), this, SLOT(setupEnemyDeck(QList<int>)));
 
-    connect(net, SIGNAL(myStartGame()), this, SLOT(startMyGame()));
-    connect(net, SIGNAL(yourStartGame()), this, SLOT(startYourGame()));
-    connect(net, SIGNAL(myDrawPhase()), this, SLOT(drawMyPhase()));
-    connect(net, SIGNAL(yourDrawPhase()), this, SLOT(drawYourPhase()));
-    connect(net, SIGNAL(myStandbyPhase()), this, SLOT(standbyMyPhase()));
-    connect(net, SIGNAL(yourStandbyPhase()), this, SLOT(standbyYourPhase()));
-    connect(net, SIGNAL(myMainPhase1()), this, SLOT(mainMyPhase1()));
-    connect(net, SIGNAL(yourMainPhase1()), this, SLOT(mainYourPhase1()));
-    connect(net, SIGNAL(yourBattlePhase()), this, SLOT(battleYourPhase()));
-    connect(net, SIGNAL(yourMainPhase2()), this, SLOT(mainYourPhase2()));
-    connect(net, SIGNAL(yourEndPhase()), this, SLOT(endYourPhase()));
+    connect(Net::instance(), SIGNAL(myStartGame()), this, SLOT(startMyGame()));
+    connect(Net::instance(), SIGNAL(yourStartGame()), this, SLOT(startYourGame()));
+    connect(Net::instance(), SIGNAL(myDrawPhase()), this, SLOT(drawMyPhase()));
+    connect(Net::instance(), SIGNAL(yourDrawPhase()), this, SLOT(drawYourPhase()));
+    connect(Net::instance(), SIGNAL(myStandbyPhase()), this, SLOT(standbyMyPhase()));
+    connect(Net::instance(), SIGNAL(yourStandbyPhase()), this, SLOT(standbyYourPhase()));
+    connect(Net::instance(), SIGNAL(myMainPhase1()), this, SLOT(mainMyPhase1()));
+    connect(Net::instance(), SIGNAL(yourMainPhase1()), this, SLOT(mainYourPhase1()));
+    connect(Net::instance(), SIGNAL(yourBattlePhase()), this, SLOT(battleYourPhase()));
+    connect(Net::instance(), SIGNAL(yourMainPhase2()), this, SLOT(mainYourPhase2()));
+    connect(Net::instance(), SIGNAL(yourEndPhase()), this, SLOT(endYourPhase()));
+
+    connect(Net::instance(), SIGNAL(actionCommand(int,int,int)), this, SLOT(doActionCommand(int,int,int)));
 
     myLP = 8000;
     yourLP = 8000;
@@ -80,40 +83,40 @@ void MainWindow::hover(QString name)
 void MainWindow::startMyGame()
 {
     QList<int> list = roomScene->startMyGame();
-    net->sendMessage(10001, list);
+    Net::instance()->sendMessage(10001, list);
 }
 
 void MainWindow::startYourGame()
 {
     //client2 start his game
     QList<int> list = roomScene->startYourGame();
-    net->sendMessage(10002, list);
+    Net::instance()->sendMessage(10002, list);
 }
 
 void MainWindow::drawMyPhase()
 {
     setPhase(myDP);
     roomScene->drawMyPhase();
-    net->sendMessage(20001);
+    Net::instance()->sendMessage(20001);
 }
 
 void MainWindow::drawYourPhase()
 {
     setPhase(yourDP);
     roomScene->drawYourPhase();
-    net->sendMessage(20002);
+    Net::instance()->sendMessage(20002);
 }
 
 void MainWindow::standbyMyPhase()
 {
     setPhase(mySP);
-    net->sendMessage(30001);
+    Net::instance()->sendMessage(30001);
 }
 
 void MainWindow::standbyYourPhase()
 {
     setPhase(yourSP);
-    net->sendMessage(30002);
+    Net::instance()->sendMessage(30002);
 }
 
 void MainWindow::mainMyPhase1()
@@ -121,7 +124,7 @@ void MainWindow::mainMyPhase1()
     setPhase(myM1);
     Rule::instance()->setOneTurnOneNormalSummon(true);
     roomScene->initializeFieldyard();
-    net->sendMessage(40001);
+    // Net::instance()->sendMessage(40001);
 }
 
 void MainWindow::mainYourPhase1()
@@ -147,5 +150,10 @@ void MainWindow::endYourPhase()
 
     setPhase(myDP);
     roomScene->endYourPhase();
-    net->sendMessage(20001);
+    Net::instance()->sendMessage(20001);
+}
+
+void MainWindow::doActionCommand(int parameter,int from,int to)
+{
+    roomScene->doActionCommand(parameter,from,to);
 }
