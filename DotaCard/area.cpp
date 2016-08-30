@@ -1,5 +1,6 @@
 #include "area.h"
 #include <QPainter>
+#include <QDebug>
 
 static QRectF DeckAreaRect(0, 0, 50, 72);
 static QRectF HandAreaRect(0, 0, 512, 70);
@@ -94,8 +95,9 @@ void HandArea::addCard(Card* card)
 
 Card* HandArea::takeCard(int index)
 {
-    //0 <= index < size()
-    return myHand.takeAt(index);
+    Card* card = myHand.takeAt(index);
+    adjustCards();
+    return card;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -128,21 +130,23 @@ void FieldyardArea::addCard(Card* card, bool face, bool stand)
     card->setIndex(myFieldyard.size());
     card->setFace(face);
     card->setStand(stand);
-    card->setArea(Card::HandArea);
+    card->setArea(Card::FieldyardArea);
     myFieldyard << card;
     adjustCards();
 }
 
 void FieldyardArea::adjustCards()
 {
+    qDebug() << "FieldyardArea's adjustCards.";
     if (myFieldyard.isEmpty())
         return;
-//    int n = myFieldyard.size();
-//    int card_skip = (n > 5) ? (412 / (n - 1)) : 102;
-//    for (int i = 0; i < n; i++) {
-//        myFieldyard[i]->setZValue(0.1 * i);
-//        myFieldyard[i]->setPos(QPointF(card_skip * i, 0));
-//    }
+    int n = myFieldyard.size();
+    int card_skip = 102;
+    for (int i = 0; i < n; i++)
+    {
+        myFieldyard[i]->setZValue(0.1 * i);
+        myFieldyard[i]->setPos(QPointF(card_skip * i, 0));
+    }
 }
 
 ///////////////////////////////////////////////////////////////
