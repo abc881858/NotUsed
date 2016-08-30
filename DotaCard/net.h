@@ -12,14 +12,17 @@ class Net : public QObject {
     Q_OBJECT
 
 public:
-    explicit Net(QObject* parent);
+    static Net* instance();
+
+    void initialize();
     QByteArray getJsonFromInt(int command);
     void firstSetupEnemyDeck(QJsonArray jsonArray);
     void secondSetupEnemyDeck(QJsonArray jsonArray);
 
     void sendMessage(int command, QList<int> list);
     void sendMessage(int command);
-
+    
+    void doNormalSummon(int from);
 private:
     QTcpSocket* client;
 
