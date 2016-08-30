@@ -73,7 +73,8 @@ private:
     QList<Card*> yourDeck;
 };
 
-class EnemyHandArea : public QGraphicsObject {
+class EnemyHandArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     EnemyHandArea();
@@ -81,19 +82,22 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void adjustCards();
     void addCard(Card* card);
-    //    Card* takeCard(int ISDN);
+    Card *takeCard(int index);
+
 private:
     QPixmap pixmap;
     QList<Card*> yourHand;
 };
 
-class EnemyFieldyardArea : public QGraphicsObject {
+class EnemyFieldyardArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     EnemyFieldyardArea();
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-
+    void addCard(Card* card, bool face = true, bool stand = true);
+    void adjustCards();
 private:
     QPixmap pixmap;
     QList<Card*> yourFieldyard;
