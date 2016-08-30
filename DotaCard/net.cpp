@@ -91,6 +91,9 @@ void Net::readFromServer()
     case 70001:
         emit yourEndPhase();
         break;
+    case 8888:
+        emit actionCommand(jsonObject["parameter"].toInt(),jsonObject["from"].toInt(),jsonObject["to"].toInt());
+        break;
     default:
         break;
     }
