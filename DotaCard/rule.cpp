@@ -1,4 +1,5 @@
 #include "rule.h"
+#include <QObject>
 
 Q_GLOBAL_STATIC(Rule, rule)
 
@@ -15,4 +16,14 @@ bool Rule::getOneTurnOneNormalSummon() const
 void Rule::setOneTurnOneNormalSummon(bool value)
 {
     oneTurnOneNormalSummon = value;
+}
+
+void Rule::setPhase(Rule::Phase phase)
+{
+    this->phase = phase;
+}
+
+Rule::Phase Rule::getphase() const
+{
+    return this->phase;
 }
