@@ -107,7 +107,7 @@ private:
 
 signals:
     void hover();
-    void doNormalSummon();
+    void doNormalSummon(int,int);
     void doSetCard();
     void doChain();
     void doEffect();
