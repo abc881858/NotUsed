@@ -24,13 +24,17 @@ public:
     };
     Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
-    enum {
+    enum
+    {
         NoArea,
         DeckArea,
         HandArea,
+        FieldyardArea,
+        FieldgroundArea,
         EnemyDeckArea,
         EnemyHandArea,
-        FieldyardArea
+        EnemyFieldyardArea,
+        EnemyFieldgroundArea
     };
 
     CardFlags getCardFlags() const;
