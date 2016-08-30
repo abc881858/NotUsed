@@ -144,7 +144,6 @@ void FieldyardArea::adjustCards()
     int card_skip = 102;
     for (int i = 0; i < n; i++)
     {
-        myFieldyard[i]->setZValue(0.1 * i);
         myFieldyard[i]->setPos(QPointF(card_skip * i, 0));
     }
 }
@@ -249,9 +248,12 @@ void EnemyHandArea::addCard(Card* card)
     adjustCards();
 }
 
-//Card* EnemyHandArea::takeCard(int ISDN)
-//{
-//}
+Card* EnemyHandArea::takeCard(int index)
+{
+    Card* card = yourHand.takeAt(index);
+    adjustCards();
+    return card;
+}
 
 ///////////////////////////////////////////////////////////////
 
@@ -268,6 +270,30 @@ QRectF EnemyFieldyardArea::boundingRect() const
 void EnemyFieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
     painter->drawPixmap(0, 0, pixmap);
+}
+
+void EnemyFieldyardArea::addCard(Card* card, bool face, bool stand)
+{
+    card->setParentItem(this);
+    card->setIndex(yourFieldyard.size());
+    card->setFace(face);
+    card->setStand(stand);
+    card->setArea(Card::EnemyFieldyardArea);
+    yourFieldyard << card;
+    adjustCards();
+}
+
+void EnemyFieldyardArea::adjustCards()
+{
+    qDebug() << "EnemyFieldyardArea's adjustCards.";
+    if (yourFieldyard.isEmpty())
+        return;
+    int n = yourFieldyard.size();
+    int card_skip = 102;
+    for (int i = 0; i < n; i++)
+    {
+        yourFieldyard[i]->setPos(QPointF(card_skip * (4-i), 0));
+    }
 }
 
 ///////////////////////////////////////////////////////////////
