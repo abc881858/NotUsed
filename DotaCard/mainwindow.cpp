@@ -34,7 +34,8 @@ MainWindow::MainWindow(QWidget* parent)
     connect(Net::instance(), SIGNAL(yourMainPhase2()), this, SLOT(mainYourPhase2()));
     connect(Net::instance(), SIGNAL(yourEndPhase()), this, SLOT(endYourPhase()));
 
-    connect(Net::instance(), SIGNAL(actionCommand(int,int,int)), this, SLOT(doActionCommand(int,int,int)));
+    //对端做了什么操作，我方都要显示出来
+    connect(Net::instance(), SIGNAL(actionCommand(int, int, int)), this, SLOT(doActionCommand(int, int, int)));
 
     myLP = 8000;
     yourLP = 8000;
@@ -63,16 +64,6 @@ void MainWindow::setupEnemyDeck(QList<int> list)
     roomScene->setupEnemyDeck(list);
 }
 
-void MainWindow::setPhase(MainWindow::Phase phase)
-{
-    this->phase = phase;
-}
-
-MainWindow::Phase MainWindow::getphase() const
-{
-    return this->phase;
-}
-
 void MainWindow::hover(QString name)
 {
     //首先一张卡被hover，左上角大图肯定要更新
@@ -95,65 +86,65 @@ void MainWindow::startYourGame()
 
 void MainWindow::drawMyPhase()
 {
-    setPhase(myDP);
+    Rule::instance()->setPhase(Rule::myDP);
     roomScene->drawMyPhase();
     Net::instance()->sendMessage(20001);
 }
 
 void MainWindow::drawYourPhase()
 {
-    setPhase(yourDP);
+    Rule::instance()->setPhase(Rule::yourDP);
     roomScene->drawYourPhase();
     Net::instance()->sendMessage(20002);
 }
 
 void MainWindow::standbyMyPhase()
 {
-    setPhase(mySP);
+    Rule::instance()->setPhase(Rule::mySP);
     Net::instance()->sendMessage(30001);
 }
 
 void MainWindow::standbyYourPhase()
 {
-    setPhase(yourSP);
+    Rule::instance()->setPhase(Rule::yourSP);
     Net::instance()->sendMessage(30002);
 }
 
 void MainWindow::mainMyPhase1()
 {
-    setPhase(myM1);
+    Rule::instance()->setPhase(Rule::myM1);
     Rule::instance()->setOneTurnOneNormalSummon(true);
     roomScene->initializeFieldyard();
-    // Net::instance()->sendMessage(40001);
+    Net::instance()->sendMessage(40001);
 }
 
 void MainWindow::mainYourPhase1()
 {
-    setPhase(yourM2);
+    Rule::instance()->setPhase(Rule::yourM2);
 }
 
 void MainWindow::battleYourPhase()
 {
-    setPhase(yourBP);
+    Rule::instance()->setPhase(Rule::yourBP);
 }
 
 void MainWindow::mainYourPhase2()
 {
-    setPhase(yourM2);
+    Rule::instance()->setPhase(Rule::yourM2);
 }
 
 void MainWindow::endYourPhase()
 {
-    setPhase(yourEP);
+    Rule::instance()->setPhase(Rule::yourEP);
     //TODO: 也许对方结束阶段我要触发什么陷阱卡
     //暂时玩家2直接进入他的抽卡阶段
 
-    setPhase(myDP);
+    Rule::instance()->setPhase(Rule::myDP);
     roomScene->endYourPhase();
     Net::instance()->sendMessage(20001);
 }
 
-void MainWindow::doActionCommand(int parameter,int from,int to)
+void MainWindow::doActionCommand(int parameter, int from, int to)
 {
-    roomScene->doActionCommand(parameter,from,to);
+    roomScene->doActionCommand(parameter, from, to);
 }
