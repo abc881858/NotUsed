@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QList>
 #include "roomscene.h"
-#include "net.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,7 +40,6 @@ private:
     int yourLP;
 
     RoomScene* roomScene;
-    Net* net;
 
 private slots:
     void setupDeck(QList<int> list);
