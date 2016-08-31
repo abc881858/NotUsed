@@ -27,7 +27,8 @@ void Net::connected()
     QFile file("test1.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
     QTextStream text_stream(&file);
-    while (!text_stream.atEnd()) {
+    while (!text_stream.atEnd())
+    {
         int ISDN = text_stream.readLine().toInt();
         myDeck << ISDN;
         cards << ISDN;
@@ -51,7 +52,8 @@ void Net::readFromServer()
     QJsonObject jsonObject = jsonDoucment.object();
     qDebug() << "Net's readFromServer" << jsonObject;
     int command = jsonObject["command"].toInt();
-    switch (command) {
+    switch (command)
+    {
     case 2000:
         firstSetupEnemyDeck(jsonObject["deck"].toArray());
         break;
@@ -92,7 +94,7 @@ void Net::readFromServer()
         emit yourEndPhase();
         break;
     case 8888:
-        emit actionCommand(jsonObject["parameter"].toInt(),jsonObject["from"].toInt(),jsonObject["to"].toInt());
+        emit actionCommand(jsonObject["parameter"].toInt(), jsonObject["from"].toInt(), jsonObject["to"].toInt());
         break;
     default:
         break;
@@ -111,7 +113,8 @@ QByteArray Net::getJsonFromInt(int command)
 void Net::firstSetupEnemyDeck(QJsonArray jsonArray)
 {
     QList<int> yourDeck;
-    foreach (const QJsonValue& value, jsonArray) {
+    foreach (const QJsonValue& value, jsonArray)
+    {
         int ISDN = value.toInt();
         yourDeck << ISDN;
     }
@@ -133,7 +136,8 @@ void Net::sendMessage(int command, QList<int> list)
 {
     QJsonObject jsonObject;
     QJsonArray cards;
-    foreach (int card, list) {
+    foreach (int card, list)
+    {
         cards << QJsonValue(card);
     }
 
@@ -149,7 +153,7 @@ void Net::doNormalSummon(int from)
 {
     qDebug() << "Net's doNormalSummon: from = " << from;
 
-    emit actionCommand(99991,from,-1);
+    emit actionCommand(99991, from, -1);
 
     QJsonObject jsonObject;
 
@@ -163,15 +167,9 @@ void Net::doNormalSummon(int from)
     client->write(json);
 }
 
-
 void Net::doSetCard(int from)
 {
     qDebug() << "Net's doSetCard: from = " << from;
-}
-
-void Net::doChain(int from)
-{
-    qDebug() << "Net's doChain: from = " << from;
 }
 
 void Net::doEffect(int from)
