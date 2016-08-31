@@ -292,7 +292,7 @@ void EnemyFieldyardArea::adjustCards()
     int card_skip = 102;
     for (int i = 0; i < n; i++)
     {
-        yourFieldyard[i]->setPos(QPointF(card_skip * (4-i), 0));
+        yourFieldyard[i]->setPos(QPointF(card_skip * (3-i), 0));
     }
 }
 
