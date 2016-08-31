@@ -140,10 +140,15 @@ void RoomScene::initializeFieldyard()
     fieldyardarea->initializeCards();
 }
 
-void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    myContextMenu->exec(event->screenPos());
+    if(event->button() == Qt::RightButton)
+    {
+        myContextMenu->exec(event->screenPos());
+    }
+    QGraphicsScene::mouseReleaseEvent(event);
 }
+
 
 void RoomScene::actionBP(bool)
 {
