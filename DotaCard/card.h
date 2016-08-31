@@ -111,11 +111,6 @@ private:
 
 signals:
     void hover();
-    void doNormalSummon(int,int);
-    void doSetCard();
-    void doChain();
-    void doEffect();
-    void doSpecialSummon();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
