@@ -16,7 +16,6 @@ Card::Card()
 
 void Card::testAll()
 {
-    testChain() ? setCardFlag(Chain, true) : setCardFlag(Chain, false);
     testEffect() ? setCardFlag(Effect, true) : setCardFlag(Effect, false);
     testSpecialSummon() ? setCardFlag(SpecialSummon, true) : setCardFlag(SpecialSummon, false);
     testNormalSummon() ? setCardFlag(NormalSummon, true) : setCardFlag(NormalSummon, false);
@@ -27,11 +26,6 @@ void Card::testAll()
     testAttack() ? setCardFlag(Card::Attack, true) : setCardFlag(Card::Attack, false);
 }
 
-bool Card::testChain()
-{
-    return false;
-}
-
 bool Card::testEffect()
 {
     return false;
@@ -39,11 +33,19 @@ bool Card::testEffect()
 
 bool Card::testSpecialSummon()
 {
+    if(area!=HandArea)
+    {
+        return false;
+    }
     return false;
 }
 
 bool Card::testNormalSummon()
 {
+    if(area!=HandArea)
+    {
+        return false;
+    }
     //TODO: 后续增加被其他卡影响，无法普通召唤的判断
     if (Rule::instance()->getOneTurnOneNormalSummon())
     {
@@ -54,6 +56,10 @@ bool Card::testNormalSummon()
 
 bool Card::testSetCard()
 {
+    if(area!=HandArea)
+    {
+        return false;
+    }
     //TODO: 后续增加被其他卡影响，无法覆盖卡牌的判断
     //包括【怪兽】和【魔陷】的覆盖
     if (Rule::instance()->getOneTurnOneNormalSummon())
@@ -77,7 +83,8 @@ bool Card::testFlipSummon()
 
 bool Card::testDefencePosition()
 {
-    if (face && stand) {
+    if (face && stand)
+    {
         return changePosition;
     }
     return false;
@@ -85,7 +92,8 @@ bool Card::testDefencePosition()
 
 bool Card::testAttackPosition()
 {
-    if (face && !stand) {
+    if (face && !stand)
+    {
         return changePosition;
     }
     return false;
@@ -123,39 +131,35 @@ void Card::setCurrentflag(Card::CardFlag flag)
 {
     currentflag = flag;
 
-    if(currentflag==Chain)
-    {
-        setCursor(Qt::SizeVerCursor);
-    }
-    else if(currentflag==Effect)
+    if (currentflag == Effect)
     {
         setCursor(Qt::SizeHorCursor);
     }
-    else if(currentflag==SpecialSummon)
+    else if (currentflag == SpecialSummon)
     {
         setCursor(Qt::SizeBDiagCursor);
     }
-    else if(currentflag==NormalSummon)
+    else if (currentflag == NormalSummon)
     {
         setCursor(Qt::SizeFDiagCursor);
     }
-    else if(currentflag==SetCard)
+    else if (currentflag == SetCard)
     {
         setCursor(Qt::SizeAllCursor);
     }
-    else if(currentflag==FlipSummon)
+    else if (currentflag == FlipSummon)
     {
         setCursor(Qt::SplitVCursor);
     }
-    else if(currentflag==DefencePosition)
+    else if (currentflag == DefencePosition)
     {
         setCursor(Qt::SplitHCursor);
     }
-    else if(currentflag==AttackPosition)
+    else if (currentflag == AttackPosition)
     {
         setCursor(Qt::PointingHandCursor);
     }
-    else if(currentflag==Attack)
+    else if (currentflag == Attack)
     {
         setCursor(Qt::ForbiddenCursor);
     }
@@ -190,7 +194,8 @@ void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
-    switch (area) {
+    switch (area)
+    {
     case HandArea:
         setY(-35);
         break;
@@ -203,19 +208,20 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
     testAll();
 
-    if (myflags.testFlag(Chain)) {
-        setCurrentflag(Chain);
-    }
-    else if (myflags.testFlag(Effect)) {
+    if (myflags.testFlag(Effect))
+    {
         setCurrentflag(Effect);
     }
-    else if (myflags.testFlag(SpecialSummon)) {
+    else if (myflags.testFlag(SpecialSummon))
+    {
         setCurrentflag(SpecialSummon);
     }
-    else if (myflags.testFlag(NormalSummon)) {
+    else if (myflags.testFlag(NormalSummon))
+    {
         setCurrentflag(NormalSummon);
     }
-    else if (myflags.testFlag(SetCard)) {
+    else if (myflags.testFlag(SetCard))
+    {
         setCurrentflag(SetCard);
     }
 
@@ -224,7 +230,8 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
-    if (area == HandArea || area == EnemyHandArea) {
+    if (area == HandArea || area == EnemyHandArea)
+    {
         setY(0);
         setCursor(Qt::ArrowCursor);
     }
@@ -232,78 +239,63 @@ void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 
 void Card::nextCursor()
 {
-    if (currentflag==Chain)
+    if (currentflag == Effect)
     {
-        if (myflags.testFlag(Effect)) {
-            setCurrentflag(Effect);
-        }
-        else if (myflags.testFlag(SpecialSummon)) {
+        if (myflags.testFlag(SpecialSummon))
+        {
             setCurrentflag(SpecialSummon);
         }
-        else if (myflags.testFlag(NormalSummon)) {
+        else if (myflags.testFlag(NormalSummon))
+        {
             setCurrentflag(NormalSummon);
         }
-        else if (myflags.testFlag(SetCard)) {
+        else if (myflags.testFlag(SetCard))
+        {
             setCurrentflag(SetCard);
         }
     }
-    else if (currentflag==Effect)
+    else if (currentflag == SpecialSummon)
     {
-        if (myflags.testFlag(SpecialSummon)) {
-            setCurrentflag(SpecialSummon);
-        }
-        else if (myflags.testFlag(NormalSummon)) {
+        if (myflags.testFlag(NormalSummon))
+        {
             setCurrentflag(NormalSummon);
         }
-        else if (myflags.testFlag(SetCard)) {
+        else if (myflags.testFlag(SetCard))
+        {
             setCurrentflag(SetCard);
         }
-        else if (myflags.testFlag(Chain)) {
-            setCurrentflag(Chain);
-        }
-    }
-    else if (currentflag==SpecialSummon)
-    {
-        if (myflags.testFlag(NormalSummon)) {
-            setCurrentflag(NormalSummon);
-        }
-        else if (myflags.testFlag(SetCard)) {
-            setCurrentflag(SetCard);
-        }
-        else if (myflags.testFlag(Chain)) {
-            setCurrentflag(Chain);
-        }
-        else if (myflags.testFlag(Effect)) {
+        else if (myflags.testFlag(Effect))
+        {
             setCurrentflag(Effect);
         }
     }
-    else if (currentflag==NormalSummon)
+    else if (currentflag == NormalSummon)
     {
-        if (myflags.testFlag(SetCard)) {
+        if (myflags.testFlag(SetCard))
+        {
             setCurrentflag(SetCard);
         }
-        else if (myflags.testFlag(Chain)) {
-            setCurrentflag(Chain);
-        }
-        else if (myflags.testFlag(Effect)) {
+        else if (myflags.testFlag(Effect))
+        {
             setCurrentflag(Effect);
         }
-        else if (myflags.testFlag(SpecialSummon)) {
+        else if (myflags.testFlag(SpecialSummon))
+        {
             setCurrentflag(SpecialSummon);
         }
     }
-    else if (currentflag==SetCard)
+    else if (currentflag == SetCard)
     {
-        if (myflags.testFlag(Chain)) {
-            setCurrentflag(Chain);
-        }
-        else if (myflags.testFlag(Effect)) {
+        if (myflags.testFlag(Effect))
+        {
             setCurrentflag(Effect);
         }
-        else if (myflags.testFlag(SpecialSummon)) {
+        else if (myflags.testFlag(SpecialSummon))
+        {
             setCurrentflag(SpecialSummon);
         }
-        else if (myflags.testFlag(NormalSummon)) {
+        else if (myflags.testFlag(NormalSummon))
+        {
             setCurrentflag(NormalSummon);
         }
     }
@@ -330,10 +322,6 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
                 Rule::instance()->setOneTurnOneNormalSummon(false);
                 Net::instance()->doSetCard(index);
             }
-            else if (currentflag == Chain)
-            {
-                Net::instance()->doChain(index);
-            }
             else if (currentflag == Effect)
             {
                 Net::instance()->doEffect(index);
@@ -342,8 +330,6 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             {
                 Net::instance()->doSpecialSummon(index);
             }
-            break;
-        case EnemyHandArea:
             break;
         case FieldyardArea:
             break;
