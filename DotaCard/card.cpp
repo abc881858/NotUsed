@@ -311,28 +311,36 @@ void Card::nextCursor()
 
 void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (event->button() == Qt::RightButton) {
+    if (event->button() == Qt::RightButton)
+    {
         nextCursor();
     }
-    else if (event->button() == Qt::LeftButton) {
-        switch (area) {
+    else if (event->button() == Qt::LeftButton)
+    {
+        switch (area)
+        {
         case HandArea:
-            if (currentflag==NormalSummon) {
+            if (currentflag == NormalSummon)
+            {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
                 Net::instance()->doNormalSummon(index);
             }
-            else if (currentflag==SetCard) {
+            else if (currentflag == SetCard)
+            {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
-                emit doSetCard();
+                Net::instance()->doSetCard(index);
             }
-            else if (currentflag==Chain) {
-                emit doChain();
+            else if (currentflag == Chain)
+            {
+                Net::instance()->doChain(index);
             }
-            else if (currentflag==Effect) {
-                emit doEffect();
+            else if (currentflag == Effect)
+            {
+                Net::instance()->doEffect(index);
             }
-            else if (currentflag==SpecialSummon) {
-                emit doSpecialSummon();
+            else if (currentflag == SpecialSummon)
+            {
+                Net::instance()->doSpecialSummon(index);
             }
             break;
         case EnemyHandArea:
