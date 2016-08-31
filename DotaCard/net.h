@@ -24,6 +24,10 @@ public:
     void sendMessage(int command);
 
     void doNormalSummon(int from);
+    void doSetCard(int from);
+    void doChain(int from);
+    void doEffect(int from);
+    void doSpecialSummon(int from);
 private:
     QTcpSocket* client;
 
