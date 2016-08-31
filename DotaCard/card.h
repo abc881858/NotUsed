@@ -6,21 +6,22 @@
 #include <QMouseEvent>
 #include <QCursor>
 
-class Card : public QGraphicsObject {
+class Card : public QGraphicsObject
+{
     Q_OBJECT
 public:
     explicit Card();
 
-    enum CardFlag {
-        Chain = 0x1, //连锁
-        Effect = 0x2, //可以发动怪兽效果
-        SpecialSummon = 0x4,
-        NormalSummon = 0x8,
-        SetCard = 0x10,
-        FlipSummon = 0x20, //可以翻转召唤
-        DefencePosition = 0x40, //可以防守表示
-        AttackPosition = 0x80, //可以攻击表示
-        Attack = 0x100
+    enum CardFlag
+    {
+        Effect = 0x1, //可以发动怪兽效果
+        SpecialSummon = 0x2,
+        NormalSummon = 0x4,
+        SetCard = 0x8,
+        FlipSummon = 0x10, //可以翻转召唤
+        DefencePosition = 0x20, //可以防守表示
+        AttackPosition = 0x40, //可以攻击表示
+        Attack = 0x80
     };
     Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
@@ -69,7 +70,6 @@ public:
     void nextCursor();
 
     void testAll();
-    bool testChain();
     bool testSpecialSummon();
     bool testNormalSummon();
     bool testSetCard();
@@ -107,7 +107,7 @@ private:
     CardFlags myflags; //右键可以显示的全部cursor
     CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
-    int index;//从左往右数第几张(第1张是index==0)
+    int index; //从左往右数第几张(第1张是index==0)
 
 signals:
     void hover();
@@ -130,7 +130,8 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
  * 同时令自己场上名字带有“dota”的怪兽的攻击力（或防御力）上升自己原本攻击力（或防御力）的一半。
  *
  */
-class CentaurWarrunner : public Card {
+class CentaurWarrunner : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE CentaurWarrunner();
@@ -148,7 +149,8 @@ public:
  * ③一回合一次，选择对方场上的一只怪兽发动，选择的怪兽在进行攻击宣言前必须丢弃一张手牌。
  *
  */
-class KeeperoftheLight : public Card {
+class KeeperoftheLight : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE KeeperoftheLight();
@@ -163,7 +165,8 @@ public:
  * 当这张卡装备了“dota-阿哈利姆神杖”时，同时破坏选择怪兽两边的卡。
  *
  */
-class Lion : public Card {
+class Lion : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE Lion();
@@ -181,7 +184,8 @@ public:
  * 且在对方回合结束前不能进行攻击不能更变形式。
  *
  */
-class Magnus : public Card {
+class Magnus : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE Magnus();
@@ -200,7 +204,8 @@ public:
  * ③一回合一次，丢弃一张手卡发动，这张卡在下次攻击的伤害计算阶段结束前攻击力上升600，且不会成为攻击和卡的效果对象。
  *
  */
-class NyxAssassin : public Card {
+class NyxAssassin : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE NyxAssassin();
@@ -216,7 +221,8 @@ public:
  * 你的1、2效果可以同时发动且你的2效果1回合可以使用2次（覆盖上次获得的效果且该回合不能再次获得同一效果）
  *
  */
-class Rubick : public Card {
+class Rubick : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE Rubick();
@@ -231,7 +237,8 @@ public:
  * 一回合一次，这张卡攻击时，若目标怪兽的防御力低于你的攻击力，此次战斗对对方造成的战斗伤害翻倍。
  *
  */
-class Tusk : public Card {
+class Tusk : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE Tusk();
@@ -247,7 +254,8 @@ public:
  * 每进行一次攻击，伤害计算后被攻击怪兽攻·守下降200至你下回合结束。）
  *
  */
-class Undying : public Card {
+class Undying : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE Undying();
@@ -267,7 +275,8 @@ public:
  * ③一回合一次，你可以指定一名怪兽使其防御力降低800。
  *
  */
-class VengefulSpirit : public Card {
+class VengefulSpirit : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE VengefulSpirit();
@@ -284,7 +293,8 @@ public:
  * 若这张卡装备了“dota-阿哈利姆神杖”时，改为降低2000点守备力。
  *
  */
-class Zeus : public Card {
+class Zeus : public Card
+{
     Q_OBJECT
 public:
     Q_INVOKABLE Zeus();
