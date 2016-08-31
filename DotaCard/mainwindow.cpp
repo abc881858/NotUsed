@@ -8,6 +8,8 @@
 #include "net.h"
 #include "rule.h"
 
+#include <QMessageBox>
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -126,6 +128,16 @@ void MainWindow::mainYourPhase1()
 void MainWindow::battleYourPhase()
 {
     Rule::instance()->setPhase(Rule::yourBP);
+    //如果前后场都没有卡，就显示对话框了
+    QMessageBox msgBox(this);
+    msgBox.setText("dui fang jin ru zhan dou liu cheng.");
+    msgBox.setInformativeText("qing wen fa dong ka pian te xiao ma?");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    int ret = msgBox.exec();
+    if (ret == QMessageBox::Close)
+    {
+        //
+    }
 }
 
 void MainWindow::mainYourPhase2()
