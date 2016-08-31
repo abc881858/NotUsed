@@ -162,3 +162,24 @@ void Net::doNormalSummon(int from)
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
 }
+
+
+void Net::doSetCard(int from)
+{
+    qDebug() << "Net's doSetCard: from = " << from;
+}
+
+void Net::doChain(int from)
+{
+    qDebug() << "Net's doChain: from = " << from;
+}
+
+void Net::doEffect(int from)
+{
+    qDebug() << "Net's doEffect: from = " << from;
+}
+
+void Net::doSpecialSummon(int from)
+{
+    qDebug() << "Net's doSpecialSummon: from = " << from;
+}
