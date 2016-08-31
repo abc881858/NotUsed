@@ -46,7 +46,7 @@ public slots:
     void actionM2(bool);
     void actionEP(bool);
 protected:
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 };
 
 #endif // ROOMSCENE_H
