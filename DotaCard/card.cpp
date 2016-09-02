@@ -28,6 +28,7 @@ void Card::testAll()
 
 bool Card::testEffect()
 {
+    Rule::instance()->getIsResponsing();
     return false;
 }
 
