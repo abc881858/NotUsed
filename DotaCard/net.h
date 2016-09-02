@@ -23,10 +23,13 @@ public:
     void sendMessage(int command, QList<int> list);
     void sendMessage(int command);
 
-    void doNormalSummon(int from);
-    void doSetCard(int from);
-    void doEffect(int from);
-    void doSpecialSummon(int from);
+    void doNormalSummon(int index);
+    void doSetCard(int index);
+    void doEffect(int index);
+    void doSpecialSummon(int index);
+
+    void doTribute(int index);
+
 private:
     QTcpSocket* client;
 
@@ -49,12 +52,12 @@ signals:
     void yourMainPhase2();
     void yourEndPhase();
 
-    //【commmand 8888】 【from、to】
+    //【commmand 8888】 【from】
     // 0 卡组，1-20 手牌，100-104 前场，105-109 后场
     // 200 墓地，300 除外区域，400 融合额外区域
     // 1000 对方卡组，1001-1020 对方手牌，1100-1104 对方前场，1105-1109 对方后场
     // 1200 对方墓地，1300 对方除外区域，1400 对方融合额外区域
-    void actionCommand(int,int,int);
+    void actionCommand(int, int);
     void getResponse();
 };
 
