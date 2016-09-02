@@ -21,17 +21,19 @@ public:
 
     void initializeFieldyard();
 
-    void doActionCommand(int parameter, int from, int);
+    void doActionCommand(int parameter, int index);
 
 private:
     DeckArea* deckarea;
     HandArea* handarea;
     FieldyardArea* fieldyardarea;
     FieldgroundArea* fieldgroundarea;
+    GraveyardArea* graveyardarea;
     EnemyDeckArea* enemydeckarea;
     EnemyHandArea* enemyhandarea;
     EnemyFieldyardArea* enemyfieldyardarea;
     EnemyFieldgroundArea* enemyfieldgroundarea;
+    EnemyGraveyardArea* enemygraveyardarea;
 
     QMenu* myContextMenu;
     QAction* goBP;
@@ -45,8 +47,9 @@ public slots:
     void actionBP(bool);
     void actionM2(bool);
     void actionEP(bool);
+
 protected:
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 };
 
 #endif // ROOMSCENE_H
