@@ -14,6 +14,8 @@ static const QPointF EnemyDeckPos(14, 105);
 static const QPointF EnemyHandPos(17, -71);
 static const QPointF EnemyFieldyardPos(94, 213);
 static const QPointF EnemyFieldgroundPos(94, 105);
+static const QPointF GraveyardPos(0, 0);
+static const QPointF EnemyGraveyardPos(0, 0);
 
 RoomScene::RoomScene(QObject* parent)
     : QGraphicsScene(parent)
@@ -34,34 +36,42 @@ RoomScene::RoomScene(QObject* parent)
 
     // create DeckArea
     deckarea = new DeckArea;
-    addItem(deckarea);
     deckarea->setPos(DeckPos);
     // create HandArea
     handarea = new HandArea;
-    addItem(handarea);
     handarea->setPos(HandPos);
     // create FieldyardArea
     fieldyardarea = new FieldyardArea;
-    addItem(fieldyardarea);
     fieldyardarea->setPos(FieldyardPos);
     // create FieldgroundArea
     fieldgroundarea = new FieldgroundArea;
-    addItem(fieldgroundarea);
     fieldgroundarea->setPos(FieldgroundPos);
+    // create GraveyardArea
+    graveyardarea = new GraveyardArea;
+    graveyardarea->setPos(GraveyardPos);
 
     // create Enemy
     enemydeckarea = new EnemyDeckArea;
-    addItem(enemydeckarea);
     enemydeckarea->setPos(EnemyDeckPos);
     enemyhandarea = new EnemyHandArea;
-    addItem(enemyhandarea);
     enemyhandarea->setPos(EnemyHandPos);
     enemyfieldyardarea = new EnemyFieldyardArea;
-    addItem(enemyfieldyardarea);
     enemyfieldyardarea->setPos(EnemyFieldyardPos);
     enemyfieldgroundarea = new EnemyFieldgroundArea;
-    addItem(enemyfieldgroundarea);
     enemyfieldgroundarea->setPos(EnemyFieldgroundPos);
+    enemygraveyardarea = new EnemyGraveyardArea;
+    enemygraveyardarea->setPos(EnemyGraveyardPos);
+
+    addItem(deckarea);
+    addItem(handarea);
+    addItem(fieldyardarea);
+    addItem(fieldgroundarea);
+    addItem(graveyardarea);
+    addItem(enemydeckarea);
+    addItem(enemyhandarea);
+    addItem(enemyfieldyardarea);
+    addItem(enemyfieldgroundarea);
+    addItem(enemygraveyardarea);
 }
 
 void RoomScene::setupDeck(QList<int> list)
@@ -140,9 +150,9 @@ void RoomScene::initializeFieldyard()
     fieldyardarea->initializeCards();
 }
 
-void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
-    if(event->button() == Qt::RightButton)
+    if (event->button() == Qt::RightButton)
     {
         myContextMenu->exec(event->screenPos());
     }
@@ -170,8 +180,7 @@ void RoomScene::actionEP(bool)
     Rule::instance()->setIsWaiting(true);
 }
 
-
-void RoomScene::doActionCommand(int parameter, int from, int)
+void RoomScene::doActionCommand(int parameter, int index)
 {
     //对方发起了命令，我方对应要执行的操作
     switch (parameter)
@@ -191,15 +200,30 @@ void RoomScene::doActionCommand(int parameter, int from, int)
      */
     case 99991:
     {
-        //normalSummon
-        Card* card = handarea->takeCard(from);
+        //普通召唤
+        Card* card = handarea->takeCard(index);
         qDebug() << "card isdn from: " << card->getISDN();
         fieldyardarea->addCard(card);
         break;
     }
     case 88881:
     {
-        Card* card = enemyhandarea->takeCard(from);
+        Card* card = enemyhandarea->takeCard(index);
+        qDebug() << "card isdn from: " << card->getISDN();
+        enemyfieldyardarea->addCard(card);
+        break;
+    }
+    case 99992:
+    {
+        //解放（在前场作为祭品）
+//        Card* card = fieldyardarea->takeCard(index);
+//        qDebug() << "card isdn from: " << card->getISDN();
+//        fieldyardarea->addCard(card);
+        break;
+    }
+    case 88882:
+    {
+        Card* card = enemyhandarea->takeCard(index);
         qDebug() << "card isdn from: " << card->getISDN();
         enemyfieldyardarea->addCard(card);
         break;
