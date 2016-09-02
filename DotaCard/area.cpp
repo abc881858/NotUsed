@@ -6,11 +6,14 @@ static QRectF DeckAreaRect(0, 0, 50, 72);
 static QRectF HandAreaRect(0, 0, 512, 70);
 static QRectF FieldyardAreaRect(0, 0, 384, 92);
 static QRectF FieldgroundAreaRect(0, 0, 384, 92);
+static QRectF GraveyardAreaRect(0, 0, 50, 72);
 static QRectF EnemyDeckAreaRect(0, 0, 50, 72);
 static QRectF EnemyHandAreaRect(0, 0, 512, 70);
 static QRectF EnemyFieldyardAreaRect(0, 0, 384, 92);
 static QRectF EnemyFieldgroundAreaRect(0, 0, 384, 92);
+static QRectF EnemyGraveyardAreaRect(0, 0, 50, 72);
 
+///////////////////////////////////////////////////////////////
 /**
   * @brief 我方卡组区域
   * @author wudongliang
@@ -39,9 +42,7 @@ void DeckArea::addCard(Card* card)
     card->setFace(false);
     card->setStand(true);
     card->setArea(Card::DeckArea);
-
     myDeck << card;
-    //    adjustCards();
 }
 
 Card* DeckArea::takeFirstCard()
@@ -49,6 +50,7 @@ Card* DeckArea::takeFirstCard()
     return myDeck.takeFirst();
 }
 
+///////////////////////////////////////////////////////////////
 /**
   * @brief 我方手牌区域
   * @author wudongliang
@@ -76,7 +78,8 @@ void HandArea::adjustCards()
         return;
     int n = myHand.size();
     int card_skip = (n > 5) ? (412 / (n - 1)) : 102;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         myHand[i]->setZValue(0.1 * i);
         myHand[i]->setPos(QPointF(card_skip * i, 0));
     }
@@ -101,6 +104,11 @@ Card* HandArea::takeCard(int index)
 }
 
 ///////////////////////////////////////////////////////////////
+/**
+  * @brief 我方怪兽卡牌摆放区域
+  * @author wudongliang
+  * @date 2016/9/2
+  */
 
 FieldyardArea::FieldyardArea()
     : pixmap(":/png/png/field.png")
@@ -119,7 +127,8 @@ void FieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QW
 
 void FieldyardArea::initializeCards()
 {
-    foreach (Card* card, myFieldyard) {
+    foreach (Card* card, myFieldyard)
+    {
         card->setChangePosition(true);
     }
 }
@@ -149,6 +158,11 @@ void FieldyardArea::adjustCards()
 }
 
 ///////////////////////////////////////////////////////////////
+/**
+  * @brief 我方魔法陷阱卡牌摆放区域
+  * @author wudongliang
+  * @date 2016/9/2
+  */
 
 FieldgroundArea::FieldgroundArea()
     : pixmap(":/png/png/field.png")
@@ -165,6 +179,53 @@ void FieldgroundArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, 
     painter->drawPixmap(0, 0, pixmap);
 }
 
+///////////////////////////////////////////////////////////////
+/**
+  * @brief 我方墓地区域
+  * @author wudongliang
+  * @date 2016/9/2
+  */
+
+GraveyardArea::GraveyardArea()
+    : pixmap(":/png/png/temp.png")
+{
+}
+
+QRectF GraveyardArea::boundingRect() const
+{
+    return GraveyardAreaRect;
+}
+
+void GraveyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+{
+    painter->drawPixmap(0, 0, pixmap);
+}
+
+void GraveyardArea::addCard(Card* card)
+{
+    card->setParentItem(this);
+    card->setIndex(myGraveyard.size());
+    card->setFace(true);
+    card->setStand(true);
+    card->setArea(Card::GraveyardArea);
+    myGraveyard << card;
+    adjustCards();
+}
+
+void GraveyardArea::adjustCards()
+{
+    qDebug() << "EnemyGraveyardArea's adjustCards.";
+//    if (myGraveyard.isEmpty())
+//        return;
+//    int n = yourFieldyard.size();
+//    int card_skip = 102;
+//    for (int i = 0; i < n; i++)
+//    {
+//        yourFieldyard[i]->setPos(QPointF(card_skip * (3 - i), 0));
+//    }
+}
+
+///////////////////////////////////////////////////////////////
 /**
   * @brief 敌方卡组区域
   * @author wudongliang
@@ -195,7 +256,6 @@ void EnemyDeckArea::addCard(Card* card)
     card->setArea(Card::EnemyDeckArea);
 
     yourDeck << card;
-    //    adjustCards();
 }
 
 Card* EnemyDeckArea::takeFirstCard()
@@ -203,6 +263,7 @@ Card* EnemyDeckArea::takeFirstCard()
     return yourDeck.takeFirst();
 }
 
+///////////////////////////////////////////////////////////////
 /**
   * @brief 敌方手牌区域
   * @author wudongliang
@@ -230,7 +291,8 @@ void EnemyHandArea::adjustCards()
         return;
     int n = yourHand.size();
     int card_skip = (n > 5) ? (412 / (n - 1)) : 102;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         yourHand[i]->setZValue(0.1 * i);
         yourHand[i]->setPos(QPointF(card_skip * i, 0));
     }
@@ -256,6 +318,11 @@ Card* EnemyHandArea::takeCard(int index)
 }
 
 ///////////////////////////////////////////////////////////////
+/**
+  * @brief 敌方怪兽卡牌摆放区域
+  * @author wudongliang
+  * @date 2016/9/2
+  */
 
 EnemyFieldyardArea::EnemyFieldyardArea()
     : pixmap(":/png/png/field.png")
@@ -292,11 +359,16 @@ void EnemyFieldyardArea::adjustCards()
     int card_skip = 102;
     for (int i = 0; i < n; i++)
     {
-        yourFieldyard[i]->setPos(QPointF(card_skip * (3-i), 0));
+        yourFieldyard[i]->setPos(QPointF(card_skip * (3 - i), 0));
     }
 }
 
 ///////////////////////////////////////////////////////////////
+/**
+  * @brief 敌方魔法陷阱卡牌摆放区域
+  * @author wudongliang
+  * @date 2016/9/2
+  */
 
 EnemyFieldgroundArea::EnemyFieldgroundArea()
     : pixmap(":/png/png/field.png")
@@ -311,4 +383,50 @@ QRectF EnemyFieldgroundArea::boundingRect() const
 void EnemyFieldgroundArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
     painter->drawPixmap(0, 0, pixmap);
+}
+
+///////////////////////////////////////////////////////////////
+/**
+  * @brief 敌方墓地区域
+  * @author wudongliang
+  * @date 2016/9/2
+  */
+
+EnemyGraveyardArea::EnemyGraveyardArea()
+    : pixmap(":/png/png/temp.png")
+{
+}
+
+QRectF EnemyGraveyardArea::boundingRect() const
+{
+    return EnemyGraveyardAreaRect;
+}
+
+void EnemyGraveyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+{
+    painter->drawPixmap(0, 0, pixmap);
+}
+
+void EnemyGraveyardArea::addCard(Card* card)
+{
+    card->setParentItem(this);
+    card->setIndex(yourGraveyard.size());
+    card->setFace(true);
+    card->setStand(true);
+    card->setArea(Card::EnemyFieldyardArea);
+    yourGraveyard << card;
+    adjustCards();
+}
+
+void EnemyGraveyardArea::adjustCards()
+{
+    qDebug() << "EnemyGraveyardArea's adjustCards.";
+//    if (yourFieldyard.isEmpty())
+//        return;
+//    int n = yourFieldyard.size();
+//    int card_skip = 102;
+//    for (int i = 0; i < n; i++)
+//    {
+//        yourFieldyard[i]->setPos(QPointF(card_skip * (3 - i), 0));
+//    }
 }
