@@ -4,7 +4,8 @@
 #include <QGraphicsObject>
 #include "card.h"
 
-class DeckArea : public QGraphicsObject {
+class DeckArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     DeckArea();
@@ -18,7 +19,8 @@ private:
     QList<Card*> myDeck;
 };
 
-class HandArea : public QGraphicsObject {
+class HandArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     HandArea();
@@ -26,13 +28,15 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void adjustCards();
     void addCard(Card* card);
-    Card *takeCard(int index);
+    Card* takeCard(int index);
+
 private:
     QPixmap pixmap;
     QList<Card*> myHand;
 };
 
-class FieldyardArea : public QGraphicsObject {
+class FieldyardArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     FieldyardArea();
@@ -41,13 +45,15 @@ public:
     void refreshCardFlags();
     void initializeCards();
     void adjustCards();
-    void addCard(Card *card, bool face = true, bool stand = true);
+    void addCard(Card* card, bool face = true, bool stand = true);
+
 private:
     QPixmap pixmap;
     QList<Card*> myFieldyard;
 };
 
-class FieldgroundArea : public QGraphicsObject {
+class FieldgroundArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     FieldgroundArea();
@@ -59,7 +65,23 @@ private:
     QList<Card*> myFieldground;
 };
 
-class EnemyDeckArea : public QGraphicsObject {
+class GraveyardArea : public QGraphicsObject
+{
+    Q_OBJECT
+public:
+    GraveyardArea();
+    QRectF boundingRect() const;
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
+    void adjustCards();
+    void addCard(Card* card);
+
+private:
+    QPixmap pixmap;
+    QList<Card*> myGraveyard;
+};
+
+class EnemyDeckArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     EnemyDeckArea();
@@ -82,7 +104,7 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void adjustCards();
     void addCard(Card* card);
-    Card *takeCard(int index);
+    Card* takeCard(int index);
 
 private:
     QPixmap pixmap;
@@ -98,12 +120,14 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void addCard(Card* card, bool face = true, bool stand = true);
     void adjustCards();
+
 private:
     QPixmap pixmap;
     QList<Card*> yourFieldyard;
 };
 
-class EnemyFieldgroundArea : public QGraphicsObject {
+class EnemyFieldgroundArea : public QGraphicsObject
+{
     Q_OBJECT
 public:
     EnemyFieldgroundArea();
@@ -113,6 +137,21 @@ public:
 private:
     QPixmap pixmap;
     QList<Card*> yourFieldground;
+};
+
+class EnemyGraveyardArea : public QGraphicsObject
+{
+    Q_OBJECT
+public:
+    EnemyGraveyardArea();
+    QRectF boundingRect() const;
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
+    void addCard(Card *card);
+    void adjustCards();
+
+private:
+    QPixmap pixmap;
+    QList<Card*> yourGraveyard;
 };
 
 #endif // AREA_H
