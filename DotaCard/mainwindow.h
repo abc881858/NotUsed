@@ -41,7 +41,7 @@ private slots:
 
 public slots:
     void hover(QString);
-    void doActionCommand(int para, int from, int to);
+    void doActionCommand(int para, int index);
     void doGetResponse();
 };
 
