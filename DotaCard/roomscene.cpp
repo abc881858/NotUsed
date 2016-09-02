@@ -149,24 +149,27 @@ void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
-
 void RoomScene::actionBP(bool)
 {
     Rule::instance()->setPhase(Rule::myBP);
     Net::instance()->sendMessage(50001);
+    Rule::instance()->setIsWaiting(true);
 }
 
 void RoomScene::actionM2(bool)
 {
     Rule::instance()->setPhase(Rule::myM2);
     Net::instance()->sendMessage(60001);
+    Rule::instance()->setIsWaiting(true);
 }
 
 void RoomScene::actionEP(bool)
 {
     Rule::instance()->setPhase(Rule::myEP);
     Net::instance()->sendMessage(70001);
+    Rule::instance()->setIsWaiting(true);
 }
+
 
 void RoomScene::doActionCommand(int parameter, int from, int)
 {
