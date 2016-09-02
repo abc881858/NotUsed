@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     //对端做了什么操作，我方都要显示出来
     connect(Net::instance(), SIGNAL(actionCommand(int, int, int)), this, SLOT(doActionCommand(int, int, int)));
+    connect(Net::instance(), SIGNAL(getResponse()), this, SLOT(doGetResponse()));
 
     myLP = 8000;
     yourLP = 8000;
