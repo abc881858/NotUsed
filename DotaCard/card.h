@@ -32,10 +32,92 @@ public:
         HandArea,
         FieldyardArea,
         FieldgroundArea,
+        GraveyardArea,
         EnemyDeckArea,
         EnemyHandArea,
         EnemyFieldyardArea,
-        EnemyFieldgroundArea
+        EnemyFieldgroundArea,
+        EnemyGraveyardArea
+    };
+
+    //    怪兽 Monster
+    //    通常怪兽 Normal monster
+    //    效果怪兽 Effect monster
+    //    仪式怪兽 Ritual monster
+    //    融合怪兽 Fusion monster
+    //    同调怪兽 Synchro monster
+    //    二重怪兽 Gemini monster
+    //    灵魂怪兽 Spirit monster
+    //    卡通怪兽 Toon monster
+    //    调整/协调（怪兽） Turner
+    //    同盟怪兽 Union monster
+    //    超量怪兽 XYZ monster
+
+    //    魔法 Spell
+    //    通常魔法 Normal spell
+    //    永续魔法 Continuous spell
+    //    装备魔法 Equip spell
+    //    速攻魔法 Quickly-play spell
+    //    场地魔法 Field spell
+    //    仪式魔法Ritual spell
+
+    //    陷阱 Trap
+    //    通常陷阱 Normal trap
+    //    永续陷阱 Continuous trap
+    //    反击陷阱 Counter trap
+    enum
+    {
+        NoType,
+        NormalMonster,
+        EffectMonster,
+        NormalSpell,
+        ContinuousSpell,
+        EquipSpell,
+        QuicklyplaySpell,
+        FieldSpell,
+        NormalTrap,
+        ContinuousTrap,
+        CounterTrap
+    };
+
+    //Earth（地属性）、Water（水属性）、Fire（炎属性）、Wind（风属性）、Light（光属性）、Dark（闇属性）
+    enum
+    {
+        Earth,
+        Water,
+        Fire,
+        Wind,
+        Light,
+        Dark
+    };
+
+    //Type：Dragon（龙族）、Spellcaster（魔法使族）、Zombie（不死族）、Warrior（战士族）、
+    //Beast-Warrior（兽战士族）、Beast（兽族）、Winged Beast（鸟兽族）、Fiend（恶魔族）、
+    //Fairy（天使族）、Insect（昆虫族）、Dinosaur（恐龙族）、Reptile（爬虫族）、Fish（鱼族）、
+    //Sea Serpent（海龙族）、Machine（机械族）、Thunder（雷族）、Aqua（水族）、Pyro（炎族）、
+    //Rock（岩石族）、Plant（植物族）
+    enum
+    {
+        Dragon,
+        Spellcaster,
+        Zombie,
+        Warrior,
+        BeastWarrior,
+        Beast,
+        WingedBeast,
+        Fiend,
+        Fairy,
+        Insect,
+        Dinosaur,
+        Reptile,
+        Fish,
+        SeaSerpent,
+        Machine,
+        Thunder,
+        Aqua,
+        Pyro,
+        Rock,
+        Plant
     };
 
     CardFlags getCardFlags() const;
@@ -85,6 +167,9 @@ public:
     int getIndex() const;
     void setIndex(int value);
 
+    bool getEffectOnBattle() const;
+    void setEffectOnBattle(bool value);
+
 protected:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
@@ -92,22 +177,30 @@ protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
 
-private:
-    QPixmap pixmap;
-    int ISDN;
-    QString name;
-    QString image;
-    int area;
-    QString description;
-    bool face;
-    bool stand;
-    bool changePosition; //每回合可以变更一次攻防表示
+    int ISDN; //图片唯一ID
+    QString name; //图片名字
+    QString image; //图片路径，包括存储文件夹路径和图片名字
+    int type;
+    int ATK;
+    int DEF;
+    int level;
+    int attribute;
+    int index; //从左往右数第几张(第1张是index==0)
 
-    bool inActive;
+    virtual void cardEffect();
+
+private:
+    QPixmap pixmap; //存储图片的容器
+    QString description; //卡牌描述
+    int area; //卡牌位置，比如在手上或者在前场
+    bool face; // 卡牌表侧表示或者里侧表示
+    bool stand; // 卡牌攻击表示或者防御表示
+    bool inActive; //忘记做什么的了
     CardFlags myflags; //右键可以显示的全部cursor
     CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
-    int index; //从左往右数第几张(第1张是index==0)
+    bool changePosition; //每回合可以变更一次攻防表示
+    bool effectOnBattle; //可以在敌方或我方战斗流程发动
 
 signals:
     void hover();
@@ -135,6 +228,7 @@ class CentaurWarrunner : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE CentaurWarrunner();
+    void cardEffect();
 };
 
 /*!
