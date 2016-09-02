@@ -96,6 +96,8 @@ void Net::readFromServer()
     case 8888:
         emit actionCommand(jsonObject["parameter"].toInt(), jsonObject["from"].toInt(), jsonObject["to"].toInt());
         break;
+    case 0: //说明对方不采取任何行动，我方继续行动
+        emit getResponse();
     default:
         break;
     }
