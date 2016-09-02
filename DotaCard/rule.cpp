@@ -27,3 +27,23 @@ Rule::Phase Rule::getphase() const
 {
     return this->phase;
 }
+
+bool Rule::getIsWaiting() const
+{
+    return isWaiting;
+}
+
+void Rule::setIsWaiting(bool value)
+{
+    isWaiting = value;
+}
+
+bool Rule::getIsResponsing() const
+{
+    return isResponsing;
+}
+
+void Rule::setIsResponsing(bool value)
+{
+    isResponsing = value;
+}
