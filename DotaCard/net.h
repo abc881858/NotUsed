@@ -55,6 +55,7 @@ signals:
     // 1000 对方卡组，1001-1020 对方手牌，1100-1104 对方前场，1105-1109 对方后场
     // 1200 对方墓地，1300 对方除外区域，1400 对方融合额外区域
     void actionCommand(int,int,int);
+    void getResponse();
 };
 
 #endif // NET_H
