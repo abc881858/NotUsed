@@ -10,6 +10,9 @@ Card::Card()
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     pixmap = QString(":/png/png/NULL.jpg");
+    area = NoArea;
+    type = NoType;
+    effectOnBattle = false;
 }
 
 /////////////////////////// Begin Test All Card Status /////////////////////////////
@@ -28,13 +31,22 @@ void Card::testAll()
 
 bool Card::testEffect()
 {
-    Rule::instance()->getIsResponsing();
+    if (Rule::instance()->getphase() == Rule::yourBP && Rule::instance()->getIsResponsing())
+    {
+        if (type == EffectMonster)
+        {
+            if (effectOnBattle && face)
+            {
+                return true;
+            }
+        }
+    }
     return false;
 }
 
 bool Card::testSpecialSummon()
 {
-    if(area!=HandArea)
+    if (area != HandArea)
     {
         return false;
     }
@@ -43,7 +55,7 @@ bool Card::testSpecialSummon()
 
 bool Card::testNormalSummon()
 {
-    if(area!=HandArea)
+    if (area != HandArea)
     {
         return false;
     }
@@ -57,7 +69,7 @@ bool Card::testNormalSummon()
 
 bool Card::testSetCard()
 {
-    if(area!=HandArea)
+    if (area != HandArea)
     {
         return false;
     }
@@ -302,8 +314,10 @@ void Card::nextCursor()
     }
 }
 
+// 当我点击任意一张卡牌时
 void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    // 右键点击的话， 切换到下一种鼠标手势， 包括发动效果、特招、普招等等
     if (event->button() == Qt::RightButton)
     {
         nextCursor();
@@ -325,7 +339,8 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             }
             else if (currentflag == Effect)
             {
-                Net::instance()->doEffect(index);
+                // Net::instance()->doEffect(index);
+                cardEffect();
             }
             else if (currentflag == SpecialSummon)
             {
@@ -338,6 +353,20 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             break;
         }
     }
+}
+
+void Card::cardEffect()
+{
+}
+
+bool Card::getEffectOnBattle() const
+{
+    return effectOnBattle;
+}
+
+void Card::setEffectOnBattle(bool value)
+{
+    effectOnBattle = value;
 }
 
 int Card::getIndex() const
@@ -444,70 +473,122 @@ void Card::setInActive(bool value)
 
 CentaurWarrunner::CentaurWarrunner() //半人马酋长
 {
-    setISDN(601);
-    setName("dota-CentaurWarrunner");
-    setImage(":/pic/monster/dota-CentaurWarrunner.jpg");
+    ISDN = 601;
+    name = "dota-CentaurWarrunner";
+    image = ":/pic/monster/dota-CentaurWarrunner.jpg";
+    type = EffectMonster;
+    ATK = 1350;
+    DEF = 1800;
+    level = 3;
+    attribute = Earth;
+
+    setEffectOnBattle(true);
+}
+
+void CentaurWarrunner::cardEffect()
+{
+    /// ①将这张卡作为祭品发动，强制结束对方的战斗阶段
+    /// 若这张卡装备了“dota-跳刀”
+    /// 则可以改为丢弃一张手牌发动
+
+    Net::instance()->doTribute(index); //解放（即作为祭品）
 }
 
 KeeperoftheLight::KeeperoftheLight() //光之守卫
 {
-    setISDN(602);
-    setName("dota-KeeperoftheLight");
-    setImage(":/pic/monster/dota-KeeperoftheLight.jpg");
+    ISDN = 602;
+    name = "dota-KeeperoftheLight";
+    image = ":/pic/monster/dota-KeeperoftheLight.jpg";
+    type = EffectMonster;
+    ATK = 800;
+    DEF = 300;
+    level = 3;
 }
 
 Lion::Lion() //恶魔巫师
 {
-    setISDN(603);
-    setName("dota-Lion");
-    setImage(":/pic/monster/dota-Lion.jpg");
+    ISDN = 603;
+    name = "dota-Lion";
+    image = ":/pic/monster/dota-Lion.jpg";
+    type = EffectMonster;
+    ATK = 1300;
+    DEF = 700;
+    level = 4;
 }
 
 Magnus::Magnus() //半人猛犸
 {
-    setISDN(604);
-    setName("dota-Magnus");
-    setImage(":/pic/monster/dota-Magnus.jpg");
+    ISDN = 604;
+    name = "dota-Magnus";
+    image = ":/pic/monster/dota-Magnus.jpg";
+    type = EffectMonster;
+    ATK = 1700;
+    DEF = 700;
+    level = 4;
 }
 
 NyxAssassin::NyxAssassin() //地穴刺客
 {
-    setISDN(605);
-    setName("dota-NyxAssassin");
-    setImage(":/pic/monster/dota-NyxAssassin.jpg");
+    ISDN = 605;
+    name = "dota-NyxAssassin";
+    image = ":/pic/monster/dota-NyxAssassin.jpg";
+    type = EffectMonster;
+    ATK = 1500;
+    DEF = 800;
+    level = 4;
 }
 
 Rubick::Rubick() //大魔导师
 {
-    setISDN(606);
-    setName("dota-Rubick");
-    setImage(":/pic/monster/dota-Rubick.jpg");
+    ISDN = 606;
+    name = "dota-Rubick";
+    image = ":/pic/monster/dota-Rubick.jpg";
+    type = EffectMonster;
+    ATK = 900;
+    DEF = 300;
+    level = 4;
 }
 
 Tusk::Tusk() //巨牙海民
 {
-    setISDN(607);
-    setName("dota-Tusk");
-    setImage(":/pic/monster/dota-Tusk.jpg");
+    ISDN = 607;
+    name = "dota-Tusk";
+    image = ":/pic/monster/dota-Tusk.jpg";
+    type = EffectMonster;
+    ATK = 1800;
+    DEF = 1000;
+    level = 4;
 }
 
 Undying::Undying() //不朽尸王
 {
-    setISDN(608);
-    setName("dota-Undying");
-    setImage(":/pic/monster/dota-Undying.jpg");
+    ISDN = 608;
+    name = "dota-Undying";
+    image = ":/pic/monster/dota-Undying.jpg";
+    type = EffectMonster;
+    ATK = 1100;
+    DEF = 1300;
+    level = 3;
 }
 
 VengefulSpirit::VengefulSpirit() //复仇之魂
 {
-    setISDN(609);
-    setName("dota-VengefulSpirit");
-    setImage(":/pic/monster/dota-VengefulSpirit.jpg");
+    ISDN = 609;
+    name = "dota-VengefulSpirit";
+    image = ":/pic/monster/dota-VengefulSpirit.jpg";
+    type = EffectMonster;
+    ATK = 1200;
+    DEF = 500;
+    level = 3;
 }
 
 Zeus::Zeus() //奥林匹斯之王
 {
-    setISDN(610);
-    setName("dota-Zeus");
-    setImage(":/pic/monster/dota-Zeus.jpg");
+    ISDN = 610;
+    name = "dota-Zeus";
+    image = ":/pic/monster/dota-Zeus.jpg";
+    type = EffectMonster;
+    ATK = 500;
+    DEF = 350;
+    level = 2;
 }
