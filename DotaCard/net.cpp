@@ -94,7 +94,7 @@ void Net::readFromServer()
         emit yourEndPhase();
         break;
     case 8888:
-        emit actionCommand(jsonObject["parameter"].toInt(), jsonObject["from"].toInt(), jsonObject["to"].toInt());
+        emit actionCommand(jsonObject["parameter"].toInt(), jsonObject["from"].toInt());
         break;
     case 0: //说明对方不采取任何行动，我方继续行动
         emit getResponse();
@@ -145,41 +145,52 @@ void Net::sendMessage(int command, QList<int> list)
 
     jsonObject.insert("command", command);
     jsonObject.insert("cards", cards);
-
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
 }
 
-void Net::doNormalSummon(int from)
+void Net::doNormalSummon(int index)
 {
-    qDebug() << "Net's doNormalSummon: from = " << from;
+    qDebug() << "Net's doNormalSummon: from = " << index;
 
-    emit actionCommand(99991, from, -1);
+    emit actionCommand(99991, index);
 
     QJsonObject jsonObject;
-
     jsonObject.insert("command", 8888);
     jsonObject.insert("parameter", 88881);
-    jsonObject.insert("from", from);
-    jsonObject.insert("to", -1);
-
+    jsonObject.insert("index", index);
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
     client->write(json);
 }
 
-void Net::doSetCard(int from)
+void Net::doSetCard(int index)
 {
-    qDebug() << "Net's doSetCard: from = " << from;
+    qDebug() << "Net's doSetCard: index = " << index;
 }
 
-void Net::doEffect(int from)
+void Net::doEffect(int index)
 {
-    qDebug() << "Net's doEffect: from = " << from;
+    qDebug() << "Net's doEffect: index = " << index;
 }
 
-void Net::doSpecialSummon(int from)
+void Net::doSpecialSummon(int index)
 {
-    qDebug() << "Net's doSpecialSummon: from = " << from;
+    qDebug() << "Net's doSpecialSummon: index = " << index;
+}
+
+void Net::doTribute(int index)
+{
+    qDebug() << "Net's doTribute: index = " << index;
+
+    emit actionCommand(99992, index);
+
+    QJsonObject jsonObject;
+    jsonObject.insert("command", 8888);
+    jsonObject.insert("parameter", 88881);
+    jsonObject.insert("index", index);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
 }
