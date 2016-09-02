@@ -28,9 +28,17 @@ public:
     void setPhase(Phase phase);
     Phase getphase() const;
 
+    bool getIsWaiting() const;
+    void setIsWaiting(bool value);
+
+    bool getIsResponsing() const;
+    void setIsResponsing(bool value);
+
 private:
     bool oneTurnOneNormalSummon;
     Rule::Phase phase;
+    bool isWaiting;
+    bool isResponsing;
 };
 
 #endif // RULE_H
