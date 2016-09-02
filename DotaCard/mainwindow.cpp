@@ -23,7 +23,6 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(Net::instance(), SIGNAL(setupDeck(QList<int>)), this, SLOT(setupDeck(QList<int>)));
     connect(Net::instance(), SIGNAL(setupEnemyDeck(QList<int>)), this, SLOT(setupEnemyDeck(QList<int>)));
-
     connect(Net::instance(), SIGNAL(myStartGame()), this, SLOT(startMyGame()));
     connect(Net::instance(), SIGNAL(yourStartGame()), this, SLOT(startYourGame()));
     connect(Net::instance(), SIGNAL(myDrawPhase()), this, SLOT(drawMyPhase()));
@@ -37,7 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(Net::instance(), SIGNAL(yourEndPhase()), this, SLOT(endYourPhase()));
 
     //对端做了什么操作，我方都要显示出来
-    connect(Net::instance(), SIGNAL(actionCommand(int, int, int)), this, SLOT(doActionCommand(int, int, int)));
+    connect(Net::instance(), SIGNAL(actionCommand(int, int)), this, SLOT(doActionCommand(int, int)));
     connect(Net::instance(), SIGNAL(getResponse()), this, SLOT(doGetResponse()));
 
     myLP = 8000;
@@ -137,8 +136,17 @@ void MainWindow::battleYourPhase()
     int ret = msgBox.exec();
     if (ret == QMessageBox::Close)
     {
-        //
+        Net::instance()->sendMessage(0);
     }
+    else
+    {
+        Rule::instance()->setIsResponsing(true);
+    }
+}
+
+void MainWindow::doGetResponse()
+{
+    Rule::instance()->setIsWaiting(false);
 }
 
 void MainWindow::mainYourPhase2()
@@ -157,7 +165,7 @@ void MainWindow::endYourPhase()
     Net::instance()->sendMessage(20001);
 }
 
-void MainWindow::doActionCommand(int parameter, int from, int to)
+void MainWindow::doActionCommand(int parameter, int index)
 {
-    roomScene->doActionCommand(parameter, from, to);
+    roomScene->doActionCommand(parameter, index);
 }
