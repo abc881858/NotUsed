@@ -133,17 +133,6 @@ void FieldyardArea::initializeCards()
     }
 }
 
-void FieldyardArea::addCard(Card* card, bool face, bool stand)
-{
-    card->setParentItem(this);
-    card->setIndex(myFieldyard.size());
-    card->setFace(face);
-    card->setStand(stand);
-    card->setArea(Card::FieldyardArea);
-    myFieldyard << card;
-    adjustCards();
-}
-
 void FieldyardArea::adjustCards()
 {
     qDebug() << "FieldyardArea's adjustCards.";
@@ -155,6 +144,24 @@ void FieldyardArea::adjustCards()
     {
         myFieldyard[i]->setPos(QPointF(card_skip * i, 0));
     }
+    //TODO: 这里有问题，不能采用handarea的雷同处理，需要修改
+}
+
+void FieldyardArea::addCard(Card* card, bool face, bool stand)
+{
+    card->setParentItem(this);
+    card->setIndex(myFieldyard.size());
+    card->setFace(face);
+    card->setStand(stand);
+    card->setArea(Card::FieldyardArea);
+    myFieldyard << card;
+    adjustCards();
+}
+
+Card* FieldyardArea::takeCard(int index)
+{
+    Card* card = myFieldyard.takeAt(index);
+    return card;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -210,6 +217,11 @@ void GraveyardArea::addCard(Card* card)
     card->setArea(Card::GraveyardArea);
     myGraveyard << card;
     adjustCards();
+}
+
+Card *GraveyardArea::takeCard(int index)
+{
+    //
 }
 
 void GraveyardArea::adjustCards()
@@ -350,6 +362,12 @@ void EnemyFieldyardArea::addCard(Card* card, bool face, bool stand)
     adjustCards();
 }
 
+Card *EnemyFieldyardArea::takeCard(int index)
+{
+    Card* card = yourFieldyard.takeAt(index);
+    return card;
+}
+
 void EnemyFieldyardArea::adjustCards()
 {
     qDebug() << "EnemyFieldyardArea's adjustCards.";
@@ -361,6 +379,7 @@ void EnemyFieldyardArea::adjustCards()
     {
         yourFieldyard[i]->setPos(QPointF(card_skip * (3 - i), 0));
     }
+    //TODO: 这里有问题，不能采用handarea的雷同处理，需要修改
 }
 
 ///////////////////////////////////////////////////////////////
@@ -416,6 +435,11 @@ void EnemyGraveyardArea::addCard(Card* card)
     card->setArea(Card::EnemyFieldyardArea);
     yourGraveyard << card;
     adjustCards();
+}
+
+Card *EnemyGraveyardArea::takeCard(int index)
+{
+    //
 }
 
 void EnemyGraveyardArea::adjustCards()
