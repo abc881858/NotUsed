@@ -488,10 +488,15 @@ CentaurWarrunner::CentaurWarrunner() //半人马酋长
 void CentaurWarrunner::cardEffect()
 {
     /// ①将这张卡作为祭品发动，强制结束对方的战斗阶段
-    /// 若这张卡装备了“dota-跳刀”
+    /// 若这张卡装备了“dota-跳刀”TODO: 跳刀未开发，暂时先不判断是否装备跳刀
     /// 则可以改为丢弃一张手牌发动
 
-    Net::instance()->doTribute(index); //解放（即作为祭品）
+    if (Rule::instance()->getphase() == Rule::yourBP && Rule::instance()->getIsResponsing() && getFace())
+    {
+        Net::instance()->doTribute(index); //解放（即作为祭品）
+        Net::instance()->doEndOpponentBattlePhase();
+    }
+
 }
 
 KeeperoftheLight::KeeperoftheLight() //光之守卫
