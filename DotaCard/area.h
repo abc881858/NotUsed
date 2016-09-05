@@ -46,6 +46,7 @@ public:
     void initializeCards();
     void adjustCards();
     void addCard(Card* card, bool face = true, bool stand = true);
+    Card* takeCard(int index);
 
 private:
     QPixmap pixmap;
@@ -74,6 +75,7 @@ public:
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void adjustCards();
     void addCard(Card* card);
+    Card* takeCard(int index);
 
 private:
     QPixmap pixmap;
@@ -118,8 +120,9 @@ public:
     EnemyFieldyardArea();
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-    void addCard(Card* card, bool face = true, bool stand = true);
     void adjustCards();
+    void addCard(Card* card, bool face = true, bool stand = true);
+    Card* takeCard(int index);
 
 private:
     QPixmap pixmap;
@@ -146,8 +149,9 @@ public:
     EnemyGraveyardArea();
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-    void addCard(Card *card);
     void adjustCards();
+    void addCard(Card* card);
+    Card* takeCard(int index);
 
 private:
     QPixmap pixmap;
