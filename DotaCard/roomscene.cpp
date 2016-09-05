@@ -216,16 +216,16 @@ void RoomScene::doActionCommand(int parameter, int index)
     case 99992:
     {
         //解放（在前场作为祭品）
-//        Card* card = fieldyardarea->takeCard(index);
-//        qDebug() << "card isdn from: " << card->getISDN();
-//        fieldyardarea->addCard(card);
+        Card* card = fieldyardarea->takeCard(index);
+        qDebug() << "card isdn from: " << card->getISDN();
+        graveyardarea->addCard(card);
         break;
     }
     case 88882:
     {
-        Card* card = enemyhandarea->takeCard(index);
+        Card* card = enemyfieldyardarea->takeCard(index);
         qDebug() << "card isdn from: " << card->getISDN();
-        enemyfieldyardarea->addCard(card);
+        enemygraveyardarea->addCard(card);
         break;
     }
     case 8001:
