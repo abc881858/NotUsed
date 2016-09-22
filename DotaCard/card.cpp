@@ -339,8 +339,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             }
             else if (currentflag == Effect)
             {
-                // Net::instance()->doEffect(index);
-                cardEffect();
+//                Net::instance()->doEffect(index);
             }
             else if (currentflag == SpecialSummon)
             {
@@ -348,6 +347,11 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             }
             break;
         case FieldyardArea:
+            if (currentflag == NormalSummon)
+            {
+                Rule::instance()->setOneTurnOneNormalSummon(false);
+                Net::instance()->doNormalSummon(index);
+            }
             break;
         default:
             break;
@@ -355,7 +359,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
     }
 }
 
-void Card::cardEffect()
+void Card::cardEffect(int)
 {
 }
 
@@ -485,18 +489,30 @@ CentaurWarrunner::CentaurWarrunner() //半人马酋长
     setEffectOnBattle(true);
 }
 
-void CentaurWarrunner::cardEffect()
+void CentaurWarrunner::cardEffect(int i)
 {
     /// ①将这张卡作为祭品发动，强制结束对方的战斗阶段
     /// 若这张卡装备了“dota-跳刀”TODO: 跳刀未开发，暂时先不判断是否装备跳刀
     /// 则可以改为丢弃一张手牌发动
 
-    if (Rule::instance()->getphase() == Rule::yourBP && Rule::instance()->getIsResponsing() && getFace())
+    if ( i == 1 )
     {
-        Net::instance()->doTribute(index); //解放（即作为祭品）
-        Net::instance()->doEndOpponentBattlePhase();
+        if (Rule::instance()->getphase() == Rule::yourBP && Rule::instance()->getIsResponsing() && getFace())
+        {
+            Net::instance()->doTribute(index); //解放（即作为祭品）
+            Net::instance()->doEndOpponentBattlePhase();
+        }
     }
 
+    /// ②你的每回合一次，
+    /// 你可以让自己场上名字带有“dota”的怪兽全部变为攻击表示或防守表示，
+    /// 若这张卡装备了“dota-阿哈利姆神杖”时 TODO: 阿哈利姆神杖未开发，暂时先不判断是否装备阿哈利姆神杖
+    /// 同时令自己场上名字带有“dota”的怪兽的攻击力（或防御力）上升自己原本攻击力（或防御力）的一半。
+
+    if ( i == 2 )
+    {
+        Net::instance()->doCentaurWarrunnerEffect2();
+    }
 }
 
 KeeperoftheLight::KeeperoftheLight() //光之守卫
