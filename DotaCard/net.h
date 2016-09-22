@@ -29,7 +29,9 @@ public:
     void doSpecialSummon(int index);
 
     void doTribute(int index);
+    void doEndOpponentBattlePhase();
 
+    void doCentaurWarrunnerEffect2();
 private:
     QTcpSocket* client;
 
