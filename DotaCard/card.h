@@ -187,7 +187,7 @@ protected:
     int attribute;
     int index; //从左往右数第几张(第1张是index==0)
 
-    virtual void cardEffect();
+    virtual void cardEffect(int i = 1);
 
 private:
     QPixmap pixmap; //存储图片的容器
@@ -228,7 +228,7 @@ class CentaurWarrunner : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE CentaurWarrunner();
-    void cardEffect();
+    void cardEffect(int);
 };
 
 /*!
