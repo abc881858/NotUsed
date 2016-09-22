@@ -188,7 +188,25 @@ void Net::doTribute(int index)
 
     QJsonObject jsonObject;
     jsonObject.insert("command", 8888);
-    jsonObject.insert("parameter", 88881);
+    jsonObject.insert("parameter", 88882);
+    jsonObject.insert("index", index);
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    client->write(json);
+}
+
+void Net::doEndOpponentBattlePhase()
+{
+    //
+}
+
+void Net::doCentaurWarrunnerEffect2()
+{
+    emit actionCommand(99993, index);
+
+    QJsonObject jsonObject;
+    jsonObject.insert("command", 8888);
+    jsonObject.insert("parameter", 88883);
     jsonObject.insert("index", index);
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
