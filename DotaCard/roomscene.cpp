@@ -5,6 +5,8 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include "rule.h"
 #include "net.h"
+#include <QMessageBox>
+#include <QPushButton>
 
 static const QPointF DeckPos(485, 426);
 static const QPointF HandPos(19, 529);
@@ -182,6 +184,9 @@ void RoomScene::actionEP(bool)
 
 void RoomScene::doActionCommand(int parameter, int index)
 {
+    //999对应的是我方发起事件，我方的处理
+    //888对应的是对方发起事件，我方的处理
+
     //对方发起了命令，我方对应要执行的操作
     switch (parameter)
     {
@@ -222,6 +227,39 @@ void RoomScene::doActionCommand(int parameter, int index)
         break;
     }
     case 88882:
+    {
+        Card* card = enemyfieldyardarea->takeCard(index);
+        qDebug() << "card isdn from: " << card->getISDN();
+        enemygraveyardarea->addCard(card);
+        break;
+    }
+    case 99993:
+    {
+        QMessageBox msgBox;
+        QPushButton* atkButton = msgBox.addButton(tr("all atk"), QMessageBox::ActionRole);
+        QPushButton* defButton = msgBox.addButton(tr("all def"), QMessageBox::ActionRole);
+        msgBox.exec();
+
+        if (msgBox.clickedButton() == atkButton)
+        {
+            //你可以让自己场上名字带有“dota”的怪兽全部变为攻击表示
+            foreach (Card* card, fieldyardarea->getMyFieldyard())
+            {
+                card->setStand(true);
+            }
+        }
+        else if (msgBox.clickedButton() == defButton)
+        {
+            //你可以让自己场上名字带有“dota”的怪兽全部变为防守表示
+            card->setStand(false);
+        }
+
+        Card* card = fieldyardarea->takeCard(index);
+        qDebug() << "card isdn from: " << card->getISDN();
+        graveyardarea->addCard(card);
+        break;
+    }
+    case 88883:
     {
         Card* card = enemyfieldyardarea->takeCard(index);
         qDebug() << "card isdn from: " << card->getISDN();
