@@ -251,13 +251,11 @@ void RoomScene::doActionCommand(int parameter, int index)
         else if (msgBox.clickedButton() == defButton)
         {
             //你可以让自己场上名字带有“dota”的怪兽全部变为防守表示
-            card->setStand(false);
+            foreach (Card* card, fieldyardarea->getMyFieldyard())
+            {
+                card->setStand(false);
+            }
         }
-
-        Card* card = fieldyardarea->takeCard(index);
-        qDebug() << "card isdn from: " << card->getISDN();
-        graveyardarea->addCard(card);
-        break;
     }
     case 88883:
     {
@@ -287,6 +285,9 @@ void RoomScene::doActionCommand(int parameter, int index)
     case 8007:
         //对方前场全部上升原本防御的力一半
         break;
+    case 8008:
+        //特招from位置手牌到场上
+        break;
     /*!
      * \brief 光之守卫
      *
@@ -299,9 +300,6 @@ void RoomScene::doActionCommand(int parameter, int index)
      * ③一回合一次，选择对方场上的一只怪兽发动，选择的怪兽在进行攻击宣言前必须丢弃一张手牌。
      *
      */
-    case 8008:
-        //特招from位置手牌到场上
-        break;
     /*!
      * \brief 恶魔巫师
      *
