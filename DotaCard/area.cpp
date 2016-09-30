@@ -1,6 +1,7 @@
 #include "area.h"
 #include <QPainter>
 #include <QDebug>
+#include "net.h"
 
 static QRectF DeckAreaRect(0, 0, 50, 72);
 static QRectF HandAreaRect(0, 0, 512, 70);
@@ -43,11 +44,15 @@ void DeckArea::addCard(Card* card)
     card->setStand(true);
     card->setArea(Card::DeckArea);
     myDeck << card;
+
+    Net::instance()->doAddCard(card->ISDN, Card::DeckArea, false, true);
 }
 
 Card* DeckArea::takeFirstCard()
 {
-    return myDeck.takeFirst();
+    Card *card = myDeck.takeFirst();
+    Net::instance()->doTakeCard(card->ISDN);
+    return card;
 }
 
 QList<Card*> DeckArea::getMyDeck() const
@@ -99,11 +104,14 @@ void HandArea::addCard(Card* card)
     card->setArea(Card::HandArea);
     myHand << card;
     adjustCards();
+
+    Net::instance()->doAddCard(card->ISDN, Card::HandArea, true, true);//号、区、表、攻
 }
 
 Card* HandArea::takeCard(int index)
 {
     Card* card = myHand.takeAt(index);
+    Net::instance()->doTakeCard(card->ISDN);
     adjustCards();
     return card;
 }
@@ -166,11 +174,14 @@ void FieldyardArea::addCard(Card* card, bool face, bool stand)
     card->setArea(Card::FieldyardArea);
     myFieldyard << card;
     adjustCards();
+
+    Net::instance()->doAddCard(card->ISDN, Card::FieldyardArea, face, stand);//号、区、表、攻
 }
 
 Card* FieldyardArea::takeCard(int index)
 {
     Card* card = myFieldyard.takeAt(index);
+    Net::instance()->doTakeCard(card->ISDN);
     return card;
 }
 
@@ -237,11 +248,14 @@ void GraveyardArea::addCard(Card* card)
     card->setArea(Card::GraveyardArea);
     myGraveyard << card;
     adjustCards();
+
+    Net::instance()->doAddCard(card->ISDN, Card::GraveyardArea, true, true);
 }
 
 Card* GraveyardArea::takeCard(int index)
 {
     Card* card = myGraveyard.takeAt(index);
+    Net::instance()->doTakeCard(card->ISDN);
     return card;
 }
 
