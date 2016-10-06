@@ -9,7 +9,8 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QS
 {
     Q_UNUSED(context)
     QString txt;
-    switch (type) {
+    switch (type)
+    {
     case QtDebugMsg:
         txt = QString("Debug: %1").arg(msg);
         break;
