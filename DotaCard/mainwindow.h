@@ -24,25 +24,24 @@ private:
 
     RoomScene* roomScene;
 
-private slots:
-    void setupDeck(QList<int> list);
-    void setupEnemyDeck(QList<int> list);
-    void startMyGame();
-    void startYourGame();
-    void drawMyPhase();
-    void drawYourPhase();
-    void standbyMyPhase();
-    void standbyYourPhase();
-    void mainMyPhase1();
-    void mainYourPhase1();
-    void battleYourPhase();
-    void mainYourPhase2();
-    void endYourPhase();
+    //private slots:
+    //    void setupDeck(QList<int> list);
+    //    void setupEnemyDeck(QList<int> list);
+    //    void startMyGame();
+    //    void startYourGame();
+    //    void drawMyPhase();
+    //    void drawYourPhase();
+    //    void standbyMyPhase();
+    //    void standbyYourPhase();
+    //    void mainMyPhase1();
+    //    void mainYourPhase1();
+    //    void battleYourPhase();
+    //    void mainYourPhase2();
+    //    void endYourPhase();
 
-public slots:
-    void hover(QString);
-    void doActionCommand(int para, int index);
-    void doGetResponse();
+    //public slots:
+    //    void doActionCommand(int para, int index);
+    //    void doGetResponse();
 };
 
 #endif // MAINWINDOW_H
