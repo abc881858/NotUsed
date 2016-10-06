@@ -126,7 +126,7 @@ public:
     void setCurrentflag(Card::CardFlag flag);
 
     int getISDN() const;
-    void setISDN(int value);
+    //    void setISDN(int value); 不提供setISDN方法
 
     QString getName() const;
     void setName(const QString& value);
