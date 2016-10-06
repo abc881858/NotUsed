@@ -5,23 +5,13 @@
 #include "area.h"
 #include <QMenu>
 #include <QAction>
+#include <QJsonObject>
 
 class RoomScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
     explicit RoomScene(QObject* parent = 0);
-    QList<int> startMyGame();
-    QList<int> startYourGame();
-    void drawMyPhase();
-    void drawYourPhase();
-    void endYourPhase();
-    void setupDeck(QList<int> list);
-    void setupEnemyDeck(QList<int> list);
-
-    void initializeFieldyard();
-
-    void doActionCommand(int parameter, int index);
 
 private:
     DeckArea* deckarea;
@@ -40,6 +30,9 @@ private:
     QAction* goM2;
     QAction* goEP;
 
+protected:
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+
 signals:
     void hover(QString);
 
@@ -48,8 +41,11 @@ public slots:
     void actionM2(bool);
     void actionEP(bool);
 
-protected:
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+    void setupDeck(QList<int> list);
+    void doAddCard(QJsonObject jsonObject);
+    void doTakeCard(QJsonObject jsonObject);
+    void setupEnemyDeck(QList<int> list);
+    void startMyGame();
 };
 
 #endif // ROOMSCENE_H
