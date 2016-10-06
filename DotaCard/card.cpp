@@ -330,27 +330,27 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             if (currentflag == NormalSummon)
             {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
-                Net::instance()->doNormalSummon(index);
+                //                Net::instance()->doNormalSummon(index);
             }
             else if (currentflag == SetCard)
             {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
-                Net::instance()->doSetCard(index);
+                //                Net::instance()->doSetCard(index);
             }
             else if (currentflag == Effect)
             {
-//                Net::instance()->doEffect(index);
+                //                Net::instance()->doEffect(index);
             }
             else if (currentflag == SpecialSummon)
             {
-                Net::instance()->doSpecialSummon(index);
+                //                Net::instance()->doSpecialSummon(index);
             }
             break;
         case FieldyardArea:
             if (currentflag == NormalSummon)
             {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
-                Net::instance()->doNormalSummon(index);
+                //                Net::instance()->doNormalSummon(index);
             }
             break;
         default:
@@ -398,10 +398,10 @@ int Card::getISDN() const
     return ISDN;
 }
 
-void Card::setISDN(int value)
-{
-    ISDN = value;
-}
+//void Card::setISDN(int value)
+//{
+//    ISDN = value;
+//}
 
 QString Card::getName() const
 {
@@ -495,12 +495,12 @@ void CentaurWarrunner::cardEffect(int i)
     /// 若这张卡装备了“dota-跳刀”TODO: 跳刀未开发，暂时先不判断是否装备跳刀
     /// 则可以改为丢弃一张手牌发动
 
-    if ( i == 1 )
+    if (i == 1)
     {
         if (Rule::instance()->getphase() == Rule::yourBP && Rule::instance()->getIsResponsing() && getFace())
         {
-            Net::instance()->doTribute(index); //解放（即作为祭品）
-            Net::instance()->doEndOpponentBattlePhase();
+            //            Net::instance()->doTribute(index); //解放（即作为祭品）
+            //            Net::instance()->doEndOpponentBattlePhase();
         }
     }
 
@@ -509,9 +509,9 @@ void CentaurWarrunner::cardEffect(int i)
     /// 若这张卡装备了“dota-阿哈利姆神杖”时 TODO: 阿哈利姆神杖未开发，暂时先不判断是否装备阿哈利姆神杖
     /// 同时令自己场上名字带有“dota”的怪兽的攻击力（或防御力）上升自己原本攻击力（或防御力）的一半。
 
-    if ( i == 2 )
+    if (i == 2)
     {
-        Net::instance()->doCentaurWarrunnerEffect2();
+        //        Net::instance()->doCentaurWarrunnerEffect2();
     }
 }
 
