@@ -2,6 +2,7 @@
 #define AREA_H
 
 #include <QGraphicsObject>
+
 #include "card.h"
 
 class DeckArea : public QGraphicsObject
@@ -12,7 +13,7 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void addCard(Card* card);
-    Card* takeFirstCard();
+    Card* takeCard(int index = 0);
     QList<Card*> getMyDeck() const;
 
 private:
@@ -95,8 +96,11 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     void addCard(Card* card);
-    Card* takeFirstCard();
+    Card* takeCard(int index = 0);
     QList<Card*> getYourDeck() const;
+
+    void response_addCard(Card* card);
+    Card* response_takeCard(int index);
 
 private:
     QPixmap pixmap;
@@ -115,6 +119,9 @@ public:
     Card* takeCard(int index);
     QList<Card*> getYourHand() const;
 
+    void response_addCard(Card* card);
+    Card* response_takeCard(int index);
+
 private:
     QPixmap pixmap;
     QList<Card*> yourHand;
@@ -132,6 +139,9 @@ public:
     Card* takeCard(int index);
     QList<Card*> getYourFieldyard() const;
 
+    void response_addCard(Card* card);
+    Card* response_takeCard(int index);
+
 private:
     QPixmap pixmap;
     QList<Card*> yourFieldyard;
@@ -145,6 +155,9 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
     QList<Card*> getYourFieldground() const;
+
+    //    void response_addCard(Card* card);
+    //    Card* response_takeCard(int index);
 
 private:
     QPixmap pixmap;
@@ -162,6 +175,9 @@ public:
     void addCard(Card* card);
     Card* takeCard(int index);
     QList<Card*> getYourGraveyard() const;
+
+    void response_addCard(Card* card);
+    Card* response_takeCard(int index);
 
 private:
     QPixmap pixmap;
