@@ -1,10 +1,7 @@
 #include "net.h"
 #include <QHostAddress>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
 #include <QFile>
-#include <functional>
+//#include <functional>
 
 Q_GLOBAL_STATIC(Net, net)
 
@@ -28,27 +25,29 @@ void Net::write(QJsonObject jsonObject)
     client->write(byteArray);
 }
 
-void Net::doAddCard(int ISDN, int area, bool face, bool stand) //添加
+void Net::doAddCard(int ISDN, int area, int index, bool face, bool stand) //添加
 {
-    QJsonObject jsonPara;
-    jsonPara.insert("ISDN", ISDN);
-    jsonPara.insert("area", area);
-    jsonPara.insert("face", face);
-    jsonPara.insert("stand", stand);
-    QJsonObject jsonObject;
-    jsonObject.insert("cmd", "doAddCard");
-    jsonObject.insert("parameter", jsonPara);
-    write(jsonObject);
+    QJsonObject parameter;
+    parameter.insert("ISDN", ISDN);
+    parameter.insert("area", area);
+    parameter.insert("index", index);
+    parameter.insert("face", face);
+    parameter.insert("stand", stand);
+    QJsonObject object;
+    object.insert("request", "doAddCard");
+    object.insert("parameter", parameter);
+    write(object);
 }
 
-void Net::doTakeCard(int ISDN) //删除
+void Net::doTakeCard(int area, int index) //删除
 {
-    QJsonObject jsonPara;
-    jsonPara.insert("ISDN", ISDN);
-    QJsonObject jsonObject;
-    jsonObject.insert("cmd", "doTakeCard");
-    jsonObject.insert("parameter", jsonPara);
-    write(jsonObject);
+    QJsonObject parameter;
+    parameter.insert("area", area);
+    parameter.insert("index", index);
+    QJsonObject object;
+    object.insert("request", "doTakeCard");
+    object.insert("parameter", parameter);
+    write(object);
 }
 
 void Net::connected()
@@ -77,67 +76,59 @@ void Net::readFromServer()
 {
     QByteArray json = client->readAll();
     QJsonDocument jsonDoucment = QJsonDocument::fromJson(json);
-    QJsonObject jsonObject = jsonDoucment.object();
-    qDebug() << "Net's readFromServer" << jsonObject;
+    QJsonObject object = jsonDoucment.object();
+    qDebug() << "Net's readFromServer" << object;
 
-    QString cmd = "cmd_";
-    cmd.append(jsonObject["command"].toString());
-    QJsonObject jsonPara = jsonObject["parameter"].toObject();
+    int command = object["command"].toInt();
+    if (command != 0)
+    {
+        if (command == 2000)
+        {
+            QList<int> yourDeck;
+            for (const QJsonValue& value : object["deck"].toArray())
+            {
+                int ISDN = value.toInt();
+                yourDeck << ISDN;
+            }
+            emit setupEnemyDeck(yourDeck);
+        }
+        else if (command == 3000)
+        {
+            QList<int> yourDeck;
+            for (const QJsonValue& value : object["deck"].toArray())
+            {
+                int ISDN = value.toInt();
+                yourDeck << ISDN;
+            }
+            emit setupEnemyDeck(yourDeck);
 
-    QMetaObject::invokeMethod(this, cmd.toLatin1(), Q_ARG(QJsonObject, jsonPara));
+            QJsonObject jsonObject;
+            jsonObject.insert("command", 1001);
+            write(jsonObject);
+        }
+        else if (command == 10000)
+        {
+            emit startMyGame();
+        }
+    }
 
+    QString request = object["request"].toString();
+    if (request.isEmpty())
+    {
+        return;
+    }
+    else
+    {
+        request.prepend("request_");
+        QJsonObject parameter = object["parameter"].toObject();
+        QMetaObject::invokeMethod(this, request.toLatin1().data(), Q_ARG(QJsonObject, parameter));
+    }
 
-
-    //    int command = jsonObject["command"].toInt();
-    //    switch (command)
-    //    {
-    //    case 2000:
-    //        firstSetupEnemyDeck(jsonObject["deck"].toArray());
-    //        break;
-    //    case 3000:
-    //        secondSetupEnemyDeck(jsonObject["deck"].toArray());
-    //        break;
-    //    case 10000:
-    //        emit myStartGame();
-    //        break;
-    //    case 10001:
-    //        emit yourStartGame();
-    //        break;
-    //    case 10002:
-    //        emit myDrawPhase();
-    //        break;
-    //    case 20001:
-    //        emit yourDrawPhase();
-    //        break;
-    //    case 20002:
-    //        emit myStandbyPhase();
-    //        break;
-    //    case 30001:
-    //        emit yourStandbyPhase();
-    //        break;
-    //    case 30002:
-    //        emit myMainPhase1();
-    //        break;
-    //    case 40001:
-    //        emit yourMainPhase1();
-    //        break;
-    //    case 50001:
-    //        emit yourBattlePhase();
-    //        break;
-    //    case 60001:
-    //        emit yourMainPhase2();
-    //        break;
-    //    case 70001:
-    //        emit yourEndPhase();
-    //        break;
     //    case 8888:
     //        emit actionCommand(jsonObject["parameter"].toInt(), jsonObject["from"].toInt());
     //        break;
     //    case 0: //说明对方不采取任何行动，我方继续行动
     //        emit getResponse();
-    //    default:
-    //        break;
-    //    }
 }
 
 //QByteArray Net::getJsonFromInt(int command)
@@ -145,23 +136,6 @@ void Net::readFromServer()
 //    QJsonObject jsonObject;
 //    jsonObject.insert("command", command);
 //    return jsonObject;
-//}
-
-//void Net::firstSetupEnemyDeck(QJsonArray jsonArray)
-//{
-//    QList<int> yourDeck;
-//    foreach (const QJsonValue& value, jsonArray)
-//    {
-//        int ISDN = value.toInt();
-//        yourDeck << ISDN;
-//    }
-//    emit setupEnemyDeck(yourDeck);
-//}
-
-//void Net::secondSetupEnemyDeck(QJsonArray jsonArray)
-//{
-//    firstSetupEnemyDeck(jsonArray);
-//    sendMessage(1001);
 //}
 
 //void Net::sendMessage(int command)
@@ -173,7 +147,7 @@ void Net::readFromServer()
 //{
 //    QJsonObject jsonObject;
 //    QJsonArray cards;
-//    foreach (int card, list)
+//    for (int card; list)
 //    {
 //        cards << QJsonValue(card);
 //    }
