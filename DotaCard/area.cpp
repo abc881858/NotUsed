@@ -1,6 +1,7 @@
 #include "area.h"
 #include <QPainter>
 #include <QDebug>
+
 #include "net.h"
 
 static QRectF DeckAreaRect(0, 0, 50, 72);
@@ -45,13 +46,14 @@ void DeckArea::addCard(Card* card)
     card->setArea(Card::DeckArea);
     myDeck << card;
 
-    Net::instance()->doAddCard(card->ISDN, Card::DeckArea, false, true);
+    Net::instance()->doAddCard(card->getISDN(), Card::DeckArea, card->getIndex(), false, true);
 }
 
-Card* DeckArea::takeFirstCard()
+Card* DeckArea::takeCard(int index)
 {
-    Card *card = myDeck.takeFirst();
-    Net::instance()->doTakeCard(card->ISDN);
+    Q_ASSERT(index == 0);
+    Card* card = myDeck.takeFirst();
+    Net::instance()->doTakeCard(Card::DeckArea, card->getIndex());
     return card;
 }
 
@@ -105,13 +107,13 @@ void HandArea::addCard(Card* card)
     myHand << card;
     adjustCards();
 
-    Net::instance()->doAddCard(card->ISDN, Card::HandArea, true, true);//号、区、表、攻
+    Net::instance()->doAddCard(card->getISDN(), Card::HandArea, card->getIndex(), true, true); //号、区、位、表、攻
 }
 
 Card* HandArea::takeCard(int index)
 {
     Card* card = myHand.takeAt(index);
-    Net::instance()->doTakeCard(card->ISDN);
+    Net::instance()->doTakeCard(Card::HandArea, card->getIndex());
     adjustCards();
     return card;
 }
@@ -145,7 +147,7 @@ void FieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QW
 
 void FieldyardArea::initializeCards()
 {
-    foreach (Card* card, myFieldyard)
+    for (Card* card : myFieldyard)
     {
         card->setChangePosition(true);
     }
@@ -175,13 +177,13 @@ void FieldyardArea::addCard(Card* card, bool face, bool stand)
     myFieldyard << card;
     adjustCards();
 
-    Net::instance()->doAddCard(card->ISDN, Card::FieldyardArea, face, stand);//号、区、表、攻
+    Net::instance()->doAddCard(card->getISDN(), Card::FieldyardArea, card->getIndex(), face, stand);
 }
 
 Card* FieldyardArea::takeCard(int index)
 {
     Card* card = myFieldyard.takeAt(index);
-    Net::instance()->doTakeCard(card->ISDN);
+    Net::instance()->doTakeCard(Card::FieldyardArea, card->getIndex());
     return card;
 }
 
@@ -249,13 +251,13 @@ void GraveyardArea::addCard(Card* card)
     myGraveyard << card;
     adjustCards();
 
-    Net::instance()->doAddCard(card->ISDN, Card::GraveyardArea, true, true);
+    Net::instance()->doAddCard(card->getISDN(), Card::GraveyardArea, card->getIndex(), true, true);
 }
 
 Card* GraveyardArea::takeCard(int index)
 {
     Card* card = myGraveyard.takeAt(index);
-    Net::instance()->doTakeCard(card->ISDN);
+    Net::instance()->doTakeCard(Card::GraveyardArea, card->getIndex());
     return card;
 }
 
@@ -302,17 +304,30 @@ void EnemyDeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QW
 void EnemyDeckArea::addCard(Card* card)
 {
     card->setParentItem(this);
-    card->setIndex(yourDeck.size());
-    card->setFace(false);
-    card->setStand(true);
     card->setArea(Card::EnemyDeckArea);
-
     yourDeck << card;
 }
 
-Card* EnemyDeckArea::takeFirstCard()
+void EnemyDeckArea::response_addCard(Card* card)
 {
-    return yourDeck.takeFirst();
+    card->setParentItem(this);
+    card->setArea(Card::EnemyDeckArea);
+    yourDeck << card;
+}
+
+Card* EnemyDeckArea::takeCard(int index)
+{
+    Q_ASSERT(index == 0);
+    Card* card = yourDeck.takeFirst();
+    //    Net::instance()->doTakeCard(Card::EnemyDeckArea, card->getIndex());
+    return card;
+}
+
+Card* EnemyDeckArea::response_takeCard(int index)
+{
+    Q_UNUSED(index);
+    Card* card = yourDeck.takeFirst();
+    return card;
 }
 
 QList<Card*> EnemyDeckArea::getYourDeck() const
@@ -358,9 +373,6 @@ void EnemyHandArea::adjustCards()
 void EnemyHandArea::addCard(Card* card)
 {
     card->setParentItem(this);
-    card->setIndex(yourHand.size());
-    card->setStand(true);
-    card->setFace(false);
     card->setArea(Card::EnemyHandArea);
 
     yourHand << card;
@@ -377,6 +389,21 @@ Card* EnemyHandArea::takeCard(int index)
 QList<Card*> EnemyHandArea::getYourHand() const
 {
     return yourHand;
+}
+
+void EnemyHandArea::response_addCard(Card* card)
+{
+    card->setParentItem(this);
+    card->setArea(Card::EnemyHandArea);
+
+    yourHand << card;
+    adjustCards();
+}
+
+Card* EnemyHandArea::response_takeCard(int index)
+{
+    Card* card = yourHand.takeAt(index);
+    return card;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -404,10 +431,9 @@ void EnemyFieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem
 void EnemyFieldyardArea::addCard(Card* card, bool face, bool stand)
 {
     card->setParentItem(this);
-    card->setIndex(yourFieldyard.size());
+    card->setArea(Card::EnemyFieldyardArea);
     card->setFace(face);
     card->setStand(stand);
-    card->setArea(Card::EnemyFieldyardArea);
     yourFieldyard << card;
     adjustCards();
 }
@@ -421,6 +447,20 @@ Card* EnemyFieldyardArea::takeCard(int index)
 QList<Card*> EnemyFieldyardArea::getYourFieldyard() const
 {
     return yourFieldyard;
+}
+
+void EnemyFieldyardArea::response_addCard(Card* card)
+{
+    card->setParentItem(this);
+    card->setArea(Card::EnemyFieldyardArea);
+    yourFieldyard << card;
+    adjustCards();
+}
+
+Card* EnemyFieldyardArea::response_takeCard(int index)
+{
+    Card* card = yourFieldyard.takeAt(index);
+    return card;
 }
 
 void EnemyFieldyardArea::adjustCards()
@@ -489,9 +529,6 @@ void EnemyGraveyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem
 void EnemyGraveyardArea::addCard(Card* card)
 {
     card->setParentItem(this);
-    card->setIndex(yourGraveyard.size());
-    card->setFace(true);
-    card->setStand(true);
     card->setArea(Card::EnemyFieldyardArea);
     yourGraveyard << card;
     adjustCards();
@@ -506,6 +543,20 @@ Card* EnemyGraveyardArea::takeCard(int index)
 QList<Card*> EnemyGraveyardArea::getYourGraveyard() const
 {
     return yourGraveyard;
+}
+
+void EnemyGraveyardArea::response_addCard(Card* card)
+{
+    card->setParentItem(this);
+    card->setArea(Card::EnemyFieldyardArea);
+    yourGraveyard << card;
+    adjustCards();
+}
+
+Card* EnemyGraveyardArea::response_takeCard(int index)
+{
+    Card* card = yourGraveyard.takeAt(index);
+    return card;
 }
 
 void EnemyGraveyardArea::adjustCards()
