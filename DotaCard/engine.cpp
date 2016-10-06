@@ -20,7 +20,8 @@ void Engine::loadAllCards()
              << new VengefulSpirit()
              << new Zeus();
 
-    foreach (Card* card, allcards) {
+    for (Card* card : allcards)
+    {
         metaobjects.insert(card->getISDN(), card->metaObject());
     }
 }
