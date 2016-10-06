@@ -7,7 +7,8 @@
 
 #include "card.h"
 
-class Engine {
+class Engine
+{
 public:
     static Engine* instance();
     void loadAllCards();
