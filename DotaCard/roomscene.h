@@ -44,8 +44,14 @@ public slots:
     void setupDeck(QList<int> list);
     void doAddCard(QJsonObject jsonObject);
     void doTakeCard(QJsonObject jsonObject);
-    void setupEnemyDeck(QList<int> list);
-    void startMyGame();
+    void doSetPhase(QJsonObject jsonObject);
+    void startGame();
+    void drawPhase();
+    void standbyPhase();
+    void main1Phase();
+    void battlePhase();
+    void main2Phase();
+    void endPhase();
 };
 
 #endif // ROOMSCENE_H
