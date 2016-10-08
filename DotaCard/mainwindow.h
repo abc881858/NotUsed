@@ -26,8 +26,6 @@ private:
 
     //private slots:
     //    void setupDeck(QList<int> list);
-    //    void setupEnemyDeck(QList<int> list);
-    //    void startMyGame();
     //    void startYourGame();
     //    void drawMyPhase();
     //    void drawYourPhase();
