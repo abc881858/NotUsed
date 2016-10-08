@@ -6,13 +6,13 @@ class Rule
 public:
     enum Phase
     {
-        myDP,
+        myDP = 0,
         mySP,
         myM1,
         myBP,
         myM2,
         myEP,
-        yourDP,
+        yourDP = 6,
         yourSP,
         yourM1,
         yourBP,
@@ -26,6 +26,7 @@ public:
     void setOneTurnOneNormalSummon(bool value);
 
     void setPhase(Phase phase);
+    void setPhase(int phase);
     Phase getphase() const;
 
     bool getIsWaiting() const;
