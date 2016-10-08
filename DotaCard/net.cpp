@@ -50,9 +50,18 @@ void Net::doTakeCard(int area, int index) //删除
     write(object);
 }
 
+void Net::doSetPhase(int phase)
+{
+    QJsonObject parameter;
+    parameter.insert("phase", phase);
+    QJsonObject object;
+    object.insert("request", "doSetPhase");
+    object.insert("parameter", parameter);
+    write(object);
+}
+
 void Net::connected()
 {
-    QJsonArray cards;
     QList<int> myDeck;
     QFile file("test1.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -61,14 +70,13 @@ void Net::connected()
     {
         int ISDN = text_stream.readLine().toInt();
         myDeck << ISDN;
-        cards << ISDN;
     }
     file.close();
+
     emit setupDeck(myDeck);
 
     QJsonObject jsonObject;
     jsonObject.insert("command", 1000);
-    jsonObject.insert("cards", cards);
     write(jsonObject);
 }
 
@@ -79,39 +87,6 @@ void Net::readFromServer()
     QJsonObject object = jsonDoucment.object();
     qDebug() << "Net's readFromServer" << object;
 
-    int command = object["command"].toInt();
-    if (command != 0)
-    {
-        if (command == 2000)
-        {
-            QList<int> yourDeck;
-            for (const QJsonValue& value : object["deck"].toArray())
-            {
-                int ISDN = value.toInt();
-                yourDeck << ISDN;
-            }
-            emit setupEnemyDeck(yourDeck);
-        }
-        else if (command == 3000)
-        {
-            QList<int> yourDeck;
-            for (const QJsonValue& value : object["deck"].toArray())
-            {
-                int ISDN = value.toInt();
-                yourDeck << ISDN;
-            }
-            emit setupEnemyDeck(yourDeck);
-
-            QJsonObject jsonObject;
-            jsonObject.insert("command", 1001);
-            write(jsonObject);
-        }
-        else if (command == 10000)
-        {
-            emit startMyGame();
-        }
-    }
-
     QString request = object["request"].toString();
     if (request.isEmpty())
     {
@@ -121,7 +96,14 @@ void Net::readFromServer()
     {
         request.prepend("request_");
         QJsonObject parameter = object["parameter"].toObject();
-        QMetaObject::invokeMethod(this, request.toLatin1().data(), Q_ARG(QJsonObject, parameter));
+        if(parameter.isEmpty())
+        {
+            QMetaObject::invokeMethod(this, request.toLatin1().data());
+        }
+        else
+        {
+            QMetaObject::invokeMethod(this, request.toLatin1().data(), Q_ARG(QJsonObject, parameter));
+        }
     }
 
     //    case 8888:
@@ -131,17 +113,12 @@ void Net::readFromServer()
     //        emit getResponse();
 }
 
-//QByteArray Net::getJsonFromInt(int command)
-//{
-//    QJsonObject jsonObject;
-//    jsonObject.insert("command", command);
-//    return jsonObject;
-//}
-
-//void Net::sendMessage(int command)
-//{
-//    client->write(getJsonFromInt(command));
-//}
+void Net::sendMessage(int command)
+{
+    QJsonObject jsonObject;
+    jsonObject.insert("command", command);
+    write(jsonObject);
+}
 
 //void Net::sendMessage(int command, QList<int> list)
 //{
