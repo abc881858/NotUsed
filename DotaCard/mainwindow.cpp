@@ -45,68 +45,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//void MainWindow::setupDeck(QList<int> list)
-//{
-//    roomScene->setupDeck(list);
-//}
-
-//void MainWindow::setupEnemyDeck(QList<int> list)
-//{
-//    roomScene->setupEnemyDeck(list);
-//}
-
-//void MainWindow::startMyGame()
-//{
-//    QList<int> list = roomScene->startMyGame();
-//    //    Net::instance()->sendMessage(10001, list);
-//}
-
-//void MainWindow::startYourGame()
-//{
-//    //client2 start his game
-//    QList<int> list = roomScene->startYourGame();
-//    //    Net::instance()->sendMessage(10002, list);
-//}
-
-//void MainWindow::drawMyPhase()
-//{
-//    Rule::instance()->setPhase(Rule::myDP);
-//    roomScene->drawMyPhase();
-//    //    Net::instance()->sendMessage(20001);
-//}
-
-//void MainWindow::drawYourPhase()
-//{
-//    Rule::instance()->setPhase(Rule::yourDP);
-//    roomScene->drawYourPhase();
-//    //    Net::instance()->sendMessage(20002);
-//}
-
-//void MainWindow::standbyMyPhase()
-//{
-//    Rule::instance()->setPhase(Rule::mySP);
-//    //    Net::instance()->sendMessage(30001);
-//}
-
-//void MainWindow::standbyYourPhase()
-//{
-//    Rule::instance()->setPhase(Rule::yourSP);
-//    //    Net::instance()->sendMessage(30002);
-//}
-
-//void MainWindow::mainMyPhase1()
-//{
-//    Rule::instance()->setPhase(Rule::myM1);
-//    Rule::instance()->setOneTurnOneNormalSummon(true);
-//    roomScene->initializeFieldyard();
-//    //    Net::instance()->sendMessage(40001);
-//}
-
-//void MainWindow::mainYourPhase1()
-//{
-//    Rule::instance()->setPhase(Rule::yourM2);
-//}
-
 //void MainWindow::battleYourPhase()
 //{
 //    Rule::instance()->setPhase(Rule::yourBP);
@@ -129,22 +67,6 @@ MainWindow::~MainWindow()
 //void MainWindow::doGetResponse()
 //{
 //    Rule::instance()->setIsWaiting(false);
-//}
-
-//void MainWindow::mainYourPhase2()
-//{
-//    Rule::instance()->setPhase(Rule::yourM2);
-//}
-
-//void MainWindow::endYourPhase()
-//{
-//    Rule::instance()->setPhase(Rule::yourEP);
-//    //TODO: 也许对方结束阶段我要触发什么陷阱卡
-//    //暂时玩家2直接进入他的抽卡阶段
-
-//    Rule::instance()->setPhase(Rule::myDP);
-//    roomScene->endYourPhase();
-//    //    Net::instance()->sendMessage(20001);
 //}
 
 //void MainWindow::doActionCommand(int parameter, int index)
