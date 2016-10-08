@@ -9,7 +9,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 
@@ -18,20 +19,18 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
-    QTcpServer *server;
+    QTcpServer* server;
     QList<QTcpSocket*> clients;
 
-    void startGame();
-    QByteArray getJsonFromInt(int command);
 public slots:
     void newConnection();
     void readFromFirstClient();
     void readFromSecondClient();
+
 private:
-    Ui::MainWindow *ui;
-    QJsonArray deck1,deck2;
+    Ui::MainWindow* ui;
 };
 
 #endif // MAINWINDOW_H
