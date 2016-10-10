@@ -41,10 +41,10 @@ public slots:
     void actionM2(bool);
     void actionEP(bool);
 
-    void setupDeck(QList<int> list);
     void doAddCard(QJsonObject jsonObject);
     void doTakeCard(QJsonObject jsonObject);
     void doSetPhase(QJsonObject jsonObject);
+    void setupDeck();
     void startGame();
     void drawPhase();
     void standbyPhase();
