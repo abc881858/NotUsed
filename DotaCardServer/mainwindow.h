@@ -2,12 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QTcpServer>
-#include <QTcpSocket>
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+
+class QWebSocketServer;
+class QWebSocket;
 
 namespace Ui
 {
@@ -21,13 +21,14 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
-    QTcpServer* server;
-    QList<QTcpSocket*> clients;
+
+    QWebSocketServer *server;
+    QList<QWebSocket*> clients;
 
 public slots:
     void newConnection();
-    void readFromFirstClient();
-    void readFromSecondClient();
+    void readFromFirstClient(QByteArray byteArray);
+    void readFromSecondClient(QByteArray byteArray);
 
 private:
     Ui::MainWindow* ui;
