@@ -15,3 +15,12 @@ Net 包含 QJsonDocument QJsonObject QJsonArray， 所以可以用这些类型 w
 
 request 和 response 是一对
 前者 net 类的 json 消息内容，后者 area 类函数
+
+//  two plays have read deck each other, begin the game!
+//  TODO: may do finger-guessing game Animation later. first player first go Now.
+//  FIXME: will do clients[0]->write(getJsonFromInt(3000));
+
+Net 类是主叫方
+RoomScene 类是被叫方
+
+Engine Net Rule 是3个单例
