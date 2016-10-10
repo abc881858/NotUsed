@@ -18,6 +18,7 @@ public:
 
     void sendMessage(int command);
     void doSetPhase(int phase);
+    void doEndOpponentBattlePhase();
 private:
     QWebSocket* client;
 
@@ -37,6 +38,7 @@ signals:
     Q_INVOKABLE void request_battlePhase();
     Q_INVOKABLE void request_main2Phase();
     Q_INVOKABLE void request_endPhase();
+    Q_INVOKABLE void request_doEndOpponentBattlePhase();
 };
 
 #endif // NET_H
