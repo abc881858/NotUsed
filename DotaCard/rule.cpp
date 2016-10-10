@@ -28,7 +28,6 @@ void Rule::setPhase(Rule::Phase phase)
 void Rule::setPhase(int phase)
 {
     this->phase = Rule::Phase(phase);
-    Net::instance()->doSetPhase(phase);
 }
 
 Rule::Phase Rule::getphase() const
