@@ -24,14 +24,13 @@ private:
     EnemyFieldyardArea* enemyfieldyardarea;
     EnemyFieldgroundArea* enemyfieldgroundarea;
     EnemyGraveyardArea* enemygraveyardarea;
-
     QMenu* myContextMenu;
     QAction* goBP;
     QAction* goM2;
     QAction* goEP;
 
-protected:
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+//protected:
+//    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 
 signals:
     void hover(QString);
@@ -40,18 +39,18 @@ public slots:
     void actionBP(bool);
     void actionM2(bool);
     void actionEP(bool);
-
-    void doAddCard(QJsonObject jsonObject);
-    void doTakeCard(QJsonObject jsonObject);
-    void doSetPhase(QJsonObject jsonObject);
-    void setupDeck();
-    void startGame();
-    void drawPhase();
-    void standbyPhase();
-    void main1Phase();
-    void battlePhase();
-    void main2Phase();
-    void endPhase();
+    void response_doAddCard(QJsonObject jsonObject);
+    void response_doTakeCard(QJsonObject jsonObject);
+    void response_doSetPhase(QJsonObject jsonObject);
+    void response_setupDeck();
+    void response_startGame();
+    void response_drawPhase();
+    void response_standbyPhase();
+    void response_main1Phase();
+    void response_battlePhase();
+    void response_main2Phase();
+    void response_endPhase();
+    void response_doEndOpponentBattlePhase();
 };
 
 #endif // ROOMSCENE_H
