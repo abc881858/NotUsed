@@ -7,17 +7,17 @@ public:
     enum Phase
     {
         myDP = 0,
-        mySP,
-        myM1,
-        myBP,
-        myM2,
-        myEP,
+        mySP = 1,
+        myM1 = 2,
+        myBP = 3,
+        myM2 = 4,
+        myEP = 5,
         yourDP = 6,
-        yourSP,
-        yourM1,
-        yourBP,
-        yourM2,
-        yourEP
+        yourSP = 7,
+        yourM1 = 8,
+        yourBP = 9,
+        yourM2 = 10,
+        yourEP = 11
     };
 
     static Rule* instance();
