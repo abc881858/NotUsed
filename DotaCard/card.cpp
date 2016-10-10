@@ -4,6 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include "net.h"
 #include "rule.h"
+#include <QMatrix>
 
 Card::Card()
 {
@@ -12,7 +13,7 @@ Card::Card()
     pixmap = QString(":/png/png/NULL.jpg");
     area = NoArea;
     type = NoType;
-    effectOnBattle = false;
+    effectOnYourBattle = false;
 }
 
 /////////////////////////// Begin Test All Card Status /////////////////////////////
@@ -25,7 +26,7 @@ void Card::testAll()
     testSetCard() ? setCardFlag(SetCard, true) : setCardFlag(SetCard, false);
     testFlipSummon() ? setCardFlag(Card::FlipSummon, true) : setCardFlag(Card::FlipSummon, false);
     testDefencePosition() ? setCardFlag(Card::DefencePosition, true) : setCardFlag(Card::DefencePosition, false);
-    testAttackPosition() ? setCardFlag(Card::AttackPosition, true) : setCardFlag(Card::DefencePosition, false);
+    testAttackPosition() ? setCardFlag(Card::AttackPosition, true) : setCardFlag(Card::AttackPosition, false);
     testAttack() ? setCardFlag(Card::Attack, true) : setCardFlag(Card::Attack, false);
 }
 
@@ -35,7 +36,7 @@ bool Card::testEffect()
     {
         if (type == EffectMonster)
         {
-            if (effectOnBattle && face)
+            if (effectOnYourBattle && face)
             {
                 return true;
             }
@@ -96,25 +97,26 @@ bool Card::testFlipSummon()
 
 bool Card::testDefencePosition()
 {
-    if (face && stand)
-    {
-        return changePosition;
-    }
+//    if (face && stand)
+//    {
+//        return changePosition;
+//    }
     return false;
 }
 
 bool Card::testAttackPosition()
 {
-    if (face && !stand)
-    {
-        return changePosition;
-    }
+//    if (face && !stand)
+//    {
+//        return changePosition;
+//    }
     return false;
 }
 
 bool Card::testAttack()
 {
-    return true;
+//    return true;
+    return false;
 }
 
 /////////////////////////// End Test All Card Status /////////////////////////////
@@ -126,23 +128,21 @@ Card::CardFlags Card::getCardFlags() const
 
 void Card::setCardFlag(Card::CardFlag flag, bool enabled)
 {
+    qDebug() << "setCardFlag" << flag;
+
     if (enabled)
-        setCardFlags(myflags | flag);
+        myflags |= flag;
     else
-        setCardFlags(myflags & ~flag);
-}
+        myflags &= ~flag;
 
-void Card::setCardFlags(CardFlags flags)
-{
-    if (myflags == flags)
-        return;
-
-    myflags = flags;
+    qDebug() << "myflags" << myflags;
 }
 
 void Card::setCurrentflag(Card::CardFlag flag)
 {
     currentflag = flag;
+
+    qDebug() << "setCurrentflag" << currentflag;
 
     if (currentflag == Effect)
     {
@@ -189,10 +189,16 @@ void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
     {
         return;
     }
-    if (area != EnemyHandArea)
+
+    if (area != EnemyHandArea && face)
     {
         pixmap = QPixmap(image);
     }
+    else
+    {
+        pixmap = QPixmap(":/png/png/NULL.jpg");
+    }
+
     if (area == HandArea || area == EnemyHandArea)
     {
         pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -200,6 +206,13 @@ void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
     else
     {
         pixmap = pixmap.scaled(50, 72, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    }
+
+    if (!stand)
+    {
+        QMatrix matrix;
+        matrix.rotate(-90);
+        pixmap = pixmap.transformed(matrix);
     }
 
     painter->drawPixmap(0, 0, pixmap);
@@ -221,7 +234,11 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
     testAll();
 
-    if (myflags.testFlag(Effect))
+    if (myflags == CardFlags())
+    {
+        setCursor(Qt::ArrowCursor);
+    }
+    else if (myflags.testFlag(Effect))
     {
         setCurrentflag(Effect);
     }
@@ -330,27 +347,34 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             if (currentflag == NormalSummon)
             {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
-                //                Net::instance()->doNormalSummon(index);
+                emit normalSummon();
             }
             else if (currentflag == SetCard)
             {
                 Rule::instance()->setOneTurnOneNormalSummon(false);
-                //                Net::instance()->doSetCard(index);
+                emit setCard();
             }
             else if (currentflag == Effect)
             {
-                //                Net::instance()->doEffect(index);
+                //目前没有从手牌发动的特效
+//                emit activeEffect();
             }
             else if (currentflag == SpecialSummon)
             {
-                //                Net::instance()->doSpecialSummon(index);
+                //目前没有从手牌特殊召唤的卡牌
+//                emit specialSummon();
             }
             break;
         case FieldyardArea:
-            if (currentflag == NormalSummon)
+            if (currentflag == FlipSummon)
             {
-                Rule::instance()->setOneTurnOneNormalSummon(false);
-                //                Net::instance()->doNormalSummon(index);
+                //目前没有翻转召唤
+//                Rule::instance()->setOneTurnOneNormalSummon(false);
+//                emit flipSummon();
+            }
+            else if (currentflag == Effect)
+            {
+                emit activeEffect();
             }
             break;
         default:
@@ -361,16 +385,6 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 void Card::cardEffect(int)
 {
-}
-
-bool Card::getEffectOnBattle() const
-{
-    return effectOnBattle;
-}
-
-void Card::setEffectOnBattle(bool value)
-{
-    effectOnBattle = value;
 }
 
 int Card::getIndex() const
@@ -397,11 +411,6 @@ int Card::getISDN() const
 {
     return ISDN;
 }
-
-//void Card::setISDN(int value)
-//{
-//    ISDN = value;
-//}
 
 QString Card::getName() const
 {
@@ -486,7 +495,7 @@ CentaurWarrunner::CentaurWarrunner() //半人马酋长
     level = 3;
     attribute = Earth;
 
-    setEffectOnBattle(true);
+    effectOnYourBattle = true;
 }
 
 void CentaurWarrunner::cardEffect(int i)
@@ -499,8 +508,9 @@ void CentaurWarrunner::cardEffect(int i)
     {
         if (Rule::instance()->getphase() == Rule::yourBP && Rule::instance()->getIsResponsing() && getFace())
         {
-            //            Net::instance()->doTribute(index); //解放（即作为祭品）
-            //            Net::instance()->doEndOpponentBattlePhase();
+            Net::instance()->doTakeCard(getArea(), index);
+            Net::instance()->doAddCard(ISDN, 5, index, true, true);
+            Net::instance()->doEndOpponentBattlePhase();
         }
     }
 
