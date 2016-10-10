@@ -27,17 +27,17 @@ public:
 
     enum
     {
-        NoArea,
-        DeckArea,
-        HandArea,
-        FieldyardArea,
-        FieldgroundArea,
-        GraveyardArea,
-        EnemyDeckArea,
-        EnemyHandArea,
-        EnemyFieldyardArea,
-        EnemyFieldgroundArea,
-        EnemyGraveyardArea
+        NoArea = 0,
+        DeckArea = 1,
+        HandArea = 2,
+        FieldyardArea = 3,
+        FieldgroundArea = 4,
+        GraveyardArea = 5,
+        EnemyDeckArea = 6,
+        EnemyHandArea = 7,
+        EnemyFieldyardArea = 8,
+        EnemyFieldgroundArea = 9,
+        EnemyGraveyardArea = 10
     };
 
     //    怪兽 Monster
