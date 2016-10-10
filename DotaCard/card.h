@@ -122,7 +122,6 @@ public:
 
     CardFlags getCardFlags() const;
     void setCardFlag(CardFlag flag, bool enabled = true);
-    void setCardFlags(CardFlags flags);
     void setCurrentflag(Card::CardFlag flag);
 
     int getISDN() const;
@@ -162,13 +161,10 @@ public:
     bool testAttack();
 
     bool getChangePosition() const;
-    void setChangePosition(bool value);
+    void setChangePosition(bool value); //area需要
 
-    int getIndex() const;
+    int getIndex() const; //area 需要这个函数
     void setIndex(int value);
-
-    bool getEffectOnBattle() const;
-    void setEffectOnBattle(bool value);
 
 protected:
     QRectF boundingRect() const;
@@ -189,6 +185,8 @@ protected:
 
     virtual void cardEffect(int i = 1);
 
+    bool effectOnYourBattle; //可以在敌方战斗流程发动
+
 private:
     QPixmap pixmap; //存储图片的容器
     QString description; //卡牌描述
@@ -200,10 +198,12 @@ private:
     CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
     bool changePosition; //每回合可以变更一次攻防表示
-    bool effectOnBattle; //可以在敌方或我方战斗流程发动
 
 signals:
     void hover();
+    void normalSummon();
+    void setCard();
+    void activeEffect();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
