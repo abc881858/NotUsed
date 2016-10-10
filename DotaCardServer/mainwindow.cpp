@@ -1,13 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QDebug>
+#include <QWebSocketServer>
+#include <QWebSocket>
+
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    server = new QTcpServer;
+    server = new QWebSocketServer(QString("Card Server"), QWebSocketServer::NonSecureMode, this);
     server->listen(QHostAddress::Any, 7720);
     connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
     //  connect(server, SIGNAL(acceptError(QAbstractSocket::SocketError)), this, SLOT(acceptError(QAbstractSocket::SocketError)));
@@ -21,47 +25,54 @@ MainWindow::~MainWindow()
 void MainWindow::newConnection()
 {
     qDebug() << "a client socket connected...";
-    QTcpSocket* newSock = server->nextPendingConnection();
+    QWebSocket* newSock = server->nextPendingConnection();
 
     if (clients.count() == 0)
     {
         newSock->setObjectName("firstPlayer");
-        connect(newSock, SIGNAL(readyRead()), this, SLOT(readFromFirstClient()));
+        connect(newSock, SIGNAL(binaryMessageReceived(QByteArray)), this, SLOT(readFromFirstClient(QByteArray)));
         clients.append(newSock);
         qDebug() << "current clients count: " << clients.count();
     }
     else if (clients.count() == 1)
     {
         newSock->setObjectName("secondPlayer");
-        connect(newSock, SIGNAL(readyRead()), this, SLOT(readFromSecondClient()));
+        connect(newSock, SIGNAL(binaryMessageReceived(QByteArray)), this, SLOT(readFromSecondClient(QByteArray)));
         clients.append(newSock);
         qDebug() << "current clients count: " << clients.count();
         qDebug() << "room is full, now we disconnect newConnection slot";
         disconnect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
-        qDebug()
-            << "the two players are ready, we start the game. First in, first go!";
+        qDebug() << "the two players are ready, we start the game. First in, first go!";
     }
 }
 
-void MainWindow::readFromFirstClient()
+void MainWindow::readFromFirstClient(QByteArray byteArray)
 {
-    QByteArray byteArray = clients[0]->readAll();
+    qDebug() << "readFromFirstClient: " << byteArray;
     QJsonDocument jsonDoucment = QJsonDocument::fromJson(byteArray);
     QJsonObject jsonObject = jsonDoucment.object();
-    qDebug() << jsonObject;
 
-    if (clients.count() < 2)
+    if (clients.count() == 1)
     {
         qDebug() << "waiting for second player...";
         return;
     }
-    if (jsonObject["command"].toInt() == 20000)
+
+    if (jsonObject["command"].toInt() == 2000)
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert("request", "setupDeck");
+        QJsonDocument jsonDoucment(jsonObject);
+        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+        clients[1]->sendBinaryMessage(json);
+    }
+    else if (jsonObject["command"].toInt() == 3000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "startGame");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[1]->write(json);
+        clients[1]->sendBinaryMessage(json);
     }
     else if (jsonObject["command"].toInt() == 20001)
     {
@@ -70,7 +81,7 @@ void MainWindow::readFromFirstClient()
         jsonObject.insert("request", "standbyPhase");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->write(json);
+        clients[0]->sendBinaryMessage(json);
     }
     else if (jsonObject["command"].toInt() == 30001)
     {
@@ -79,71 +90,51 @@ void MainWindow::readFromFirstClient()
         jsonObject.insert("request", "main1Phase");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->write(json);
+        clients[0]->sendBinaryMessage(json);
     }
-//    else if (jsonObject["command"].toInt() == 40001)
-//    {
-//        QJsonObject jsonObject;
-//        jsonObject.insert("request", "battlePhase");
-//        QJsonDocument jsonDoucment(jsonObject);
-//        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-//        clients[0]->write(json);
-//    }
-//    else if (jsonObject["command"].toInt() == 50001)
-//    {
-//        QJsonObject jsonObject;
-//        jsonObject.insert("request", "main2Phase");
-//        QJsonDocument jsonDoucment(jsonObject);
-//        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-//        clients[0]->write(json);
-//    }
-//    else if (jsonObject["command"].toInt() == 60001)
-//    {
-//        QJsonObject jsonObject;
-//        jsonObject.insert("request", "endPhase");
-//        QJsonDocument jsonDoucment(jsonObject);
-//        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-//        clients[0]->write(json);
-//    }
     else if (jsonObject["command"].toInt() == 70001)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "drawPhase");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[1]->write(json);
+        clients[1]->sendBinaryMessage(json);
     }
     else
     {
-        clients[1]->write(byteArray);
+        clients[1]->sendBinaryMessage(byteArray);
     }
 }
 
-void MainWindow::readFromSecondClient()
+void MainWindow::readFromSecondClient(QByteArray byteArray)
 {
-    QByteArray byteArray = clients[1]->readAll();
+    qDebug() << "readFromSecondClient: " << byteArray;
     QJsonDocument jsonDoucment = QJsonDocument::fromJson(byteArray);
     QJsonObject jsonObject = jsonDoucment.object();
-    qDebug() << jsonObject;
 
     if (jsonObject["command"].toInt() == 1000)
     {
-        //  two plays have read deck each other, begin the game!
-        //  TODO: may do finger-guessing game Animation later. first player first go Now.
-        //  FIXME: will do clients[0]->write(getJsonFromInt(3000));
+        QJsonObject jsonObject;
+        jsonObject.insert("request", "setupDeck");
+        QJsonDocument jsonDoucment(jsonObject);
+        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+        clients[0]->sendBinaryMessage(json);
+    }
+    else if (jsonObject["command"].toInt() == 2000)
+    {
         QJsonObject jsonObject;
         jsonObject.insert("request", "startGame");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->write(json);
+        clients[0]->sendBinaryMessage(json);
     }
-    else if (jsonObject["command"].toInt() == 20000)
+    else if (jsonObject["command"].toInt() == 3000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "drawPhase");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->write(json);
+        clients[0]->sendBinaryMessage(json);
     }
     else if (jsonObject["command"].toInt() == 20001)
     {
@@ -152,7 +143,7 @@ void MainWindow::readFromSecondClient()
         jsonObject.insert("request", "standbyPhase");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->write(json);
+        clients[0]->sendBinaryMessage(json);
     }
     else if (jsonObject["command"].toInt() == 30001)
     {
@@ -161,7 +152,7 @@ void MainWindow::readFromSecondClient()
         jsonObject.insert("request", "main1Phase");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->write(json);
+        clients[0]->sendBinaryMessage(json);
     }
     else if (jsonObject["command"].toInt() == 70001)
     {
@@ -169,10 +160,10 @@ void MainWindow::readFromSecondClient()
         jsonObject.insert("request", "drawPhase");
         QJsonDocument jsonDoucment(jsonObject);
         QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->write(json);
+        clients[0]->sendBinaryMessage(json);
     }
     else
     {
-        clients[0]->write(byteArray);
+        clients[0]->sendBinaryMessage(byteArray);
     }
 }
