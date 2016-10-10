@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QAction>
 #include <QGraphicsSceneContextMenuEvent>
+#include <QFile>
 
 #include "engine.h"
 #include "rule.h"
@@ -75,10 +76,10 @@ RoomScene::RoomScene(QObject* parent)
     addItem(enemyfieldgroundarea);
     addItem(enemygraveyardarea);
 
-    connect(Net::instance(), SIGNAL(setupDeck(QList<int>)), this, SLOT(setupDeck(QList<int>)));
     connect(Net::instance(), SIGNAL(request_doAddCard(QJsonObject)), this, SLOT(doAddCard(QJsonObject)));
     connect(Net::instance(), SIGNAL(request_doTakeCard(QJsonObject)), this, SLOT(doTakeCard(QJsonObject)));
     connect(Net::instance(), SIGNAL(request_doSetPhase(QJsonObject)), this, SLOT(doSetPhase(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_setupDeck()), this, SLOT(setupDeck()));
     connect(Net::instance(), SIGNAL(request_startGame()), this, SLOT(startGame()));
     connect(Net::instance(), SIGNAL(request_drawPhase()), this, SLOT(drawPhase()));
     connect(Net::instance(), SIGNAL(request_standbyPhase()), this, SLOT(standbyPhase()));
@@ -86,6 +87,7 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_battlePhase()), this, SLOT(battlePhase()));
     connect(Net::instance(), SIGNAL(request_main2Phase()), this, SLOT(main2Phase()));
     connect(Net::instance(), SIGNAL(request_endPhase()), this, SLOT(endPhase()));
+
 }
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -118,21 +120,6 @@ void RoomScene::actionEP(bool)
     Rule::instance()->setIsWaiting(true);
 }
 
-void RoomScene::setupDeck(QList<int> list)
-{
-    for (int ISDN : list)
-    {
-        Card* card = Engine::instance()->cloneCard(ISDN);
-        deckarea->addCard(card);
-
-        connect(card, &Card::hover, [=]()
-            {
-                QString name = card->getName();
-                emit hover(name);
-            });
-    }
-}
-
 void RoomScene::doAddCard(QJsonObject jsonObject)
 {
     int ISDN = jsonObject["ISDN"].toInt();
@@ -148,19 +135,19 @@ void RoomScene::doAddCard(QJsonObject jsonObject)
 
     switch (area)
     {
-    case Card::DeckArea:
+    case 1:
         enemydeckarea->response_addCard(card);
         break;
-    case Card::HandArea:
+    case 2:
         enemyhandarea->response_addCard(card);
         break;
-    case Card::FieldyardArea:
+    case 3:
         enemyfieldyardarea->response_addCard(card);
         break;
-    //    case Card::FieldgroundArea:
+    //    case 4
     //        EnemyFieldgroundArea->response_addCard(ISDN, index, face, stand);
     //        break;
-    case Card::GraveyardArea:
+    case 5:
         enemygraveyardarea->response_addCard(card);
         break;
     default:
@@ -175,19 +162,19 @@ void RoomScene::doTakeCard(QJsonObject jsonObject)
 
     switch (area)
     {
-    case Card::DeckArea:
+    case 1:
         enemydeckarea->response_takeCard(index);
         break;
-    case Card::HandArea:
+    case 2:
         enemyhandarea->response_takeCard(index);
         break;
-    case Card::FieldyardArea:
+    case 3:
         enemyfieldyardarea->response_takeCard(index);
         break;
-    //    case Card::FieldgroundArea:
+    //    case 4:
     //        EnemyFieldgroundArea->response_takeCard(index);
     //        break;
-    case Card::GraveyardArea:
+    case 5:
         enemygraveyardarea->response_takeCard(index);
         break;
     default:
@@ -198,7 +185,29 @@ void RoomScene::doTakeCard(QJsonObject jsonObject)
 void RoomScene::doSetPhase(QJsonObject jsonObject)
 {
     int phase = jsonObject["phase"].toInt();
-    Rule::instance()->setPhase(phase+6);
+    Rule::instance()->setPhase(phase + 6);
+}
+
+void RoomScene::setupDeck()
+{
+    QFile file("test1.txt");
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream text_stream(&file);
+    while (!text_stream.atEnd())
+    {
+        int ISDN = text_stream.readLine().toInt();
+        Card* card = Engine::instance()->cloneCard(ISDN);
+        deckarea->addCard(card);
+
+        connect(card, &Card::hover, [=]()
+            {
+                QString name = card->getName();
+                emit hover(name);
+            });
+    }
+    file.close();
+
+    Net::instance()->sendMessage(2000);
 }
 
 void RoomScene::startGame()
@@ -208,7 +217,7 @@ void RoomScene::startGame()
         Card* card = deckarea->takeCard(0);
         handarea->addCard(card);
     }
-    Net::instance()->sendMessage(20000);
+    Net::instance()->sendMessage(3000);
 }
 
 void RoomScene::drawPhase()
