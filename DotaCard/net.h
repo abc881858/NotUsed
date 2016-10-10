@@ -1,10 +1,7 @@
 #ifndef NET_H
 #define NET_H
 
-#include <QTcpSocket>
-#include <QJsonDocument>
-#include <QJsonValue>
-#include <QJsonArray>
+#include <QWebSocket>
 #include <QJsonObject>
 
 class Net : public QObject
@@ -22,18 +19,17 @@ public:
     void sendMessage(int command);
     void doSetPhase(int phase);
 private:
-    QTcpSocket* client;
+    QWebSocket* client;
 
 public slots:
-    void readFromServer();
+    void readFromServer(QByteArray json);
     void connected();
 
 signals:
-    void setupDeck(QList<int>);
-
     Q_INVOKABLE void request_doAddCard(QJsonObject);
     Q_INVOKABLE void request_doTakeCard(QJsonObject);
     Q_INVOKABLE void request_doSetPhase(QJsonObject);
+    Q_INVOKABLE void request_setupDeck();
     Q_INVOKABLE void request_startGame();
     Q_INVOKABLE void request_drawPhase();
     Q_INVOKABLE void request_standbyPhase();
