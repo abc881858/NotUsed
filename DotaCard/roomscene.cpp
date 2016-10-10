@@ -76,28 +76,28 @@ RoomScene::RoomScene(QObject* parent)
     addItem(enemyfieldgroundarea);
     addItem(enemygraveyardarea);
 
-    connect(Net::instance(), SIGNAL(request_doAddCard(QJsonObject)), this, SLOT(doAddCard(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doTakeCard(QJsonObject)), this, SLOT(doTakeCard(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doSetPhase(QJsonObject)), this, SLOT(doSetPhase(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_setupDeck()), this, SLOT(setupDeck()));
-    connect(Net::instance(), SIGNAL(request_startGame()), this, SLOT(startGame()));
-    connect(Net::instance(), SIGNAL(request_drawPhase()), this, SLOT(drawPhase()));
-    connect(Net::instance(), SIGNAL(request_standbyPhase()), this, SLOT(standbyPhase()));
-    connect(Net::instance(), SIGNAL(request_main1Phase()), this, SLOT(main1Phase()));
-    connect(Net::instance(), SIGNAL(request_battlePhase()), this, SLOT(battlePhase()));
-    connect(Net::instance(), SIGNAL(request_main2Phase()), this, SLOT(main2Phase()));
-    connect(Net::instance(), SIGNAL(request_endPhase()), this, SLOT(endPhase()));
-
+    connect(Net::instance(), SIGNAL(request_doAddCard(QJsonObject)), this, SLOT(response_doAddCard(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doTakeCard(QJsonObject)), this, SLOT(response_doTakeCard(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doSetPhase(QJsonObject)), this, SLOT(response_doSetPhase(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_setupDeck()), this, SLOT(response_setupDeck()));
+    connect(Net::instance(), SIGNAL(request_startGame()), this, SLOT(response_startGame()));
+    connect(Net::instance(), SIGNAL(request_drawPhase()), this, SLOT(response_drawPhase()));
+    connect(Net::instance(), SIGNAL(request_standbyPhase()), this, SLOT(response_standbyPhase()));
+    connect(Net::instance(), SIGNAL(request_main1Phase()), this, SLOT(response_main1Phase()));
+    connect(Net::instance(), SIGNAL(request_battlePhase()), this, SLOT(response_battlePhase()));
+    connect(Net::instance(), SIGNAL(request_main2Phase()), this, SLOT(response_main2Phase()));
+    connect(Net::instance(), SIGNAL(request_endPhase()), this, SLOT(response_endPhase()));
+    connect(Net::instance(), SIGNAL(request_doEndOpponentBattlePhase()), this, SLOT(response_doEndOpponentBattlePhase()));
 }
 
-void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-    if (event->button() == Qt::RightButton)
-    {
-        myContextMenu->exec(event->screenPos());
-    }
-    QGraphicsScene::mouseReleaseEvent(event);
-}
+//void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+//{
+//    if (event->button() == Qt::RightButton)
+//    {
+//        myContextMenu->exec(event->screenPos());
+//    }
+//    QGraphicsScene::mouseReleaseEvent(event);
+//}
 
 void RoomScene::actionBP(bool)
 {
@@ -120,7 +120,7 @@ void RoomScene::actionEP(bool)
     Rule::instance()->setIsWaiting(true);
 }
 
-void RoomScene::doAddCard(QJsonObject jsonObject)
+void RoomScene::response_doAddCard(QJsonObject jsonObject)
 {
     int ISDN = jsonObject["ISDN"].toInt();
     int area = jsonObject["area"].toInt();
@@ -155,7 +155,7 @@ void RoomScene::doAddCard(QJsonObject jsonObject)
     }
 }
 
-void RoomScene::doTakeCard(QJsonObject jsonObject)
+void RoomScene::response_doTakeCard(QJsonObject jsonObject)
 {
     int area = jsonObject["area"].toInt();
     int index = jsonObject["index"].toInt();
@@ -182,13 +182,13 @@ void RoomScene::doTakeCard(QJsonObject jsonObject)
     }
 }
 
-void RoomScene::doSetPhase(QJsonObject jsonObject)
+void RoomScene::response_doSetPhase(QJsonObject jsonObject)
 {
     int phase = jsonObject["phase"].toInt();
     Rule::instance()->setPhase(phase + 6);
 }
 
-void RoomScene::setupDeck()
+void RoomScene::response_setupDeck()
 {
     QFile file("test1.txt");
     file.open(QIODevice::ReadOnly | QIODevice::Text);
@@ -210,17 +210,28 @@ void RoomScene::setupDeck()
     Net::instance()->sendMessage(2000);
 }
 
-void RoomScene::startGame()
+void RoomScene::response_startGame()
 {
     for (int i = 0; i < 5; i++)
     {
         Card* card = deckarea->takeCard(0);
         handarea->addCard(card);
+
+        connect(card, &Card::normalSummon, [=]()
+            {
+                handarea->takeCard(card->getIndex());
+                fieldyardarea->addCard(card, true, true);
+            });
+        connect(card, &Card::setCard, [=]()
+            {
+                handarea->takeCard(card->getIndex());
+                fieldyardarea->addCard(card, false, false);
+            });
     }
     Net::instance()->sendMessage(3000);
 }
 
-void RoomScene::drawPhase()
+void RoomScene::response_drawPhase()
 {
     Rule::instance()->setPhase(Rule::myDP);
     Card* card = deckarea->takeCard();
@@ -228,7 +239,7 @@ void RoomScene::drawPhase()
     Net::instance()->sendMessage(20001);
 }
 
-void RoomScene::standbyPhase()
+void RoomScene::response_standbyPhase()
 {
     Rule::instance()->setPhase(Rule::mySP);
     fieldyardarea->initializeCards();
@@ -236,23 +247,28 @@ void RoomScene::standbyPhase()
     Net::instance()->sendMessage(30001);
 }
 
-void RoomScene::main1Phase()
+void RoomScene::response_main1Phase()
 {
     Rule::instance()->setPhase(Rule::myM1);
 }
 
-void RoomScene::battlePhase()
+void RoomScene::response_battlePhase()
 {
     Rule::instance()->setPhase(Rule::myBP);
 }
 
-void RoomScene::main2Phase()
+void RoomScene::response_main2Phase()
 {
     Rule::instance()->setPhase(Rule::myM2);
 }
 
-void RoomScene::endPhase()
+void RoomScene::response_endPhase()
 {
     Rule::instance()->setPhase(Rule::myEP);
     Net::instance()->sendMessage(70001);
+}
+
+void RoomScene::response_doEndOpponentBattlePhase()
+{
+    Rule::instance()->setPhase(Rule::myM2);
 }
