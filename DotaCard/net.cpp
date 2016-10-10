@@ -26,7 +26,7 @@ void Net::write(QJsonObject jsonObject)
     QJsonDocument jsonDoucment(jsonObject);
     QByteArray byteArray = jsonDoucment.toJson(QJsonDocument::Compact); //压缩的json
     client->sendBinaryMessage(byteArray);
-    qDebug() << "write: " << byteArray;
+    qDebug() << "write: " << jsonObject;
 }
 
 void Net::doAddCard(int ISDN, int area, int index, bool face, bool stand) //添加
@@ -54,7 +54,7 @@ void Net::doTakeCard(int area, int index) //删除
     write(object);
 }
 
-void Net::doSetPhase(int phase)
+void Net::doSetPhase(int phase) //告诉对方我的阶段
 {
     QJsonObject parameter;
     parameter.insert("phase", phase);
@@ -75,7 +75,7 @@ void Net::readFromServer(QByteArray json)
 {
     QJsonDocument jsonDoucment = QJsonDocument::fromJson(json);
     QJsonObject object = jsonDoucment.object();
-    qDebug() << "Net's readFromServer" << json;
+    qDebug() << "Net's readFromServer" << object;
 
     QString request = object["request"].toString();
     if (request.isEmpty())
@@ -95,6 +95,12 @@ void Net::readFromServer(QByteArray json)
             QMetaObject::invokeMethod(this, request.toLatin1().data(), Q_ARG(QJsonObject, parameter));
         }
     }
+
+    //    case 8888:
+    //        emit actionCommand(jsonObject["parameter"].toInt(), jsonObject["from"].toInt());
+    //        break;
+    //    case 0: //说明对方不采取任何行动，我方继续行动
+    //        emit getResponse();
 }
 
 void Net::sendMessage(int command)
@@ -103,3 +109,21 @@ void Net::sendMessage(int command)
     jsonObject.insert("command", command);
     write(jsonObject);
 }
+
+void Net::doEndOpponentBattlePhase() //结束对方的战斗阶段
+{
+    QJsonObject object;
+    object.insert("request", "doEndOpponentBattlePhase");
+    write(object);
+}
+
+//void Net::doCentaurWarrunnerEffect2()
+//{
+//    emit actionCommand(99993, index);
+
+//    QJsonObject jsonObject;
+//    jsonObject.insert("command", 8888);
+//    jsonObject.insert("parameter", 88883);
+//    jsonObject.insert("index", index);
+//    write(jsonObject);
+//}
