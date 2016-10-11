@@ -6,7 +6,7 @@
 #include <QMouseEvent>
 #include <QCursor>
 
-class Card : public QGraphicsObject
+class Card : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
@@ -125,13 +125,9 @@ public:
     void setCurrentflag(Card::CardFlag flag);
 
     int getISDN() const;
-    //    void setISDN(int value); 不提供setISDN方法
 
     QString getName() const;
     void setName(const QString& value);
-
-    QString getImage() const;
-    void setImage(const QString& value);
 
     int getArea() const;
     void setArea(int value);
@@ -148,8 +144,6 @@ public:
     bool getInActive() const;
     void setInActive(bool value);
 
-    void nextCursor();
-
     void testAll();
     bool testSpecialSummon();
     bool testNormalSummon();
@@ -157,7 +151,7 @@ public:
     bool testFlipSummon();
     bool testDefencePosition();
     bool testAttackPosition();
-    bool testEffect();
+    virtual bool testEffect();
     bool testAttack();
 
     bool getChangePosition() const;
@@ -167,15 +161,12 @@ public:
     void setIndex(int value);
 
 protected:
-    QRectF boundingRect() const;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
 
     int ISDN; //图片唯一ID
     QString name; //图片名字
-    QString image; //图片路径，包括存储文件夹路径和图片名字
     int type;
     int ATK;
     int DEF;
@@ -183,12 +174,7 @@ protected:
     int attribute;
     int index; //从左往右数第几张(第1张是index==0)
 
-    virtual void cardEffect(int i = 1);
-
-    bool effectOnYourBattle; //可以在敌方战斗流程发动
-
 private:
-    QPixmap pixmap; //存储图片的容器
     QString description; //卡牌描述
     int area; //卡牌位置，比如在手上或者在前场
     bool face; // 卡牌表侧表示或者里侧表示
@@ -203,7 +189,7 @@ signals:
     void hover();
     void normalSummon();
     void setCard();
-    void activeEffect();
+    void tribute();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
@@ -228,7 +214,9 @@ class CentaurWarrunner : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE CentaurWarrunner();
-    void cardEffect(int);
+    virtual bool testEffect();
+    //private:
+    //    bool effect2;//未发动过效果2的话，则为true
 };
 
 /*!
