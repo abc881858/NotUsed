@@ -314,6 +314,9 @@ void EnemyDeckArea::addCard(Card* card)
 void EnemyDeckArea::response_addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(yourDeck.size());
+    card->setFace(false);
+    card->setStand(true);
     card->setArea(Card::EnemyDeckArea);
     yourDeck << card;
 }
@@ -399,8 +402,10 @@ QList<Card*> EnemyHandArea::getYourHand() const
 void EnemyHandArea::response_addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(yourHand.size());
+    card->setFace(false);
+    card->setStand(true);
     card->setArea(Card::EnemyHandArea);
-
     yourHand << card;
     adjustCards();
 }
@@ -458,6 +463,9 @@ QList<Card*> EnemyFieldyardArea::getYourFieldyard() const
 void EnemyFieldyardArea::response_addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(yourFieldyard.size());
+    card->setFace(card->getFace());
+    card->setStand(card->getStand());
     card->setArea(Card::EnemyFieldyardArea);
     yourFieldyard << card;
     adjustCards();
@@ -557,6 +565,9 @@ QList<Card*> EnemyGraveyardArea::getYourGraveyard() const
 void EnemyGraveyardArea::response_addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(yourGraveyard.size());
+    card->setFace(true);
+    card->setStand(true);
     card->setArea(Card::EnemyFieldyardArea);
     yourGraveyard << card;
     adjustCards();
