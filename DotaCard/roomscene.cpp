@@ -4,6 +4,7 @@
 #include <QAction>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QFile>
+#include <QMessageBox>
 
 #include "engine.h"
 #include "rule.h"
@@ -84,10 +85,8 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_drawPhase()), this, SLOT(response_drawPhase()));
     connect(Net::instance(), SIGNAL(request_standbyPhase()), this, SLOT(response_standbyPhase()));
     connect(Net::instance(), SIGNAL(request_main1Phase()), this, SLOT(response_main1Phase()));
-    connect(Net::instance(), SIGNAL(request_battlePhase()), this, SLOT(response_battlePhase()));
-    connect(Net::instance(), SIGNAL(request_main2Phase()), this, SLOT(response_main2Phase()));
-    connect(Net::instance(), SIGNAL(request_endPhase()), this, SLOT(response_endPhase()));
     connect(Net::instance(), SIGNAL(request_doEndOpponentBattlePhase()), this, SLOT(response_doEndOpponentBattlePhase()));
+    connect(Net::instance(), SIGNAL(request_askForResponse()), this, SLOT(response_askForResponse()));
 }
 
 //void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -102,22 +101,19 @@ RoomScene::RoomScene(QObject* parent)
 void RoomScene::actionBP(bool)
 {
     Rule::instance()->setPhase(Rule::myBP);
-    Net::instance()->sendMessage(50001);
-    Rule::instance()->setIsWaiting(true);
+    Rule::instance()->setDoing(false);
 }
 
 void RoomScene::actionM2(bool)
 {
     Rule::instance()->setPhase(Rule::myM2);
-    Net::instance()->sendMessage(60001);
-    Rule::instance()->setIsWaiting(true);
+    Rule::instance()->setDoing(false);
 }
 
 void RoomScene::actionEP(bool)
 {
     Rule::instance()->setPhase(Rule::myEP);
-    Net::instance()->sendMessage(70001);
-    Rule::instance()->setIsWaiting(true);
+    Rule::instance()->setDoing(false);
 }
 
 void RoomScene::response_doAddCard(QJsonObject jsonObject)
@@ -204,6 +200,22 @@ void RoomScene::response_setupDeck()
                 QString name = card->getName();
                 emit hover(name);
             });
+
+        connect(card, &Card::normalSummon, [=]()
+            {
+                handarea->takeCard(card->getIndex());
+                fieldyardarea->addCard(card, true, true);
+            });
+        connect(card, &Card::setCard, [=]()
+            {
+                handarea->takeCard(card->getIndex());
+                fieldyardarea->addCard(card, false, false);
+            });
+        connect(card, &Card::tribute, [=]()
+            {
+                fieldyardarea->takeCard(card->getIndex());
+                graveyardarea->addCard(card);
+            });
     }
     file.close();
 
@@ -216,17 +228,6 @@ void RoomScene::response_startGame()
     {
         Card* card = deckarea->takeCard(0);
         handarea->addCard(card);
-
-        connect(card, &Card::normalSummon, [=]()
-            {
-                handarea->takeCard(card->getIndex());
-                fieldyardarea->addCard(card, true, true);
-            });
-        connect(card, &Card::setCard, [=]()
-            {
-                handarea->takeCard(card->getIndex());
-                fieldyardarea->addCard(card, false, false);
-            });
     }
     Net::instance()->sendMessage(3000);
 }
@@ -252,23 +253,56 @@ void RoomScene::response_main1Phase()
     Rule::instance()->setPhase(Rule::myM1);
 }
 
-void RoomScene::response_battlePhase()
-{
-    Rule::instance()->setPhase(Rule::myBP);
-}
-
-void RoomScene::response_main2Phase()
-{
-    Rule::instance()->setPhase(Rule::myM2);
-}
-
-void RoomScene::response_endPhase()
-{
-    Rule::instance()->setPhase(Rule::myEP);
-    Net::instance()->sendMessage(70001);
-}
-
 void RoomScene::response_doEndOpponentBattlePhase()
 {
     Rule::instance()->setPhase(Rule::myM2);
+}
+
+void RoomScene::response_askForResponse()
+{
+    Rule::instance()->setDoing(true);
+
+    Rule::Phase phase = Rule::instance()->getphase();
+    if(phase == Rule::myDP || phase == Rule::mySP || phase == Rule::myM1
+       || phase == Rule::myBP || phase == Rule::myM2 || phase == Rule::myEP)
+    {
+        return;
+    }
+
+    bool responsible = false;
+    for (Card* card : fieldyardarea->getMyFieldyard())
+    {
+        if (card->testEffect())
+        {
+            responsible = true;
+        }
+    }
+    for (Card* card : fieldgroundarea->getMyFieldground())
+    {
+        if (card->testEffect())
+        {
+            responsible = true;
+        }
+    }
+
+    if (!responsible)
+    {
+        //没有可以Active的卡牌，我方进入“非 isDoing”模式，通知对方行动
+        Rule::instance()->setDoing(false);
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("if chain or not?");
+        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        int ret = msgBox.exec();
+        if (ret == QMessageBox::Close)
+        {
+            Rule::instance()->setDoing(false);
+        }
+        else
+        {
+            msgBox.hide();
+        }
+    }
 }
