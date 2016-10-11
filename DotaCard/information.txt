@@ -24,3 +24,6 @@ Net 类是主叫方
 RoomScene 类是被叫方
 
 Engine Net Rule 是3个单例
+
+在 response_setupDeck 的 Card* card = Engine::instance()->cloneCard(ISDN);
+之后 去emit 和card 有关的signals （例如 summon set 之类的）
