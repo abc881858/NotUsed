@@ -22,6 +22,13 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::write(QWebSocket* socket, QJsonObject jsonObject)
+{
+    QJsonDocument jsonDoucment(jsonObject);
+    QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    socket->sendBinaryMessage(json);
+}
+
 void MainWindow::newConnection()
 {
     qDebug() << "a client socket connected...";
@@ -48,9 +55,9 @@ void MainWindow::newConnection()
 
 void MainWindow::readFromFirstClient(QByteArray byteArray)
 {
-    qDebug() << "readFromFirstClient: " << byteArray;
     QJsonDocument jsonDoucment = QJsonDocument::fromJson(byteArray);
     QJsonObject jsonObject = jsonDoucment.object();
+    qDebug() << "readFromFirstClient: " << jsonObject;
 
     if (clients.count() == 1)
     {
@@ -58,47 +65,68 @@ void MainWindow::readFromFirstClient(QByteArray byteArray)
         return;
     }
 
+    if (jsonObject["command"].toInt() == 0)
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert("request", "noResponse");
+        write(clients[1], jsonObject);
+    }
     if (jsonObject["command"].toInt() == 2000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "setupDeck");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[1]->sendBinaryMessage(json);
+        write(clients[1], jsonObject);
     }
     else if (jsonObject["command"].toInt() == 3000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "startGame");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[1]->sendBinaryMessage(json);
+        write(clients[1], jsonObject);
     }
     else if (jsonObject["command"].toInt() == 20001)
     {
         //默认对端无响应，直接进入standbyPhase（即30001阶段）
         QJsonObject jsonObject;
         jsonObject.insert("request", "standbyPhase");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[0], jsonObject);
     }
     else if (jsonObject["command"].toInt() == 30001)
     {
         //默认对端无响应，直接进入main1Phase（即40001阶段）
         QJsonObject jsonObject;
         jsonObject.insert("request", "main1Phase");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[0], jsonObject);
     }
+//    else if (jsonObject["command"].toInt() == 40001)
+//    {
+//        QJsonObject jsonObject;
+//        jsonObject.insert("request", "battlePhase");
+//        QJsonDocument jsonDoucment(jsonObject);
+//        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+//        clients[1]->write(json);
+//    }
+//    else if (jsonObject["command"].toInt() == 50001)
+//    {
+//        QJsonObject jsonObject;
+//        jsonObject.insert("request", "main2Phase");
+//        QJsonDocument jsonDoucment(jsonObject);
+//        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+//        clients[1]->write(json);
+//    }
+//    else if (jsonObject["command"].toInt() == 60001)
+//    {
+//        QJsonObject jsonObject;
+//        jsonObject.insert("request", "endPhase");
+//        QJsonDocument jsonDoucment(jsonObject);
+//        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+//        clients[1]->write(json);
+//    }
     else if (jsonObject["command"].toInt() == 70001)
     {
+        //默认对端无响应，直接进入yourPhase（即对方抽卡阶段）
         QJsonObject jsonObject;
         jsonObject.insert("request", "drawPhase");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[1]->sendBinaryMessage(json);
+        write(clients[1], jsonObject);
     }
     else
     {
@@ -108,59 +136,77 @@ void MainWindow::readFromFirstClient(QByteArray byteArray)
 
 void MainWindow::readFromSecondClient(QByteArray byteArray)
 {
-    qDebug() << "readFromSecondClient: " << byteArray;
     QJsonDocument jsonDoucment = QJsonDocument::fromJson(byteArray);
     QJsonObject jsonObject = jsonDoucment.object();
+    qDebug() << "readFromSecondClient: " << jsonObject;
 
+    if (jsonObject["command"].toInt() == 0)
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert("request", "noResponse");
+        write(clients[0], jsonObject);
+    }
     if (jsonObject["command"].toInt() == 1000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "setupDeck");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[0], jsonObject);
     }
     else if (jsonObject["command"].toInt() == 2000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "startGame");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[0], jsonObject);
     }
     else if (jsonObject["command"].toInt() == 3000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "drawPhase");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[0], jsonObject);
     }
     else if (jsonObject["command"].toInt() == 20001)
     {
         //默认对端无响应，直接进入standbyPhase（即30000阶段）
         QJsonObject jsonObject;
         jsonObject.insert("request", "standbyPhase");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[1], jsonObject);
     }
     else if (jsonObject["command"].toInt() == 30001)
     {
         //默认对端无响应，直接进入main1Phase（即40000阶段）
         QJsonObject jsonObject;
         jsonObject.insert("request", "main1Phase");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[1], jsonObject);
     }
+    //    else if (jsonObject["command"].toInt() == 40001)
+    //    {
+    //        QJsonObject jsonObject;
+    //        jsonObject.insert("request", "battlePhase");
+    //        QJsonDocument jsonDoucment(jsonObject);
+    //        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    //        clients[0]->write(json);
+    //    }
+    //    else if (jsonObject["command"].toInt() == 50001)
+    //    {
+    //        QJsonObject jsonObject;
+    //        jsonObject.insert("request", "main2Phase");
+    //        QJsonDocument jsonDoucment(jsonObject);
+    //        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    //        clients[0]->write(json);
+    //    }
+    //    else if (jsonObject["command"].toInt() == 60001)
+    //    {
+    //        QJsonObject jsonObject;
+    //        jsonObject.insert("request", "endPhase");
+    //        QJsonDocument jsonDoucment(jsonObject);
+    //        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
+    //        clients[0]->write(json);
+    //    }
     else if (jsonObject["command"].toInt() == 70001)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "drawPhase");
-        QJsonDocument jsonDoucment(jsonObject);
-        QByteArray json = jsonDoucment.toJson(QJsonDocument::Compact);
-        clients[0]->sendBinaryMessage(json);
+        write(clients[0], jsonObject);
     }
     else
     {
