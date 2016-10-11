@@ -424,43 +424,43 @@ void Card::setArea(int value)
     {
     case 1:
         //DeckArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     case 2:
         //HandArea
-        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), false);
+        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), true);
         break;
     case 3:
         //FieldyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     case 4:
         //FieldgroundArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     case 5:
         //GraveyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     case 6:
         //EnemyDeckArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     case 7:
         //EnemyHandArea
-        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), false);
+        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), true);
         break;
     case 8:
         //EnemyFieldyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     case 9:
         //EnemyFieldgroundArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     case 10:
         //EnemyGraveyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
         break;
     default:
         break;
