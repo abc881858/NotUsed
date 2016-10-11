@@ -35,10 +35,8 @@ signals:
     Q_INVOKABLE void request_drawPhase();
     Q_INVOKABLE void request_standbyPhase();
     Q_INVOKABLE void request_main1Phase();
-    Q_INVOKABLE void request_battlePhase();
-    Q_INVOKABLE void request_main2Phase();
-    Q_INVOKABLE void request_endPhase();
     Q_INVOKABLE void request_doEndOpponentBattlePhase();
+    Q_INVOKABLE void request_askForResponse();
 };
 
 #endif // NET_H
