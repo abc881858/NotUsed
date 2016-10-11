@@ -21,6 +21,7 @@ public:
     };
 
     static Rule* instance();
+    void initialize();
 
     bool getOneTurnOneNormalSummon() const;
     void setOneTurnOneNormalSummon(bool value);
@@ -29,17 +30,13 @@ public:
     void setPhase(int phase);
     Phase getphase() const;
 
-    bool getIsWaiting() const;
-    void setIsWaiting(bool value);
-
-    bool getIsResponsing() const;
-    void setIsResponsing(bool value);
+    bool getDoing() const;
+    void setDoing(bool value);
 
 private:
     bool oneTurnOneNormalSummon;
     Rule::Phase phase;
-    bool isWaiting;
-    bool isResponsing;
+    bool isDoing;
 };
 
 #endif // RULE_H
