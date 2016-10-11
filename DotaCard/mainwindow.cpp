@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget* parent)
     setPalette(palette);
 
     Net::instance()->initialize();
+    Rule::instance()->initialize();
 
     //    //对端做了什么操作，我方都要显示出来
     //    connect(Net::instance(), SIGNAL(actionCommand(int, int)), this, SLOT(doActionCommand(int, int)));
