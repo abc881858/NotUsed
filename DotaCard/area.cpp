@@ -304,6 +304,9 @@ void EnemyDeckArea::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QW
 void EnemyDeckArea::addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(yourDeck.size());
+    card->setFace(false);
+    card->setStand(true);
     card->setArea(Card::EnemyDeckArea);
     yourDeck << card;
 }
@@ -373,8 +376,10 @@ void EnemyHandArea::adjustCards()
 void EnemyHandArea::addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(yourHand.size());
+    card->setFace(false);
+    card->setStand(true);
     card->setArea(Card::EnemyHandArea);
-
     yourHand << card;
     adjustCards();
 }
@@ -431,9 +436,10 @@ void EnemyFieldyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem
 void EnemyFieldyardArea::addCard(Card* card, bool face, bool stand)
 {
     card->setParentItem(this);
-    card->setArea(Card::EnemyFieldyardArea);
+    card->setIndex(yourFieldyard.size());
     card->setFace(face);
     card->setStand(stand);
+    card->setArea(Card::EnemyFieldyardArea);
     yourFieldyard << card;
     adjustCards();
 }
@@ -529,6 +535,9 @@ void EnemyGraveyardArea::paint(QPainter* painter, const QStyleOptionGraphicsItem
 void EnemyGraveyardArea::addCard(Card* card)
 {
     card->setParentItem(this);
+    card->setIndex(yourGraveyard.size());
+    card->setFace(true);
+    card->setStand(true);
     card->setArea(Card::EnemyFieldyardArea);
     yourGraveyard << card;
     adjustCards();
