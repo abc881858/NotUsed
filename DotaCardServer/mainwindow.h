@@ -21,9 +21,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
-
-    QWebSocketServer *server;
-    QList<QWebSocket*> clients;
+    void write(QWebSocket* socket, QJsonObject jsonObject);
 
 public slots:
     void newConnection();
@@ -32,6 +30,8 @@ public slots:
 
 private:
     Ui::MainWindow* ui;
+    QWebSocketServer* server;
+    QList<QWebSocket*> clients;
 };
 
 #endif // MAINWINDOW_H
