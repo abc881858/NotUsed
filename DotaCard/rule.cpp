@@ -9,6 +9,12 @@ Rule* Rule::instance()
     return rule();
 }
 
+void Rule::initialize()
+{
+    isDoing = false;
+    oneTurnOneNormalSummon = false;
+}
+
 bool Rule::getOneTurnOneNormalSummon() const
 {
     return oneTurnOneNormalSummon;
@@ -35,22 +41,17 @@ Rule::Phase Rule::getphase() const
     return this->phase;
 }
 
-bool Rule::getIsWaiting() const
+bool Rule::getDoing() const
 {
-    return isWaiting;
+    return isDoing;
 }
 
-void Rule::setIsWaiting(bool value)
+void Rule::setDoing(bool value)
 {
-    isWaiting = value;
-}
+    isDoing = value;
 
-bool Rule::getIsResponsing() const
-{
-    return isResponsing;
-}
-
-void Rule::setIsResponsing(bool value)
-{
-    isResponsing = value;
+    if(!isDoing)
+    {
+        Net::instance()->sendMessage(0);
+    }
 }
