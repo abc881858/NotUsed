@@ -47,10 +47,8 @@ public slots:
     void response_drawPhase();
     void response_standbyPhase();
     void response_main1Phase();
-    void response_battlePhase();
-    void response_main2Phase();
-    void response_endPhase();
     void response_doEndOpponentBattlePhase();
+    void response_askForResponse();
 };
 
 #endif // ROOMSCENE_H
