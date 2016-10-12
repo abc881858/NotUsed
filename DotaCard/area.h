@@ -139,7 +139,7 @@ public:
     Card* takeCard(int index);
     QList<Card*> getYourFieldyard() const;
 
-    void response_addCard(Card* card);
+    void response_addCard(Card* card, bool face = true, bool stand = true);
     Card* response_takeCard(int index);
 
 private:
