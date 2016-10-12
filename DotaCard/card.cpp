@@ -13,7 +13,7 @@ Card::Card()
     setPixmap(QPixmap(":/png/png/NULL.jpg"));
     area = NoArea;
     type = NoType;
-    //    effectOnYourBattle = false;
+    setTransformationMode(Qt::SmoothTransformation);
 }
 
 /////////////////////////// Begin Test All Card Status /////////////////////////////
@@ -37,7 +37,7 @@ bool Card::testEffect()
 
 bool Card::testSpecialSummon()
 {
-    if (area != HandArea)
+    if (area != 2)
     {
         return false;
     }
@@ -46,7 +46,7 @@ bool Card::testSpecialSummon()
 
 bool Card::testNormalSummon()
 {
-    if (area != HandArea)
+    if (area != 2)
     {
         return false;
     }
@@ -60,7 +60,7 @@ bool Card::testNormalSummon()
 
 bool Card::testSetCard()
 {
-    if (area != HandArea)
+    if (area != 2)
     {
         return false;
     }
@@ -172,55 +172,15 @@ void Card::setCurrentflag(Card::CardFlag flag)
     }
 }
 
-//QRectF Card::boundingRect() const
-//{
-//    return QRectF(pixmap.rect());
-//}
-
-//void Card::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
-//{
-//    if (area == DeckArea || area == EnemyDeckArea)
-//    {
-//        return;
-//    }
-
-//    if (area != EnemyHandArea && face)
-//    {
-//        pixmap = QPixmap(image);
-//    }
-//    else
-//    {
-//        pixmap = QPixmap(":/png/png/NULL.jpg");
-//    }
-
-//    if (area == HandArea || area == EnemyHandArea)
-//    {
-//        pixmap = pixmap.scaled(100, 145, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-//    }
-//    else
-//    {
-//        pixmap = pixmap.scaled(50, 72, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-//    }
-
-//    if (!stand)
-//    {
-//        QMatrix matrix;
-//        matrix.rotate(-90);
-//        pixmap = pixmap.transformed(matrix);
-//    }
-
-//    painter->drawPixmap(0, 0, pixmap);
-//}
-
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
     qDebug() << "hoverEnterEvent: area = " << area;
     switch (area)
     {
-    case HandArea:
+    case 2:
         setY(-35);
         break;
-    case EnemyHandArea:
+    case 7:
         setY(35);
         break;
     default:
@@ -256,7 +216,7 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
-    if (area == HandArea || area == EnemyHandArea)
+    if (area == 2 || area == 7)
     {
         setY(0);
         setCursor(Qt::ArrowCursor);
@@ -334,15 +294,15 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         switch (area)
         {
-        case HandArea:
+        case 2:
             if (currentflag == NormalSummon)
             {
-                Rule::instance()->setOneTurnOneNormalSummon(false);
+//                Rule::instance()->setOneTurnOneNormalSummon(false);
                 emit normalSummon();
             }
             else if (currentflag == SetCard)
             {
-                Rule::instance()->setOneTurnOneNormalSummon(false);
+//                Rule::instance()->setOneTurnOneNormalSummon(false);
                 emit setCard();
             }
             else if (currentflag == Effect)
@@ -356,7 +316,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
                 //emit specialSummon();
             }
             break;
-        case FieldyardArea:
+        case 3:
             if (currentflag == FlipSummon)
             {
                 //目前没有翻转召唤
@@ -420,47 +380,48 @@ void Card::setArea(int value)
     int width = pixmap().width();
     int height = pixmap().height();
 
+    setTransformationMode(Qt::SmoothTransformation);
     switch (area)
     {
     case 1:
         //DeckArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     case 2:
         //HandArea
-        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), true);
+        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), false);
         break;
     case 3:
         //FieldyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     case 4:
         //FieldgroundArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     case 5:
         //GraveyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     case 6:
         //EnemyDeckArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     case 7:
         //EnemyHandArea
-        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), true);
+        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), false);
         break;
     case 8:
         //EnemyFieldyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     case 9:
         //EnemyFieldgroundArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     case 10:
         //EnemyGraveyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), true);
+        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
         break;
     default:
         break;
@@ -509,9 +470,16 @@ void Card::setStand(bool value)
     }
     else
     {
-        QMatrix matrix;
-        matrix.rotate(-90);
-        setTransform(QTransform(matrix), true);
+        setTransformationMode(Qt::SmoothTransformation);
+        if(face)
+        {
+            setTransformOriginPoint(290,415);
+        }
+        else
+        {
+            setTransformOriginPoint(100,145);
+        }
+        setRotation(-90);
     }
 }
 
@@ -543,7 +511,7 @@ bool CentaurWarrunner::testEffect()
 {
     Rule::Phase phase = Rule::instance()->getphase();
 
-    if (getArea() == Card::FieldyardArea && getFace() && Rule::instance()->getDoing())
+    if (getArea() == 3 && getFace() && Rule::instance()->getDoing())
     {
         /// ①将这张卡作为祭品发动，强制结束对方的战斗阶段
         /// 若这张卡装备了“dota-跳刀”TODO: 跳刀未开发，暂时先不判断是否装备跳刀
