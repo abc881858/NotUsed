@@ -12,6 +12,7 @@ class RoomScene : public QGraphicsScene
     Q_OBJECT
 public:
     explicit RoomScene(QObject* parent = 0);
+    Card *enemyTakedCard;
 
 private:
     DeckArea* deckarea;
