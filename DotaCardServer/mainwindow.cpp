@@ -65,10 +65,11 @@ void MainWindow::readFromFirstClient(QByteArray byteArray)
         return;
     }
 
-    if (jsonObject["command"].toInt() == 0)
+    //toInt默认值是0，所以就算没有command，也会返回0，请求响应code改为666
+    if (jsonObject["command"].toInt() == 666)
     {
         QJsonObject jsonObject;
-        jsonObject.insert("request", "noResponse");
+        jsonObject.insert("request", "askForResponse");
         write(clients[1], jsonObject);
     }
     if (jsonObject["command"].toInt() == 2000)
@@ -143,7 +144,7 @@ void MainWindow::readFromSecondClient(QByteArray byteArray)
     if (jsonObject["command"].toInt() == 0)
     {
         QJsonObject jsonObject;
-        jsonObject.insert("request", "noResponse");
+        jsonObject.insert("request", "askForResponse");
         write(clients[0], jsonObject);
     }
     if (jsonObject["command"].toInt() == 1000)
