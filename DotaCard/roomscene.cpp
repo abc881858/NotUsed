@@ -120,31 +120,34 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
 {
     int ISDN = jsonObject["ISDN"].toInt();
     int area = jsonObject["area"].toInt();
-    int index = jsonObject["index"].toInt();
+//    int index = jsonObject["index"].toInt();
     bool face = jsonObject["face"].toBool();
     bool stand = jsonObject["stand"].toBool();
-
-    Card* card = Engine::instance()->cloneCard(ISDN);
-    card->setIndex(index);
-    card->setFace(face);
-    card->setStand(stand);
 
     switch (area)
     {
     case 1:
+    {
+        Card* card = Engine::instance()->cloneCard(ISDN);
+        connect(card, &Card::hover, [=]()
+            {
+                QString name = card->getName();
+                emit hover(name);
+            });
         enemydeckarea->response_addCard(card);
         break;
+    }
     case 2:
-        enemyhandarea->response_addCard(card);
+        enemyhandarea->response_addCard(enemyTakedCard);
         break;
     case 3:
-        enemyfieldyardarea->response_addCard(card);
+        enemyfieldyardarea->response_addCard(enemyTakedCard, face, stand);
         break;
     //    case 4
-    //        EnemyFieldgroundArea->response_addCard(ISDN, index, face, stand);
+    //        EnemyFieldgroundArea->response_addCard(enemyTakedCard);
     //        break;
     case 5:
-        enemygraveyardarea->response_addCard(card);
+        enemygraveyardarea->response_addCard(enemyTakedCard);
         break;
     default:
         break;
@@ -159,19 +162,19 @@ void RoomScene::response_doTakeCard(QJsonObject jsonObject)
     switch (area)
     {
     case 1:
-        enemydeckarea->response_takeCard(index);
+        enemyTakedCard = enemydeckarea->response_takeCard(index);
         break;
     case 2:
-        enemyhandarea->response_takeCard(index);
+        enemyTakedCard = enemyhandarea->response_takeCard(index);
         break;
     case 3:
-        enemyfieldyardarea->response_takeCard(index);
+        enemyTakedCard = enemyfieldyardarea->response_takeCard(index);
         break;
     //    case 4:
     //        EnemyFieldgroundArea->response_takeCard(index);
     //        break;
     case 5:
-        enemygraveyardarea->response_takeCard(index);
+        enemyTakedCard = enemygraveyardarea->response_takeCard(index);
         break;
     default:
         break;
