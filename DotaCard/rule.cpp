@@ -52,6 +52,6 @@ void Rule::setDoing(bool value)
 
     if(!isDoing)
     {
-        Net::instance()->sendMessage(0);
+        Net::instance()->sendMessage(666);
     }
 }
