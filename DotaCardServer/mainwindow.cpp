@@ -141,7 +141,7 @@ void MainWindow::readFromSecondClient(QByteArray byteArray)
     QJsonObject jsonObject = jsonDoucment.object();
     qDebug() << "readFromSecondClient: " << jsonObject;
 
-    if (jsonObject["command"].toInt() == 0)
+    if (jsonObject["command"].toInt() == 666)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "askForResponse");
