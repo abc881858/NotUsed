@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     area.cpp \
     engine.cpp \
     net.cpp \
-    rule.cpp
+    rule.cpp \
+    cardeffect.cpp
 
 HEADERS  += mainwindow.h \
     card.h \
@@ -46,3 +47,5 @@ RESOURCES += \
 #RC_ICONS
 #RC_LANG
 #VERSION = 1.1.0
+
+TRANSLATIONS += dc_zh_cn.ts
