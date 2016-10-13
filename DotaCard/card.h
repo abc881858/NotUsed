@@ -1,10 +1,21 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include <QGraphicsObject>
-#include <QHash>
-#include <QMouseEvent>
-#include <QCursor>
+#include <QGraphicsPixmapItem>
+
+#define No_Area 0
+#define Deck_Area 1
+#define Hand_Area 2
+#define Fieldyard_Area 3
+#define Fieldground_Area 4
+#define Graveyard_Area 5
+#define EnemyDeck_Area 6
+#define EnemyHand_Area 7
+#define EnemyFieldyard_Area 8
+#define EnemyFieldground_Area 9
+#define EnemyGraveyard_Area 10
+
+#define No_Type 0
 
 class Card : public QObject, public QGraphicsPixmapItem
 {
@@ -133,7 +144,6 @@ public:
     void setArea(int value);
 
     QString getDescription() const;
-    void setDescription(const QString& value);
 
     bool getFace() const;
     void setFace(bool value);
@@ -151,7 +161,7 @@ public:
     bool testFlipSummon();
     bool testDefencePosition();
     bool testAttackPosition();
-    virtual bool testEffect();
+    virtual bool testEffect(){return false;}
     bool testAttack();
 
     bool getChangePosition() const;
@@ -159,6 +169,9 @@ public:
 
     int getIndex() const; //area 需要这个函数
     void setIndex(int value);
+
+    bool getOneTurnOneEffect() const;
+    void setOneTurnOneEffect(bool value);
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
@@ -173,23 +186,24 @@ protected:
     int level;
     int attribute;
     int index; //从左往右数第几张(第1张是index==0)
+    QString description; //卡牌描述
 
 private:
-    QString description; //卡牌描述
     int area; //卡牌位置，比如在手上或者在前场
     bool face; // 卡牌表侧表示或者里侧表示
     bool stand; // 卡牌攻击表示或者防御表示
-    bool inActive; //忘记做什么的了
     CardFlags myflags; //右键可以显示的全部cursor
     CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
     bool changePosition; //每回合可以变更一次攻防表示
+    bool oneTurnOneEffect;
 
 signals:
     void hover();
     void normalSummon();
     void setCard();
     void tribute();
+    void activeEffect();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
@@ -215,8 +229,6 @@ class CentaurWarrunner : public Card
 public:
     Q_INVOKABLE CentaurWarrunner();
     virtual bool testEffect();
-    //private:
-    //    bool effect2;//未发动过效果2的话，则为true
 };
 
 /*!
@@ -236,6 +248,7 @@ class KeeperoftheLight : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE KeeperoftheLight();
+    virtual bool testEffect();
 };
 
 /*!
@@ -252,6 +265,7 @@ class Lion : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE Lion();
+    virtual bool testEffect();
 };
 
 /*!
@@ -271,6 +285,7 @@ class Magnus : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE Magnus();
+    virtual bool testEffect();
 };
 
 /*!
@@ -291,6 +306,7 @@ class NyxAssassin : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE NyxAssassin();
+    virtual bool testEffect();
 };
 
 /*!
@@ -308,6 +324,7 @@ class Rubick : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE Rubick();
+    virtual bool testEffect();
 };
 
 /*!
@@ -324,6 +341,7 @@ class Tusk : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE Tusk();
+    virtual bool testEffect();
 };
 
 /*!
@@ -341,6 +359,7 @@ class Undying : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE Undying();
+    virtual bool testEffect();
 };
 
 /*!
@@ -362,6 +381,7 @@ class VengefulSpirit : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE VengefulSpirit();
+    virtual bool testEffect();
 };
 
 /*!
@@ -380,6 +400,7 @@ class Zeus : public Card
     Q_OBJECT
 public:
     Q_INVOKABLE Zeus();
+    virtual bool testEffect();
 };
 
 #endif // CARD_H
