@@ -1,18 +1,16 @@
 #include "card.h"
-#include <QPainter>
-#include <QMetaObject>
-#include <QGraphicsSceneMouseEvent>
-#include "net.h"
 #include "rule.h"
-#include <QMatrix>
+#include <QGraphicsSceneMouseEvent>
+#include <QDebug>
+#include <QCursor>
 
 Card::Card()
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     setPixmap(QPixmap(":/png/png/NULL.jpg"));
-    area = NoArea;
-    type = NoType;
+    area = No_Area;
+    type = No_Type;
     setTransformationMode(Qt::SmoothTransformation);
 }
 
@@ -30,14 +28,9 @@ void Card::testAll()
     testAttack() ? setCardFlag(Card::Attack, true) : setCardFlag(Card::Attack, false);
 }
 
-bool Card::testEffect()
-{
-    return false;
-}
-
 bool Card::testSpecialSummon()
 {
-    if (area != 2)
+    if (area != Hand_Area)
     {
         return false;
     }
@@ -46,42 +39,78 @@ bool Card::testSpecialSummon()
 
 bool Card::testNormalSummon()
 {
-    if (area != 2)
+    if (area != Hand_Area)
     {
         return false;
     }
+
+    if (!Rule::instance()->getDoing() || !face)
+    {
+        return false;
+    }
+
+    //一回合只能普通召唤一次
     //TODO: 后续增加被其他卡影响，无法普通召唤的判断
-    if (Rule::instance()->getOneTurnOneNormalSummon())
+    if (!Rule::instance()->getOneTurnOneNormalSummon())
+    {
+        return false;
+    }
+
+    Rule::Phase phase = Rule::instance()->getphase();
+    if (phase == Rule::myM1 || phase == Rule::myM2)
     {
         return true;
     }
+
     return false;
 }
 
 bool Card::testSetCard()
 {
-    if (area != 2)
+    if (area != Hand_Area)
     {
         return false;
     }
-    //TODO: 后续增加被其他卡影响，无法覆盖卡牌的判断
-    //包括【怪兽】和【魔陷】的覆盖
-    if (Rule::instance()->getOneTurnOneNormalSummon())
+
+    if (!Rule::instance()->getDoing() || !face)
+    {
+        return false;
+    }
+
+    if (!Rule::instance()->getOneTurnOneNormalSummon())
+    {
+        return false;
+    }
+
+    Rule::Phase phase = Rule::instance()->getphase();
+    if (phase == Rule::myM1 || phase == Rule::myM2)
     {
         return true;
     }
+
     return false;
 }
 
 bool Card::testFlipSummon()
 {
-    //    if (!face && !stand) //FIXME: 后续可以去掉stand
-    //    {
-    //        //TODO: 后续增加被其他卡影响，无法翻转召唤的判断
-    //        if (Rule::instance()->getOneTurnOneNormalSummon()) {
-    //            return true;
-    //        }
-    //    }
+    if (area != Fieldyard_Area)
+    {
+        return false;
+    }
+
+    //TODO: 后续增加被其他卡影响，无法翻转召唤的判断
+    //还要添加一个关键的，刚set的卡牌无法当回合flipSummon
+    if (!Rule::instance()->getDoing() || face)
+    {
+        return false;
+    }
+
+    Rule::Phase phase = Rule::instance()->getphase();
+    if (phase == Rule::myM1 || phase == Rule::myM2)
+    {
+        return true;
+    }
+
     return false;
 }
 
@@ -177,10 +206,10 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     qDebug() << "hoverEnterEvent: area = " << area;
     switch (area)
     {
-    case 2:
+    case Hand_Area:
         setY(-35);
         break;
-    case 7:
+    case EnemyHand_Area:
         setY(35);
         break;
     default:
@@ -216,7 +245,7 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
-    if (area == 2 || area == 7)
+    if (area == Hand_Area || area == EnemyHand_Area)
     {
         setY(0);
         setCursor(Qt::ArrowCursor);
@@ -226,6 +255,10 @@ void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 // 当我点击任意一张卡牌时
 void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (myflags == CardFlags())
+    {
+        return;
+    }
     // 右键点击的话， 切换到下一种鼠标手势， 包括发动效果、特招、普招等等
     if (event->button() == Qt::RightButton)
     {
@@ -294,21 +327,21 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         switch (area)
         {
-        case 2:
+        case Hand_Area:
             if (currentflag == NormalSummon)
             {
-//                Rule::instance()->setOneTurnOneNormalSummon(false);
+                Rule::instance()->setOneTurnOneNormalSummon(false);
                 emit normalSummon();
             }
             else if (currentflag == SetCard)
             {
-//                Rule::instance()->setOneTurnOneNormalSummon(false);
+                Rule::instance()->setOneTurnOneNormalSummon(false);
                 emit setCard();
             }
             else if (currentflag == Effect)
             {
-                //目前没有从手牌发动的特效
-                //emit activeEffect();
+                //目前没有从手牌发动的特效，已经有了
+                //                activeEffectFromHand();
             }
             else if (currentflag == SpecialSummon)
             {
@@ -316,16 +349,16 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
                 //emit specialSummon();
             }
             break;
-        case 3:
+        case Fieldyard_Area:
             if (currentflag == FlipSummon)
             {
                 //目前没有翻转召唤
-                //Rule::instance()->setOneTurnOneNormalSummon(false);
                 //emit flipSummon();
             }
             else if (currentflag == Effect)
             {
-                //emit activeEffect(ISDN,i);
+                setOneTurnOneEffect(false);
+                emit activeEffect();
             }
             break;
         default:
@@ -342,6 +375,11 @@ int Card::getIndex() const
 void Card::setIndex(int value)
 {
     index = value;
+}
+
+QString Card::getDescription() const
+{
+    return description;
 }
 
 bool Card::getChangePosition() const
@@ -380,62 +418,41 @@ void Card::setArea(int value)
     int width = pixmap().width();
     int height = pixmap().height();
 
-    setTransformationMode(Qt::SmoothTransformation);
     switch (area)
     {
-    case 1:
-        //DeckArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case Deck_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
-    case 2:
-        //HandArea
-        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), false);
+    case Hand_Area:
+        setTransform(QTransform::fromScale(100.0 / width, 145.0 / height), false);
         break;
-    case 3:
-        //FieldyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case Fieldyard_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
-    case 4:
-        //FieldgroundArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case Fieldground_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
-    case 5:
-        //GraveyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case Graveyard_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
-    case 6:
-        //EnemyDeckArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case EnemyDeck_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
-    case 7:
-        //EnemyHandArea
-        setTransform(QTransform::fromScale( 100.0/width, 145.0/height), false);
+    case EnemyHand_Area:
+        setTransform(QTransform::fromScale(100.0 / width, 145.0 / height), false);
         break;
-    case 8:
-        //EnemyFieldyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case EnemyFieldyard_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
-    case 9:
-        //EnemyFieldgroundArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case EnemyFieldground_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
-    case 10:
-        //EnemyGraveyardArea
-        setTransform(QTransform::fromScale( 50.0/width, 72.0/height), false);
+    case EnemyGraveyard_Area:
+        setTransform(QTransform::fromScale(50.0 / width, 72.0 / height), false);
         break;
     default:
         break;
     }
-}
-
-QString Card::getDescription() const
-{
-    return description;
-}
-
-void Card::setDescription(const QString& value)
-{
-    description = value;
 }
 
 bool Card::getFace() const
@@ -446,7 +463,7 @@ bool Card::getFace() const
 void Card::setFace(bool value)
 {
     face = value;
-    if(face)
+    if (face)
     {
         setPixmap(QPixmap(QString(":/pic/monster/%1.jpg").arg(name)));
     }
@@ -464,171 +481,30 @@ bool Card::getStand() const
 void Card::setStand(bool value)
 {
     stand = value;
-    if(stand)
+    if (stand)
     {
         //
     }
     else
     {
-        setTransformationMode(Qt::SmoothTransformation);
-        if(face)
+        if (face)
         {
-            setTransformOriginPoint(290,415);
+            setTransformOriginPoint(290, 415);
         }
         else
         {
-            setTransformOriginPoint(100,145);
+            setTransformOriginPoint(100, 145);
         }
         setRotation(-90);
     }
 }
 
-bool Card::getInActive() const
+bool Card::getOneTurnOneEffect() const
 {
-    return inActive;
+    return oneTurnOneEffect;
 }
 
-void Card::setInActive(bool value)
+void Card::setOneTurnOneEffect(bool value)
 {
-    inActive = value;
-}
-
-///////////////////////////////////////////////////////////
-
-CentaurWarrunner::CentaurWarrunner() //半人马酋长
-{
-    ISDN = 601;
-    name = "dota-CentaurWarrunner";
-    setPixmap(QPixmap(":/pic/monster/dota-CentaurWarrunner.jpg"));
-    type = EffectMonster;
-    ATK = 1350;
-    DEF = 1800;
-    level = 3;
-    attribute = Earth;
-}
-
-bool CentaurWarrunner::testEffect()
-{
-    Rule::Phase phase = Rule::instance()->getphase();
-
-    if (getArea() == 3 && getFace() && Rule::instance()->getDoing())
-    {
-        /// ①将这张卡作为祭品发动，强制结束对方的战斗阶段
-        /// 若这张卡装备了“dota-跳刀”TODO: 跳刀未开发，暂时先不判断是否装备跳刀
-        /// 则可以改为丢弃一张手牌发动
-        if (phase == Rule::yourBP)
-        {
-            return true;
-        }
-
-        /// ②你的每回合一次，
-        /// 你可以让自己场上名字带有“dota”的怪兽全部变为攻击表示或防守表示，
-        /// 若这张卡装备了“dota-阿哈利姆神杖”时 TODO: 阿哈利姆神杖未开发，暂时先不判断是否装备阿哈利姆神杖
-        /// 同时令自己场上名字带有“dota”的怪兽的攻击力（或防御力）上升自己原本攻击力（或防御力）的一半。
-        if (phase == Rule::myM1 || phase == Rule::myM2)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-KeeperoftheLight::KeeperoftheLight() //光之守卫
-{
-    ISDN = 602;
-    name = "dota-KeeperoftheLight";
-    setPixmap(QPixmap(":/pic/monster/dota-KeeperoftheLight.jpg"));
-    type = EffectMonster;
-    ATK = 800;
-    DEF = 300;
-    level = 3;
-}
-
-Lion::Lion() //恶魔巫师
-{
-    ISDN = 603;
-    name = "dota-Lion";
-    setPixmap(QPixmap(":/pic/monster/dota-Lion.jpg"));
-    type = EffectMonster;
-    ATK = 1300;
-    DEF = 700;
-    level = 4;
-}
-
-Magnus::Magnus() //半人猛犸
-{
-    ISDN = 604;
-    name = "dota-Magnus";
-    setPixmap(QPixmap(":/pic/monster/dota-Magnus.jpg"));
-    type = EffectMonster;
-    ATK = 1700;
-    DEF = 700;
-    level = 4;
-}
-
-NyxAssassin::NyxAssassin() //地穴刺客
-{
-    ISDN = 605;
-    name = "dota-NyxAssassin";
-    setPixmap(QPixmap(":/pic/monster/dota-NyxAssassin.jpg"));
-    type = EffectMonster;
-    ATK = 1500;
-    DEF = 800;
-    level = 4;
-}
-
-Rubick::Rubick() //大魔导师
-{
-    ISDN = 606;
-    name = "dota-Rubick";
-    setPixmap(QPixmap(":/pic/monster/dota-Rubick.jpg"));
-    type = EffectMonster;
-    ATK = 900;
-    DEF = 300;
-    level = 4;
-}
-
-Tusk::Tusk() //巨牙海民
-{
-    ISDN = 607;
-    name = "dota-Tusk";
-    setPixmap(QPixmap(":/pic/monster/dota-Tusk.jpg"));
-    type = EffectMonster;
-    ATK = 1800;
-    DEF = 1000;
-    level = 4;
-}
-
-Undying::Undying() //不朽尸王
-{
-    ISDN = 608;
-    name = "dota-Undying";
-    setPixmap(QPixmap(":/pic/monster/dota-Undying.jpg"));
-    type = EffectMonster;
-    ATK = 1100;
-    DEF = 1300;
-    level = 3;
-}
-
-VengefulSpirit::VengefulSpirit() //复仇之魂
-{
-    ISDN = 609;
-    name = "dota-VengefulSpirit";
-    setPixmap(QPixmap(":/pic/monster/dota-VengefulSpirit.jpg"));
-    type = EffectMonster;
-    ATK = 1200;
-    DEF = 500;
-    level = 3;
-}
-
-Zeus::Zeus() //奥林匹斯之王
-{
-    ISDN = 610;
-    name = "dota-Zeus";
-    setPixmap(QPixmap(":/pic/monster/dota-Zeus.jpg"));
-    type = EffectMonster;
-    ATK = 500;
-    DEF = 350;
-    level = 2;
+    oneTurnOneEffect = value;
 }
