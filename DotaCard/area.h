@@ -3,7 +3,7 @@
 
 #include <QGraphicsObject>
 
-#include "card.h"
+class Card;
 
 class DeckArea : public QGraphicsObject
 {

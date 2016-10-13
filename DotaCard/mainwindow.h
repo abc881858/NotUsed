@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QList>
-#include "roomscene.h"
+
+class RoomScene;
 
 namespace Ui
 {
@@ -23,23 +23,6 @@ private:
     int yourLP;
 
     RoomScene* roomScene;
-
-    //private slots:
-    //    void setupDeck(QList<int> list);
-    //    void startYourGame();
-    //    void drawMyPhase();
-    //    void drawYourPhase();
-    //    void standbyMyPhase();
-    //    void standbyYourPhase();
-    //    void mainMyPhase1();
-    //    void mainYourPhase1();
-    //    void battleYourPhase();
-    //    void mainYourPhase2();
-    //    void endYourPhase();
-
-    //public slots:
-    //    void doActionCommand(int para, int index);
-    //    void doGetResponse();
 };
 
 #endif // MAINWINDOW_H

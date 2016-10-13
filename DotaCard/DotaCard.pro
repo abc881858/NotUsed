@@ -48,4 +48,8 @@ RESOURCES += \
 #RC_LANG
 #VERSION = 1.1.0
 
+win32 {
+QMAKE_CXXFLAGS+=/wd"4819"
+}
+
 TRANSLATIONS += dc_zh_cn.ts

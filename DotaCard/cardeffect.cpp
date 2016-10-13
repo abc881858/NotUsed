@@ -1,14 +1,12 @@
 #include "roomscene.h"
 
 #include <QDebug>
-#include <QAction>
 #include <QMessageBox>
 
-#include "engine.h"
 #include "rule.h"
 #include "net.h"
+#include "card.h"
 
-//半人马酋长
 CentaurWarrunner::CentaurWarrunner()
 {
     ISDN = 601;

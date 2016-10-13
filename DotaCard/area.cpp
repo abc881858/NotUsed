@@ -1,8 +1,9 @@
-#include "area.h"
 #include <QPainter>
 #include <QDebug>
 
 #include "net.h"
+#include "area.h"
+#include "card.h"
 
 static QRectF DeckAreaRect(0, 0, 50, 72);
 static QRectF HandAreaRect(0, 0, 512, 70);

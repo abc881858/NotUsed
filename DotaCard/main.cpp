@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
+#include <QTranslator>
 #include <QtDebug>
 #include "engine.h"
 #include "mainwindow.h"
@@ -39,6 +40,11 @@ int main(int argc, char* argv[])
     qInstallMessageHandler(myMessageOutput);
 
     QApplication a(argc, argv);
+    QTranslator translator;
+    if (translator.load("dc_zh_cn"))
+    {
+        a.installTranslator(&translator);
+    }
 
     Engine::instance()->loadAllCards();
 

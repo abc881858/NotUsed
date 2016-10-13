@@ -1,6 +1,5 @@
 #include "net.h"
 #include <QHostAddress>
-//#include <functional>
 #include <QJsonDocument>
 #include <QJsonValue>
 #include <QJsonArray>

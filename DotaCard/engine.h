@@ -5,7 +5,7 @@
 #include <QMetaObject>
 #include <QList>
 
-#include "card.h"
+class Card;
 
 class Engine
 {

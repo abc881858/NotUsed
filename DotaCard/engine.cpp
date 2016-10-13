@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "card.h"
 
 Q_GLOBAL_STATIC(Engine, engine)
 

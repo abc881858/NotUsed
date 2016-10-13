@@ -1,7 +1,6 @@
 #include "roomscene.h"
 
 #include <QDebug>
-#include <QAction>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QFile>
 #include <QMessageBox>
@@ -9,6 +8,7 @@
 #include "engine.h"
 #include "rule.h"
 #include "net.h"
+#include "card.h"
 
 static const QPointF DeckPos(485, 426);
 static const QPointF HandPos(19, 529);
@@ -215,6 +215,8 @@ void RoomScene::response_setupDeck()
             {
                 QString name = card->getName();
                 QString description = card->getDescription();
+                qDebug() << "hover Name: " << name;
+                qDebug() << "Description: " << description;
                 emit hover(name, description);
             });
 

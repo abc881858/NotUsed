@@ -2,10 +2,11 @@
 #define ROOMSCENE_H
 
 #include <QGraphicsScene>
-#include "area.h"
 #include <QMenu>
 #include <QAction>
 #include <QJsonObject>
+
+#include "area.h"
 
 class RoomScene : public QGraphicsScene
 {

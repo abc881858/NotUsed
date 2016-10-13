@@ -5,6 +5,7 @@
 #include <QBrush>
 #include <QPixmap>
 
+#include "roomscene.h"
 #include "net.h"
 #include "rule.h"
 

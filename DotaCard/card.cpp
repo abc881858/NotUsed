@@ -1,8 +1,10 @@
 #include "card.h"
-#include "rule.h"
+
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
 #include <QCursor>
+
+#include "rule.h"
 
 Card::Card()
 {
@@ -239,7 +241,6 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
         setCurrentflag(SetCard);
     }
 
-    qDebug() << "hover: " << getName();
     emit hover();
 }
 
