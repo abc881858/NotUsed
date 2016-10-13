@@ -87,6 +87,17 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_main1Phase()), this, SLOT(response_main1Phase()));
     connect(Net::instance(), SIGNAL(request_doEndOpponentBattlePhase()), this, SLOT(response_doEndOpponentBattlePhase()));
     connect(Net::instance(), SIGNAL(request_askForResponse()), this, SLOT(response_askForResponse()));
+
+    connect(Net::instance(), SIGNAL(request_doCentaurWarrunnerEffect(QJsonObject)), this, SLOT(response_doCentaurWarrunnerEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doKeeperoftheLightEffect(QJsonObject)), this, SLOT(response_doKeeperoftheLightEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doLionEffect(QJsonObject)), this, SLOT(response_doLionEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doMagnusEffect(QJsonObject)), this, SLOT(response_doMagnusEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doNyxAssassinEffect(QJsonObject)), this, SLOT(response_doNyxAssassinEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doRubickEffect(QJsonObject)), this, SLOT(response_doRubickEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doTuskEffect(QJsonObject)), this, SLOT(response_doTuskEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doUndyingEffect(QJsonObject)), this, SLOT(response_doUndyingEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doVengefulSpiritEffect(QJsonObject)), this, SLOT(response_doVengefulSpiritEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doZeusEffect(QJsonObject)), this, SLOT(response_doZeusEffect(QJsonObject)));
 }
 
 //void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -120,33 +131,35 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
 {
     int ISDN = jsonObject["ISDN"].toInt();
     int area = jsonObject["area"].toInt();
-//    int index = jsonObject["index"].toInt();
+    //    int index = jsonObject["index"].toInt();
     bool face = jsonObject["face"].toBool();
     bool stand = jsonObject["stand"].toBool();
 
     switch (area)
     {
-    case 1:
+    case Deck_Area:
     {
         Card* card = Engine::instance()->cloneCard(ISDN);
+        //TODO: 现在方便调试，加入对方手牌的hover
         connect(card, &Card::hover, [=]()
             {
                 QString name = card->getName();
-                emit hover(name);
+                QString description = card->getDescription();
+                emit hover(name, description);
             });
         enemydeckarea->response_addCard(card);
         break;
     }
-    case 2:
+    case Hand_Area:
         enemyhandarea->response_addCard(enemyTakedCard);
         break;
-    case 3:
+    case Fieldyard_Area:
         enemyfieldyardarea->response_addCard(enemyTakedCard, face, stand);
         break;
-    //    case 4
+    //    case Fieldground_Area:
     //        EnemyFieldgroundArea->response_addCard(enemyTakedCard);
     //        break;
-    case 5:
+    case Graveyard_Area:
         enemygraveyardarea->response_addCard(enemyTakedCard);
         break;
     default:
@@ -161,19 +174,19 @@ void RoomScene::response_doTakeCard(QJsonObject jsonObject)
 
     switch (area)
     {
-    case 1:
+    case Deck_Area:
         enemyTakedCard = enemydeckarea->response_takeCard(index);
         break;
-    case 2:
+    case Hand_Area:
         enemyTakedCard = enemyhandarea->response_takeCard(index);
         break;
-    case 3:
+    case Fieldyard_Area:
         enemyTakedCard = enemyfieldyardarea->response_takeCard(index);
         break;
-    //    case 4:
+    //    case Fieldground_Area:
     //        EnemyFieldgroundArea->response_takeCard(index);
     //        break;
-    case 5:
+    case Graveyard_Area:
         enemyTakedCard = enemygraveyardarea->response_takeCard(index);
         break;
     default:
@@ -201,7 +214,8 @@ void RoomScene::response_setupDeck()
         connect(card, &Card::hover, [=]()
             {
                 QString name = card->getName();
-                emit hover(name);
+                QString description = card->getDescription();
+                emit hover(name, description);
             });
 
         connect(card, &Card::normalSummon, [=]()
@@ -218,6 +232,13 @@ void RoomScene::response_setupDeck()
             {
                 fieldyardarea->takeCard(card->getIndex());
                 graveyardarea->addCard(card);
+            });
+        connect(card, &Card::activeEffect, [=]()
+            {
+                QString className = card->metaObject()->className();
+                qDebug() << "className: " << className;
+                className.append("Effect");
+                QMetaObject::invokeMethod(this, className.toLatin1().data());
             });
     }
     file.close();
@@ -248,6 +269,14 @@ void RoomScene::response_standbyPhase()
     Rule::instance()->setPhase(Rule::mySP);
     fieldyardarea->initializeCards();
     Rule::instance()->setOneTurnOneNormalSummon(true);
+    for (Card* card : fieldyardarea->getMyFieldyard())
+    {
+        card->setOneTurnOneEffect(true);
+    }
+    for (Card* card : handarea->getMyHand())
+    {
+        card->setOneTurnOneEffect(true);
+    }
     Net::instance()->sendMessage(30001);
 }
 
@@ -266,8 +295,8 @@ void RoomScene::response_askForResponse()
     Rule::instance()->setDoing(true);
 
     Rule::Phase phase = Rule::instance()->getphase();
-    if(phase == Rule::myDP || phase == Rule::mySP || phase == Rule::myM1
-       || phase == Rule::myBP || phase == Rule::myM2 || phase == Rule::myEP)
+    if (phase == Rule::myDP || phase == Rule::mySP || phase == Rule::myM1
+        || phase == Rule::myBP || phase == Rule::myM2 || phase == Rule::myEP)
     {
         return;
     }
@@ -280,13 +309,13 @@ void RoomScene::response_askForResponse()
             responsible = true;
         }
     }
-    for (Card* card : fieldgroundarea->getMyFieldground())
-    {
-        if (card->testEffect())
-        {
-            responsible = true;
-        }
-    }
+    //    for (Card* card : fieldgroundarea->getMyFieldground()) //暂时还没有后场魔陷卡
+    //    {
+    //        if (card->testEffect())
+    //        {
+    //            responsible = true;
+    //        }
+    //    }
 
     if (!responsible)
     {
@@ -296,10 +325,10 @@ void RoomScene::response_askForResponse()
     else
     {
         QMessageBox msgBox;
-        msgBox.setText("if chain or not?");
+        msgBox.setText(tr("if chain or not?"));
         msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
         int ret = msgBox.exec();
-        if (ret == QMessageBox::Close)
+        if (ret == QDialog::Rejected)
         {
             Rule::instance()->setDoing(false);
         }
