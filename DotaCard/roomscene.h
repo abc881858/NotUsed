@@ -12,7 +12,7 @@ class RoomScene : public QGraphicsScene
     Q_OBJECT
 public:
     explicit RoomScene(QObject* parent = 0);
-    Card *enemyTakedCard;
+    Card* enemyTakedCard;
 
 private:
     DeckArea* deckarea;
@@ -30,11 +30,11 @@ private:
     QAction* goM2;
     QAction* goEP;
 
-//protected:
-//    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+    //protected:
+    //    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 
 signals:
-    void hover(QString);
+    void hover(QString, QString);
 
 public slots:
     void actionBP(bool);
@@ -50,6 +50,28 @@ public slots:
     void response_main1Phase();
     void response_doEndOpponentBattlePhase();
     void response_askForResponse();
+
+    void CentaurWarrunnerEffect();
+    void KeeperoftheLightEffect();
+    void LionEffect();
+    void MagnusEffect();
+    void NyxAssassinEffect();
+    void RubickEffect();
+    void TuskEffect();
+    void UndyingEffect();
+    void VengefulSpiritEffect();
+    void ZeusEffect();
+
+    void response_doCentaurWarrunnerEffect(QJsonObject);
+    void response_doKeeperoftheLightEffect(QJsonObject);
+    void response_doLionEffect(QJsonObject);
+    void response_doMagnusEffect(QJsonObject);
+    void response_doNyxAssassinEffect(QJsonObject);
+    void response_doRubickEffect(QJsonObject);
+    void response_doTuskEffect(QJsonObject);
+    void response_doUndyingEffect(QJsonObject);
+    void response_doVengefulSpiritEffect(QJsonObject);
+    void response_doZeusEffect(QJsonObject);
 };
 
 #endif // ROOMSCENE_H
