@@ -1,12 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QPalette>
 #include <QBrush>
+#include <QPalette>
 #include <QPixmap>
 
-#include "roomscene.h"
 #include "net.h"
+#include "roomscene.h"
 #include "rule.h"
 
 MainWindow::MainWindow(QWidget* parent)
@@ -30,28 +30,33 @@ MainWindow::MainWindow(QWidget* parent)
     ui->roomView->setScene(roomScene);
     ui->roomView->setSceneRect(0, 0, 550, 600);
 
-    connect(roomScene, &RoomScene::hover, [=](QString name, QString description)
-        {
-            //首先一张卡被hover，左上角大图肯定要更新
-            //但对方的（除前后场的face-up卡）不该显示，我方卡组也不该显示
-            ui->label->setStyleSheet(QString("image: url(:/pic/monster/%1.jpg)").arg(name));
-            ui->textEdit->setText(description);
-        });
-    connect(ui->buttonBP, &QPushButton::pressed, [=]()
+    connect(roomScene, &RoomScene::hover, [=](QString name, QString description) {
+        //首先一张卡被hover，左上角大图肯定要更新
+        //但对方的（除前后场的face-up卡）不该显示，我方卡组也不该显示
+        ui->label->setStyleSheet(QString("image: url(:/pic/monster/%1.jpg)").arg(name));
+        ui->textEdit->setText(description);
+    });
+    connect(ui->buttonBP, &QPushButton::pressed, [=]() {
+        if (Rule::instance()->getphase() == Rule::myM1)
         {
             Rule::instance()->setPhase(Rule::myBP);
             Rule::instance()->setDoing(false);
-        });
-    connect(ui->buttonM2, &QPushButton::pressed, [=]()
+        }
+    });
+    connect(ui->buttonM2, &QPushButton::pressed, [=]() {
+        if (Rule::instance()->getphase() == Rule::myBP)
         {
             Rule::instance()->setPhase(Rule::myM2);
             Rule::instance()->setDoing(false);
-        });
-    connect(ui->buttonEP, &QPushButton::pressed, [=]()
+        }
+    });
+    connect(ui->buttonEP, &QPushButton::pressed, [=]() {
+        if (Rule::instance()->getphase() == Rule::myM1 || Rule::instance()->getphase() == Rule::myM2)
         {
             Rule::instance()->setPhase(Rule::myEP);
             Rule::instance()->setDoing(false);
-        });
+        }
+    });
 }
 
 MainWindow::~MainWindow()

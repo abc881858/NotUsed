@@ -270,6 +270,7 @@ void RoomScene::response_standbyPhase()
 {
     Rule::instance()->setPhase(Rule::mySP);
     fieldyardarea->initializeCards();
+    Rule::instance()->setDoing(true);
     Rule::instance()->setOneTurnOneNormalSummon(true);
     for (Card* card : fieldyardarea->getMyFieldyard())
     {

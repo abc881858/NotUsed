@@ -41,44 +41,44 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="204"/>
+        <location filename="mainwindow.ui" line="205"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;SimSun&apos;; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:9px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;【恶魔族·效果】&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;一回合一次，选择下面的其一的效果发动：&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;1、选择对方场上一张怪兽发动，选择的怪兽变为里侧守备表示。&lt;/span&gt;&lt;/p&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt;&quot;&gt;2、选择对方场上一张里侧守备表示的怪兽发动，选择的怪兽破坏。当这张卡装备了“dota-阿哈利姆神杖”时，同时破坏选择怪兽两边的卡。&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;一回合一次，选择下面的其一的效果发动：&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、选择对方场上一张怪兽发动，选择的怪兽变为里侧守备表示。&lt;/p&gt;
+&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2、选择对方场上一张里侧守备表示的怪兽发动，选择的怪兽破坏。当这张卡装备了“dota-阿哈利姆神杖”时，同时破坏选择怪兽两边的卡。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="315"/>
+        <location filename="mainwindow.ui" line="316"/>
         <source>DP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="340"/>
+        <location filename="mainwindow.ui" line="341"/>
         <source>SP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="365"/>
+        <location filename="mainwindow.ui" line="366"/>
         <source>M1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="390"/>
+        <location filename="mainwindow.ui" line="391"/>
         <source>BP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="415"/>
+        <location filename="mainwindow.ui" line="416"/>
         <source>M2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="440"/>
+        <location filename="mainwindow.ui" line="441"/>
         <source>EP</source>
         <translation></translation>
     </message>
@@ -130,7 +130,7 @@ p, li { white-space: pre-wrap; }
         <translation>选择我方场上的一只怪兽发动。</translation>
     </message>
     <message>
-        <location filename="roomscene.cpp" line="328"/>
+        <location filename="roomscene.cpp" line="331"/>
         <source>if chain or not?</source>
         <translation>是否连锁？</translation>
     </message>
