@@ -95,12 +95,6 @@ void Net::readFromServer(QByteArray json)
             QMetaObject::invokeMethod(this, request.toLatin1().data(), Q_ARG(QJsonObject, parameter));
         }
     }
-
-    //    case 8888:
-    //        emit actionCommand(jsonObject["parameter"].toInt(), jsonObject["from"].toInt());
-    //        break;
-    //    case 0: //说明对方不采取任何行动，我方继续行动
-    //        emit getResponse();
 }
 
 void Net::sendMessage(int command)
@@ -110,20 +104,9 @@ void Net::sendMessage(int command)
     write(jsonObject);
 }
 
-void Net::doEndOpponentBattlePhase() //结束对方的战斗阶段
-{
-    QJsonObject object;
-    object.insert("request", "doEndOpponentBattlePhase");
-    write(object);
-}
-
-//void Net::doCentaurWarrunnerEffect2()
+//void Net::doEndOpponentBattlePhase() //结束对方的战斗阶段
 //{
-//    emit actionCommand(99993, index);
-
-//    QJsonObject jsonObject;
-//    jsonObject.insert("command", 8888);
-//    jsonObject.insert("parameter", 88883);
-//    jsonObject.insert("index", index);
-//    write(jsonObject);
+//    QJsonObject object;
+//    object.insert("request", "doEndOpponentBattlePhase");
+//    write(object);
 //}
