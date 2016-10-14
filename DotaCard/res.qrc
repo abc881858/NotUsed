@@ -6,6 +6,14 @@
         <file>png/hand.png</file>
         <file>png/temp.png</file>
         <file>png/NULL.jpg</file>
+        <file>png/3.cur</file>
+        <file>png/1.cur</file>
+        <file>png/2.cur</file>
+        <file>png/4.cur</file>
+        <file>png/5.cur</file>
+        <file>png/6.cur</file>
+        <file>png/7.cur</file>
+        <file>png/8.cur</file>
     </qresource>
     <qresource prefix="/">
         <file>pic/monster/dota-CentaurWarrunner.jpg</file>
