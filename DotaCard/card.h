@@ -161,7 +161,7 @@ public:
     bool testFlipSummon();
     bool testDefencePosition();
     bool testAttackPosition();
-    virtual bool testEffect(){return false;}
+    virtual bool testEffect() { return false; }
     bool testAttack();
 
     bool getChangePosition() const;
@@ -177,6 +177,7 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 
     int ISDN; //图片唯一ID
     QString name; //图片名字
