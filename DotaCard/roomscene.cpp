@@ -10,16 +10,27 @@
 #include "net.h"
 #include "card.h"
 
-static const QPointF DeckPos(485, 426);
-static const QPointF HandPos(19, 529);
-static const QPointF FieldyardPos(94, 317);
-static const QPointF FieldgroundPos(94, 424);
-static const QPointF EnemyDeckPos(14, 105);
-static const QPointF EnemyHandPos(17, -71);
-static const QPointF EnemyFieldyardPos(94, 213);
-static const QPointF EnemyFieldgroundPos(94, 105);
-static const QPointF GraveyardPos(0, 0);
-static const QPointF EnemyGraveyardPos(0, 0);
+#define DeckAreaRect QSize(50, 72)
+#define HandAreaRect QSize(512, 70)
+#define FieldyardAreaRect QSize(384, 92)
+#define FieldgroundAreaRect QSize(384, 92)
+#define GraveyardAreaRect QSize(50, 72)
+#define EnemyDeckAreaRect QSize(50, 72)
+#define EnemyHandAreaRect QSize(512, 70)
+#define EnemyFieldyardAreaRect QSize(384, 92)
+#define EnemyFieldgroundAreaRect QSize(384, 92)
+#define EnemyGraveyardAreaRect QSize(50, 72)
+
+#define DeckPos QPointF(485, 426)
+#define HandPos QPointF(19, 529)
+#define FieldyardPos QPointF(94, 317)
+#define FieldgroundPos QPointF(94, 424)
+#define EnemyDeckPos QPointF(14, 105)
+#define EnemyHandPos QPointF(17, -71)
+#define EnemyFieldyardPos QPointF(94, 213)
+#define EnemyFieldgroundPos QPointF(94, 105)
+#define GraveyardPos QPointF(0, 0)
+#define EnemyGraveyardPos QPointF(0, 0)
 
 RoomScene::RoomScene(QObject* parent)
     : QGraphicsScene(parent)
@@ -38,44 +49,38 @@ RoomScene::RoomScene(QObject* parent)
     connect(goM2, SIGNAL(triggered(bool)), this, SLOT(actionM2(bool)));
     connect(goEP, SIGNAL(triggered(bool)), this, SLOT(actionEP(bool)));
 
-    // create DeckArea
-    deckarea = new DeckArea;
-    deckarea->setPos(DeckPos);
-    // create HandArea
-    handarea = new HandArea;
-    handarea->setPos(HandPos);
-    // create FieldyardArea
-    fieldyardarea = new FieldyardArea;
-    fieldyardarea->setPos(FieldyardPos);
-    // create FieldgroundArea
-    fieldgroundarea = new FieldgroundArea;
-    fieldgroundarea->setPos(FieldgroundPos);
-    // create GraveyardArea
-    graveyardarea = new GraveyardArea;
-    graveyardarea->setPos(GraveyardPos);
+    DeckArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(DeckAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    HandArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(HandAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    FieldyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(FieldyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    FieldgroundArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(FieldgroundAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    GraveyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(GraveyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    EnemyDeckArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyDeckAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    EnemyHandArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyHandAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    EnemyFieldyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyFieldyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    EnemyFieldgroundArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyFieldgroundAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    EnemyGraveyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyGraveyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 
-    // create Enemy
-    enemydeckarea = new EnemyDeckArea;
-    enemydeckarea->setPos(EnemyDeckPos);
-    enemyhandarea = new EnemyHandArea;
-    enemyhandarea->setPos(EnemyHandPos);
-    enemyfieldyardarea = new EnemyFieldyardArea;
-    enemyfieldyardarea->setPos(EnemyFieldyardPos);
-    enemyfieldgroundarea = new EnemyFieldgroundArea;
-    enemyfieldgroundarea->setPos(EnemyFieldgroundPos);
-    enemygraveyardarea = new EnemyGraveyardArea;
-    enemygraveyardarea->setPos(EnemyGraveyardPos);
+    DeckArea::instance()->setPos(DeckPos);
+    HandArea::instance()->setPos(HandPos);
+    FieldyardArea::instance()->setPos(FieldyardPos);
+    FieldgroundArea::instance()->setPos(FieldgroundPos);
+    GraveyardArea::instance()->setPos(GraveyardPos);
+    EnemyDeckArea::instance()->setPos(EnemyDeckPos);
+    EnemyHandArea::instance()->setPos(EnemyHandPos);
+    EnemyFieldyardArea::instance()->setPos(EnemyFieldyardPos);
+    EnemyFieldgroundArea::instance()->setPos(EnemyFieldgroundPos);
+    EnemyGraveyardArea::instance()->setPos(EnemyGraveyardPos);
 
-    addItem(deckarea);
-    addItem(handarea);
-    addItem(fieldyardarea);
-    addItem(fieldgroundarea);
-    addItem(graveyardarea);
-    addItem(enemydeckarea);
-    addItem(enemyhandarea);
-    addItem(enemyfieldyardarea);
-    addItem(enemyfieldgroundarea);
-    addItem(enemygraveyardarea);
+    addItem(DeckArea::instance());
+    addItem(HandArea::instance());
+    addItem(FieldyardArea::instance());
+    addItem(FieldgroundArea::instance());
+    addItem(GraveyardArea::instance());
+    addItem(EnemyDeckArea::instance());
+    addItem(EnemyHandArea::instance());
+    addItem(EnemyFieldyardArea::instance());
+    addItem(EnemyFieldgroundArea::instance());
+    addItem(EnemyGraveyardArea::instance());
 
     connect(Net::instance(), SIGNAL(request_doAddCard(QJsonObject)), this, SLOT(response_doAddCard(QJsonObject)));
     connect(Net::instance(), SIGNAL(request_doTakeCard(QJsonObject)), this, SLOT(response_doTakeCard(QJsonObject)));
@@ -147,20 +152,20 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
                 QString description = card->getDescription();
                 emit hover(name, description);
             });
-        enemydeckarea->response_addCard(card);
+        EnemyDeckArea::instance()->response_addCard(card);
         break;
     }
     case Hand_Area:
-        enemyhandarea->response_addCard(enemyTakedCard);
+        EnemyHandArea::instance()->response_addCard(enemyTakedCard);
         break;
     case Fieldyard_Area:
-        enemyfieldyardarea->response_addCard(enemyTakedCard, face, stand);
+        EnemyFieldyardArea::instance()->response_addCard(enemyTakedCard, face, stand);
         break;
     //    case Fieldground_Area:
-    //        EnemyFieldgroundArea->response_addCard(enemyTakedCard);
+    //        EnemyFieldgroundArea::instance()->response_addCard(enemyTakedCard);
     //        break;
     case Graveyard_Area:
-        enemygraveyardarea->response_addCard(enemyTakedCard);
+        EnemyGraveyardArea::instance()->response_addCard(enemyTakedCard);
         break;
     default:
         break;
@@ -175,19 +180,19 @@ void RoomScene::response_doTakeCard(QJsonObject jsonObject)
     switch (area)
     {
     case Deck_Area:
-        enemyTakedCard = enemydeckarea->response_takeCard(index);
+        enemyTakedCard = EnemyDeckArea::instance()->response_takeCard(index);
         break;
     case Hand_Area:
-        enemyTakedCard = enemyhandarea->response_takeCard(index);
+        enemyTakedCard = EnemyHandArea::instance()->response_takeCard(index);
         break;
     case Fieldyard_Area:
-        enemyTakedCard = enemyfieldyardarea->response_takeCard(index);
+        enemyTakedCard = EnemyFieldyardArea::instance()->response_takeCard(index);
         break;
     //    case Fieldground_Area:
-    //        EnemyFieldgroundArea->response_takeCard(index);
+    //        EnemyFieldgroundArea::instance()->response_takeCard(index);
     //        break;
     case Graveyard_Area:
-        enemyTakedCard = enemygraveyardarea->response_takeCard(index);
+        enemyTakedCard = EnemyGraveyardArea::instance()->response_takeCard(index);
         break;
     default:
         break;
@@ -209,7 +214,7 @@ void RoomScene::response_setupDeck()
     {
         int ISDN = text_stream.readLine().toInt();
         Card* card = Engine::instance()->cloneCard(ISDN);
-        deckarea->addCard(card);
+        DeckArea::instance()->addCard(card);
 
         connect(card, &Card::hover, [=]()
             {
@@ -222,18 +227,18 @@ void RoomScene::response_setupDeck()
 
         connect(card, &Card::normalSummon, [=]()
             {
-                handarea->takeCard(card->getIndex());
-                fieldyardarea->addCard(card, true, true);
+                HandArea::instance()->takeCard(card->getIndex());
+                FieldyardArea::instance()->addCard(card, true, true);
             });
         connect(card, &Card::setCard, [=]()
             {
-                handarea->takeCard(card->getIndex());
-                fieldyardarea->addCard(card, false, false);
+                HandArea::instance()->takeCard(card->getIndex());
+                FieldyardArea::instance()->addCard(card, false, false);
             });
         connect(card, &Card::tribute, [=]()
             {
-                fieldyardarea->takeCard(card->getIndex());
-                graveyardarea->addCard(card);
+                FieldyardArea::instance()->takeCard(card->getIndex());
+                GraveyardArea::instance()->addCard(card);
             });
         connect(card, &Card::activeEffect, [=]()
             {
@@ -252,8 +257,8 @@ void RoomScene::response_startGame()
 {
     for (int i = 0; i < 5; i++)
     {
-        Card* card = deckarea->takeCard(0);
-        handarea->addCard(card);
+        Card* card = DeckArea::instance()->takeCard(0);
+        HandArea::instance()->addCard(card);
     }
     Net::instance()->sendMessage(3000);
 }
@@ -261,22 +266,22 @@ void RoomScene::response_startGame()
 void RoomScene::response_drawPhase()
 {
     Rule::instance()->setPhase(Rule::myDP);
-    Card* card = deckarea->takeCard();
-    handarea->addCard(card);
+    Card* card = DeckArea::instance()->takeCard();
+    HandArea::instance()->addCard(card);
     Net::instance()->sendMessage(20001);
 }
 
 void RoomScene::response_standbyPhase()
 {
     Rule::instance()->setPhase(Rule::mySP);
-    fieldyardarea->initializeCards();
+    FieldyardArea::instance()->initializeCards(); //一回合一次攻防转换
     Rule::instance()->setDoing(true);
     Rule::instance()->setOneTurnOneNormalSummon(true);
-    for (Card* card : fieldyardarea->getMyFieldyard())
+    for (Card* card : FieldyardArea::instance()->getMyFieldyard())
     {
         card->setOneTurnOneEffect(true);
     }
-    for (Card* card : handarea->getMyHand())
+    for (Card* card : HandArea::instance()->getMyHand())
     {
         card->setOneTurnOneEffect(true);
     }
@@ -305,14 +310,14 @@ void RoomScene::response_askForResponse()
     }
 
     bool responsible = false;
-    for (Card* card : fieldyardarea->getMyFieldyard())
+    for (Card* card : FieldyardArea::instance()->getMyFieldyard())
     {
         if (card->testEffect())
         {
             responsible = true;
         }
     }
-    //    for (Card* card : fieldgroundarea->getMyFieldground()) //暂时还没有后场魔陷卡
+    //    for (Card* card : FieldgroundArea::instance()->getMyFieldground()) //暂时还没有后场魔陷卡
     //    {
     //        if (card->testEffect())
     //        {
