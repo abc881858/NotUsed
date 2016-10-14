@@ -6,6 +6,7 @@
 #include "rule.h"
 #include "net.h"
 #include "card.h"
+#include "area.h"
 
 CentaurWarrunner::CentaurWarrunner()
 {
@@ -36,6 +37,7 @@ bool CentaurWarrunner::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
@@ -44,7 +46,7 @@ void RoomScene::CentaurWarrunnerEffect()
     QMessageBox::StandardButton ret;
     ret = QMessageBox::question(0, QString(tr("active CentaurWarrunner's effect")), QString(tr("Select all atk or all def?")), QMessageBox::Yes | QMessageBox::No);
     bool all = (ret == QMessageBox::Yes);
-    for (Card* card : fieldyardarea->getMyFieldyard())
+    for (Card* card : FieldyardArea::instance()->getMyFieldyard())
     {
         if (card->getFace())
         {
@@ -67,7 +69,7 @@ void Net::doCentaurWarrunnerEffect(bool all)
 void RoomScene::response_doCentaurWarrunnerEffect(QJsonObject jsonObject)
 {
     bool all = jsonObject["all"].toBool();
-    for (Card* card : enemyfieldyardarea->getYourFieldyard())
+    for (Card* card : EnemyFieldyardArea::instance()->getYourFieldyard())
     {
         if (card->getFace())
         {
@@ -95,30 +97,42 @@ bool KeeperoftheLight::testEffect()
     {
         return false;
     }
-    Rule::Phase phase = Rule::instance()->getphase();
 
+    Rule::Phase phase = Rule::instance()->getphase();
     if (getArea() == Hand_Area)
     {
         if (phase == Rule::myM1 || phase == Rule::myM2)
         {
-            return true;
-        }
-    }
-    if (getArea() == Fieldyard_Area)
-    {
-        {
-            if (phase == Rule::myM1 || phase == Rule::myM2)
+            if(FieldyardArea::instance()->getMyFieldyard().count() > 0)
             {
                 return true;
             }
         }
     }
+
+    if (getArea() == Fieldyard_Area)
+    {
+        {
+            if (phase == Rule::myM1 || phase == Rule::myM2)
+            {
+                if(EnemyFieldyardArea::instance()->getYourFieldyard().count() > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    //卡牌上面弹出tip: 不满足发动条件
+                }
+            }
+        }
+    }
+
     return false;
 }
 
 void RoomScene::KeeperoftheLightEffect()
 {
-    QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
+   QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
 }
 
 void RoomScene::response_doKeeperoftheLightEffect(QJsonObject jsonObject)
@@ -144,6 +158,7 @@ bool Lion::testEffect()
     {
         return false;
     }
+
     Rule::Phase phase = Rule::instance()->getphase();
     if (getArea() == Fieldyard_Area)
     {
@@ -152,6 +167,7 @@ bool Lion::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
@@ -183,6 +199,7 @@ bool Magnus::testEffect()
     {
         return false;
     }
+
     Rule::Phase phase = Rule::instance()->getphase();
     if (getArea() == Fieldyard_Area)
     {
@@ -191,6 +208,7 @@ bool Magnus::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
@@ -222,6 +240,7 @@ bool NyxAssassin::testEffect()
     {
         return false;
     }
+
     Rule::Phase phase = Rule::instance()->getphase();
     if (getArea() == Fieldyard_Area)
     {
@@ -230,6 +249,7 @@ bool NyxAssassin::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
@@ -239,6 +259,7 @@ void RoomScene::NyxAssassinEffect()
 
 void RoomScene::response_doNyxAssassinEffect(QJsonObject jsonObject)
 {
+    //
 }
 
 //大魔导师
@@ -260,6 +281,7 @@ bool Rubick::testEffect()
     {
         return false;
     }
+
     Rule::Phase phase = Rule::instance()->getphase();
     if (getArea() == Fieldyard_Area)
     {
@@ -268,6 +290,7 @@ bool Rubick::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
@@ -277,6 +300,7 @@ void RoomScene::RubickEffect()
 
 void RoomScene::response_doRubickEffect(QJsonObject jsonObject)
 {
+    //
 }
 
 //巨牙海民
@@ -307,6 +331,7 @@ void RoomScene::TuskEffect()
 
 void RoomScene::response_doTuskEffect(QJsonObject jsonObject)
 {
+    //
 }
 
 //不朽尸王
@@ -337,6 +362,7 @@ bool Undying::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
@@ -376,6 +402,7 @@ bool VengefulSpirit::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
@@ -406,6 +433,7 @@ bool Zeus::testEffect()
     {
         return false;
     }
+
     Rule::Phase phase = Rule::instance()->getphase();
     if (getArea() == Fieldyard_Area)
     {
@@ -414,6 +442,7 @@ bool Zeus::testEffect()
             return true;
         }
     }
+
     return false;
 }
 
