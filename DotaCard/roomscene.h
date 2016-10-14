@@ -16,16 +16,6 @@ public:
     Card* enemyTakedCard;
 
 private:
-    DeckArea* deckarea;
-    HandArea* handarea;
-    FieldyardArea* fieldyardarea;
-    FieldgroundArea* fieldgroundarea;
-    GraveyardArea* graveyardarea;
-    EnemyDeckArea* enemydeckarea;
-    EnemyHandArea* enemyhandarea;
-    EnemyFieldyardArea* enemyfieldyardarea;
-    EnemyFieldgroundArea* enemyfieldgroundarea;
-    EnemyGraveyardArea* enemygraveyardarea;
     QMenu* myContextMenu;
     QAction* goBP;
     QAction* goM2;
