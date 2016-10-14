@@ -169,37 +169,46 @@ void Card::setCurrentflag(Card::CardFlag flag)
 
     qDebug() << "setCurrentflag: " << currentflag;
 
+    QCursor cursorEffect = QCursor(QPixmap(":/png/png/4.cur"), 15, 19);
+    QCursor cursorSpecialSummon = QCursor(QPixmap(":/png/png/5.cur"), 8, 26);
+    QCursor cursorNormalSummon = QCursor(QPixmap(":/png/png/1.cur"), 13, 19);
+    QCursor cursorSetCard = QCursor(QPixmap(":/png/png/2.cur"), 13, 19);
+    QCursor cursorFlipSummon = QCursor(QPixmap(":/png/png/1.cur"), 13, 19); //暂时先用1.cur替代
+    QCursor cursorDefencePosition = QCursor(QPixmap(":/png/png/6.cur"), 14, 21);
+    QCursor cursorAttackPosition = QCursor(QPixmap(":/png/png/8.cur"), 14, 21);
+    QCursor cursorAttack = QCursor(QPixmap(":/png/png/7.cur"), 14, 19);
+
     if (currentflag == Effect)
     {
-        setCursor(Qt::SizeHorCursor);
+        setCursor(cursorEffect);
     }
     else if (currentflag == SpecialSummon)
     {
-        setCursor(Qt::SizeBDiagCursor);
+        setCursor(cursorSpecialSummon);
     }
     else if (currentflag == NormalSummon)
     {
-        setCursor(Qt::SizeFDiagCursor);
+        setCursor(cursorNormalSummon);
     }
     else if (currentflag == SetCard)
     {
-        setCursor(Qt::SizeAllCursor);
+        setCursor(cursorSetCard);
     }
     else if (currentflag == FlipSummon)
     {
-        setCursor(Qt::SplitVCursor);
+        setCursor(cursorFlipSummon);
     }
     else if (currentflag == DefencePosition)
     {
-        setCursor(Qt::SplitHCursor);
+        setCursor(cursorDefencePosition);
     }
     else if (currentflag == AttackPosition)
     {
-        setCursor(Qt::PointingHandCursor);
+        setCursor(cursorAttackPosition);
     }
     else if (currentflag == Attack)
     {
-        setCursor(Qt::ForbiddenCursor);
+        setCursor(cursorAttack);
     }
 }
 
@@ -220,11 +229,12 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
     testAll();
 
-    if (myflags == CardFlags())
-    {
-        setCursor(Qt::ArrowCursor);
-    }
-    else if (myflags.testFlag(Effect))
+    //    if (myflags == CardFlags())
+    //    {
+    //        QCursor cursorCommmon = QCursor(QPixmap(":/png/png/3.cur"), 31, 15);
+    //        setCursor(cursorCommmon);
+    //    }
+    if (myflags.testFlag(Effect))
     {
         setCurrentflag(Effect);
     }
@@ -246,10 +256,11 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
+    setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
+
     if (area == Hand_Area || area == EnemyHand_Area)
     {
         setY(0);
-        setCursor(Qt::ArrowCursor);
     }
 }
 
@@ -365,6 +376,14 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         default:
             break;
         }
+    }
+}
+
+void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
     }
 }
 
