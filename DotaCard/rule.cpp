@@ -1,5 +1,4 @@
 #include "rule.h"
-#include <QObject>
 #include "net.h"
 
 Q_GLOBAL_STATIC(Rule, rule)
@@ -50,7 +49,7 @@ void Rule::setDoing(bool value)
 {
     isDoing = value;
 
-    if(!isDoing)
+    if (!isDoing)
     {
         Net::instance()->sendMessage(666);
     }
