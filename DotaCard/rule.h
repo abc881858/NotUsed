@@ -1,6 +1,12 @@
 #ifndef RULE_H
 #define RULE_H
 
+#define KeeperoftheLightRequirement 602
+#define KeeperoftheLightRequiremented 502
+#define LionRequirement 603
+
+#include <QHash>
+
 class Rule
 {
 public:
@@ -22,6 +28,7 @@ public:
 
     static Rule* instance();
     void initialize();
+    QHash<int,QString> NameEffected;
 
     bool getOneTurnOneNormalSummon() const;
     void setOneTurnOneNormalSummon(bool value);
@@ -33,10 +40,24 @@ public:
     bool getDoing() const;
     void setDoing(bool value);
 
+    bool getPicking() const;
+    void setPicking(bool value);
+
+    int getPickRequirement() const;
+    void setPickRequirement(int value);
+
+//    int getPickedArea() const;
+//    int getPickedIndex() const;
+
 private:
     bool oneTurnOneNormalSummon;
     Rule::Phase phase;
     bool isDoing;
+    bool isPicking;
+    int pickRequirement;
+
+    int pickedArea;
+    int pickedIndex;
 };
 
 #endif // RULE_H

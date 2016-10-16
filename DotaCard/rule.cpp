@@ -12,6 +12,11 @@ void Rule::initialize()
 {
     isDoing = false;
     oneTurnOneNormalSummon = false;
+    isPicking = false;
+
+    NameEffected.insert(KeeperoftheLightRequirement,"KeeperoftheLight");
+    NameEffected.insert(KeeperoftheLightRequiremented,"KeeperoftheLight");
+    NameEffected.insert(LionRequirement,"Lion");
 }
 
 bool Rule::getOneTurnOneNormalSummon() const
@@ -48,9 +53,42 @@ bool Rule::getDoing() const
 void Rule::setDoing(bool value)
 {
     isDoing = value;
-
-    if (!isDoing)
-    {
-        Net::instance()->sendMessage(666);
-    }
 }
+
+bool Rule::getPicking() const
+{
+    return isPicking;
+}
+
+void Rule::setPicking(bool value)
+{
+    qDebug() << "setPicking(bool value)" << value;
+    isPicking = value;
+}
+
+int Rule::getPickRequirement() const
+{
+    return pickRequirement;
+}
+
+void Rule::setPickRequirement(int value)
+{
+    qDebug() << "setPickRequirement(int value)" << value;
+    pickRequirement = value;
+}
+
+//int Rule::getPickedArea() const
+//{
+//    return pickedArea;
+//}
+
+//int Rule::getPickedIndex() const
+//{
+//    return pickedIndex;
+//}
+
+//void Rule::setPickedCard(int area, int index)
+//{
+//    pickedArea = area;
+//    pickedIndex = index;
+//}

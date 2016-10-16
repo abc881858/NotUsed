@@ -170,7 +170,7 @@
          </property>
          <property name="styleSheet">
           <string notr="true">background-color: rgb(255, 240, 180);
-image: url(:/pic/monster/NULL.jpg);</string>
+image: url(:/image/NULL.jpg);</string>
          </property>
          <property name="text">
           <string/>

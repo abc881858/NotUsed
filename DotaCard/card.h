@@ -32,24 +32,25 @@ public:
         FlipSummon = 0x10, //可以翻转召唤
         DefencePosition = 0x20, //可以防守表示
         AttackPosition = 0x40, //可以攻击表示
-        Attack = 0x80
+        Attack = 0x80,
+        Selectable = 0x100
     };
     Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
-    enum
-    {
-        NoArea = 0,
-        DeckArea = 1,
-        HandArea = 2,
-        FieldyardArea = 3,
-        FieldgroundArea = 4,
-        GraveyardArea = 5,
-        EnemyDeckArea = 6,
-        EnemyHandArea = 7,
-        EnemyFieldyardArea = 8,
-        EnemyFieldgroundArea = 9,
-        EnemyGraveyardArea = 10
-    };
+//    enum
+//    {
+//        NoArea = 0,
+//        DeckArea = 1,
+//        HandArea = 2,
+//        FieldyardArea = 3,
+//        FieldgroundArea = 4,
+//        GraveyardArea = 5,
+//        EnemyDeckArea = 6,
+//        EnemyHandArea = 7,
+//        EnemyFieldyardArea = 8,
+//        EnemyFieldgroundArea = 9,
+//        EnemyGraveyardArea = 10
+//    };
 
     //    怪兽 Monster
     //    通常怪兽 Normal monster
@@ -154,15 +155,20 @@ public:
     bool getInActive() const;
     void setInActive(bool value);
 
-    void testAll();
+    Card::CardFlags testAll();
     bool testSpecialSummon();
     bool testNormalSummon();
     bool testSetCard();
     bool testFlipSummon();
     bool testDefencePosition();
     bool testAttackPosition();
-    virtual bool testEffect() { return false; }
     bool testAttack();
+    bool testSelectable();
+
+    virtual bool testEffect() { return false; }
+    virtual void activeEffect() {}
+    virtual void activeHandEffect() {}
+    void activePicked();
 
     bool getChangePosition() const;
     void setChangePosition(bool value); //area需要
@@ -173,6 +179,17 @@ public:
     bool getOneTurnOneEffect() const;
     void setOneTurnOneEffect(bool value);
 
+    bool isMonstor(){ return (type==NormalMonster || type==EffectMonster); }
+
+    int getType() const;
+    void setType(int value);
+
+    int getDebuff() const;
+    void setDebuff(int value);
+
+    bool getOneTurnHandEffect() const;
+    void setOneTurnHandEffect(bool value);
+
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
@@ -181,30 +198,36 @@ protected:
 
     int ISDN; //图片唯一ID
     QString name; //图片名字
-    int type;
+    int type; //类型
     int ATK;
     int DEF;
-    int level;
-    int attribute;
+    int level; //等级
+    int attribute; //种族
     int index; //从左往右数第几张(第1张是index==0)
     QString description; //卡牌描述
 
 private:
+    bool isRotate; //是否显示为横置
+    bool isBack; //是否显示为背面
+    bool isField; //是否显示为field文件夹的卡（即50*72类型）
     int area; //卡牌位置，比如在手上或者在前场
     bool face; // 卡牌表侧表示或者里侧表示
     bool stand; // 卡牌攻击表示或者防御表示
     CardFlags myflags; //右键可以显示的全部cursor
-    CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
+    Card::CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
     bool changePosition; //每回合可以变更一次攻防表示
-    bool oneTurnOneEffect;
+    bool oneTurnOneEffect; //每回合从场地上可以发动一次
+    bool oneTurnHandEffect; //每回合从手上可以发动一次
+//    int currentRequire; //当前选择卡牌的原因，不能放在发动卡里，也不能放在选择卡里，请使用全局Rule里的pickRequirement
+
+    int debuff; // 光之守卫 需要用到
 
 signals:
     void hover();
     void normalSummon();
     void setCard();
     void tribute();
-    void activeEffect();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
@@ -230,6 +253,7 @@ class CentaurWarrunner : public Card
 public:
     Q_INVOKABLE CentaurWarrunner();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -250,6 +274,8 @@ class KeeperoftheLight : public Card
 public:
     Q_INVOKABLE KeeperoftheLight();
     virtual bool testEffect();
+    virtual void activeEffect();
+    virtual void activeHandEffect();
 };
 
 /*!
@@ -267,6 +293,7 @@ class Lion : public Card
 public:
     Q_INVOKABLE Lion();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -287,6 +314,7 @@ class Magnus : public Card
 public:
     Q_INVOKABLE Magnus();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -308,6 +336,7 @@ class NyxAssassin : public Card
 public:
     Q_INVOKABLE NyxAssassin();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -326,6 +355,7 @@ class Rubick : public Card
 public:
     Q_INVOKABLE Rubick();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -343,6 +373,7 @@ class Tusk : public Card
 public:
     Q_INVOKABLE Tusk();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -361,6 +392,7 @@ class Undying : public Card
 public:
     Q_INVOKABLE Undying();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -383,6 +415,7 @@ class VengefulSpirit : public Card
 public:
     Q_INVOKABLE VengefulSpirit();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 /*!
@@ -402,6 +435,7 @@ class Zeus : public Card
 public:
     Q_INVOKABLE Zeus();
     virtual bool testEffect();
+    virtual void activeEffect();
 };
 
 #endif // CARD_H

@@ -78,17 +78,17 @@ void DeckArea::addCard(Card* card)
     card->setParentItem(this);
     card->setIndex(myDeck.size());
     card->setFace(false);
-    card->setArea(1);
+    card->setArea(Deck_Area);
     card->setStand(true);
     myDeck << card;
-    Net::instance()->doAddCard(card->getISDN(), 1, card->getIndex(), false, true);
+    Net::instance()->doAddCard(card->getISDN(), Deck_Area, card->getIndex(), false, true);
 }
 
 Card* DeckArea::takeCard(int index)
 {
     Q_ASSERT(index == 0);
     Card* card = myDeck.takeFirst();
-    Net::instance()->doTakeCard(1, card->getIndex());
+    Net::instance()->doTakeCard(Deck_Area, card->getIndex());
     for(Card* item: myDeck)
     {
         item->setIndex(item->getIndex()-1);
@@ -108,7 +108,7 @@ QList<Card*> DeckArea::getMyDeck() const
   * @date 2016/4/22
   */
 
-void HandArea::adjustCards()
+void HandArea::adjustCards() //TODO 非抽卡阶段addCard 需要flush
 {
     if (myHand.isEmpty())
         return;
@@ -126,18 +126,18 @@ void HandArea::addCard(Card* card)
 {
     card->setParentItem(this);
     card->setFace(true);
-    card->setArea(2);
+    card->setArea(Hand_Area);
     card->setStand(true);
     myHand << card;
     adjustCards();
 
-    Net::instance()->doAddCard(card->getISDN(), 2, card->getIndex(), true, true); //号、区、位、表、攻
+    Net::instance()->doAddCard(card->getISDN(), Hand_Area, card->getIndex(), true, true); //号、区、位、表、攻
 }
 
 Card* HandArea::takeCard(int index)
 {
     Card* card = myHand.takeAt(index);
-    Net::instance()->doTakeCard(2, card->getIndex());
+    Net::instance()->doTakeCard(Hand_Area, card->getIndex());
     adjustCards();
     return card;
 }
@@ -181,18 +181,19 @@ void FieldyardArea::addCard(Card* card, bool face, bool stand)
 {
     card->setParentItem(this);
     card->setFace(face);
-    card->setArea(3);
+    card->setArea(Fieldyard_Area);
     card->setStand(stand);
     myFieldyard << card;
     adjustCards();
 
-    Net::instance()->doAddCard(card->getISDN(), 3, card->getIndex(), face, stand);
+    Net::instance()->doAddCard(card->getISDN(), Fieldyard_Area, card->getIndex(), face, stand);
 }
 
 Card* FieldyardArea::takeCard(int index)
 {
+    qDebug() << "FieldyardArea::takeCard index: " << index;
     Card* card = myFieldyard.takeAt(index);
-    Net::instance()->doTakeCard(3, card->getIndex());
+    Net::instance()->doTakeCard(Fieldyard_Area, card->getIndex());
     return card;
 }
 
@@ -222,20 +223,21 @@ QList<Card*> FieldgroundArea::getMyFieldground() const
 
 void GraveyardArea::addCard(Card* card)
 {
+    qDebug() << "GraveyardArea::addCard";
     card->setParentItem(this);
     card->setFace(true);
-    card->setArea(5);
+    card->setArea(Graveyard_Area);
     card->setStand(true);
     myGraveyard << card;
     adjustCards();
 
-    Net::instance()->doAddCard(card->getISDN(), 5, card->getIndex(), true, true);
+    Net::instance()->doAddCard(card->getISDN(), Graveyard_Area, card->getIndex(), true, true);
 }
 
 Card* GraveyardArea::takeCard(int index)
 {
     Card* card = myGraveyard.takeAt(index);
-    Net::instance()->doTakeCard(5, card->getIndex());
+    Net::instance()->doTakeCard(Graveyard_Area, card->getIndex());
     return card;
 }
 
@@ -264,36 +266,14 @@ void GraveyardArea::adjustCards()
   * @date 2016/4/22
   */
 
-void EnemyDeckArea::addCard(Card* card)
-{
-    card->setParentItem(this);
-    card->setIndex(yourDeck.size());
-    card->setFace(false);
-    card->setArea(6);
-    card->setStand(true);
-    yourDeck << card;
-}
-
 void EnemyDeckArea::response_addCard(Card* card)
 {
     card->setParentItem(this);
     card->setIndex(yourDeck.size());
     card->setFace(false);
     card->setStand(true);
-    card->setArea(6);
+    card->setArea(EnemyDeck_Area);
     yourDeck << card;
-}
-
-Card* EnemyDeckArea::takeCard(int index)
-{
-    Q_ASSERT(index == 0);
-    Card* card = yourDeck.takeFirst();
-    int n = yourDeck.size();
-    for (int i = 0; i < n; i++)
-    {
-        yourDeck[i]->setIndex(i);
-    }
-    return card;
 }
 
 Card* EnemyDeckArea::response_takeCard(int index)
@@ -320,7 +300,7 @@ QList<Card*> EnemyDeckArea::getYourDeck() const
   * @date 2016/4/22
   */
 
-void EnemyHandArea::adjustCards()
+void EnemyHandArea::adjustCards() //修改为从右往左排
 {
     if (yourHand.isEmpty())
         return;
@@ -334,33 +314,16 @@ void EnemyHandArea::adjustCards()
     }
 }
 
-void EnemyHandArea::addCard(Card* card)
-{
-    card->setParentItem(this);
-    card->setFace(false);
-    card->setArea(7);
-    card->setStand(true);
-    yourHand << card;
-    adjustCards();
-}
-
-Card* EnemyHandArea::takeCard(int index)
-{
-    Card* card = yourHand.takeAt(index);
-    adjustCards();
-    return card;
-}
-
 QList<Card*> EnemyHandArea::getYourHand() const
 {
     return yourHand;
 }
 
-void EnemyHandArea::response_addCard(Card* card)
+void EnemyHandArea::response_addCard(Card* card) //TODO 非抽卡阶段addCard 需要flush
 {
     card->setParentItem(this);
     card->setFace(false);
-    card->setArea(7);
+    card->setArea(EnemyHand_Area);
     card->setStand(true);
     yourHand << card;
     adjustCards();
@@ -380,23 +343,6 @@ Card* EnemyHandArea::response_takeCard(int index)
   * @date 2016/9/2
   */
 
-void EnemyFieldyardArea::addCard(Card* card, bool face, bool stand)
-{
-    card->setParentItem(this);
-    card->setFace(face);
-    card->setArea(8);
-    card->setStand(stand);
-    yourFieldyard << card;
-    adjustCards();
-}
-
-Card* EnemyFieldyardArea::takeCard(int index)
-{
-    Card* card = yourFieldyard.takeAt(index);
-    adjustCards();
-    return card;
-}
-
 QList<Card*> EnemyFieldyardArea::getYourFieldyard() const
 {
     return yourFieldyard;
@@ -406,7 +352,7 @@ void EnemyFieldyardArea::response_addCard(Card* card, bool face, bool stand)
 {
     card->setParentItem(this);
     card->setFace(face);
-    card->setArea(8);
+    card->setArea(EnemyFieldyard_Area);
     card->setStand(stand);
     yourFieldyard << card;
     adjustCards();
@@ -414,6 +360,7 @@ void EnemyFieldyardArea::response_addCard(Card* card, bool face, bool stand)
 
 Card* EnemyFieldyardArea::response_takeCard(int index)
 {
+    qDebug() << "EnemyFieldyardArea::response_takeCard index: " << index;
     Card* card = yourFieldyard.takeAt(index);
     adjustCards();
     return card;
@@ -453,23 +400,6 @@ QList<Card*> EnemyFieldgroundArea::getYourFieldground() const
   * @date 2016/9/2
   */
 
-void EnemyGraveyardArea::addCard(Card* card)
-{
-    card->setParentItem(this);
-    card->setFace(true);
-    card->setArea(10);
-    card->setStand(true);
-    yourGraveyard << card;
-    adjustCards();
-}
-
-Card* EnemyGraveyardArea::takeCard(int index)
-{
-    Card* card = yourGraveyard.takeAt(index);
-    adjustCards();
-    return card;
-}
-
 QList<Card*> EnemyGraveyardArea::getYourGraveyard() const
 {
     return yourGraveyard;
@@ -477,9 +407,10 @@ QList<Card*> EnemyGraveyardArea::getYourGraveyard() const
 
 void EnemyGraveyardArea::response_addCard(Card* card)
 {
+    qDebug() << "EnemyGraveyardArea::response_addCard";
     card->setParentItem(this);
     card->setFace(true);
-    card->setArea(10);
+    card->setArea(EnemyGraveyard_Area);
     card->setStand(true);
     yourGraveyard << card;
     adjustCards();

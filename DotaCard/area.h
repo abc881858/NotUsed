@@ -77,11 +77,9 @@ class EnemyDeckArea : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 public:
     static EnemyDeckArea* instance();
-    void addCard(Card* card);
-    Card* takeCard(int index = 0);
     QList<Card*> getYourDeck() const;
     void response_addCard(Card* card);
-    Card* response_takeCard(int index);
+    Card* response_takeCard(int index = 0);
 
 private:
     QList<Card*> yourDeck;
@@ -93,8 +91,6 @@ class EnemyHandArea : public QObject, public QGraphicsPixmapItem
 public:
     static EnemyHandArea* instance();
     void adjustCards();
-    void addCard(Card* card);
-    Card* takeCard(int index);
     QList<Card*> getYourHand() const;
     void response_addCard(Card* card);
     Card* response_takeCard(int index);
@@ -109,8 +105,6 @@ class EnemyFieldyardArea : public QObject, public QGraphicsPixmapItem
 public:
     static EnemyFieldyardArea* instance();
     void adjustCards();
-    void addCard(Card* card, bool face = true, bool stand = true);
-    Card* takeCard(int index);
     QList<Card*> getYourFieldyard() const;
     void response_addCard(Card* card, bool face = true, bool stand = true);
     Card* response_takeCard(int index);
@@ -137,8 +131,6 @@ class EnemyGraveyardArea : public QObject, public QGraphicsPixmapItem
 public:
     static EnemyGraveyardArea* instance();
     void adjustCards();
-    void addCard(Card* card);
-    Card* takeCard(int index);
     QList<Card*> getYourGraveyard() const;
     void response_addCard(Card* card);
     Card* response_takeCard(int index);

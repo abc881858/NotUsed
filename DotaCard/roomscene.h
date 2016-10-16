@@ -16,10 +16,10 @@ public:
     Card* enemyTakedCard;
 
 private:
-    QMenu* myContextMenu;
-    QAction* goBP;
-    QAction* goM2;
-    QAction* goEP;
+//    QMenu* myContextMenu;
+//    QAction* goBP;
+//    QAction* goM2;
+//    QAction* goEP;
 
     //protected:
     //    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
@@ -28,9 +28,9 @@ signals:
     void hover(QString, QString);
 
 public slots:
-    void actionBP(bool);
-    void actionM2(bool);
-    void actionEP(bool);
+//    void actionBP(bool);
+//    void actionM2(bool);
+//    void actionEP(bool);
     void response_doAddCard(QJsonObject jsonObject);
     void response_doTakeCard(QJsonObject jsonObject);
     void response_doSetPhase(QJsonObject jsonObject);
@@ -41,28 +41,18 @@ public slots:
     void response_main1Phase();
     void response_doEndOpponentBattlePhase();
     void response_askForResponse();
+    void response_tellForRequest();
 
-    void CentaurWarrunnerEffect();
-    void KeeperoftheLightEffect();
-    void LionEffect();
-    void MagnusEffect();
-    void NyxAssassinEffect();
-    void RubickEffect();
-    void TuskEffect();
-    void UndyingEffect();
-    void VengefulSpiritEffect();
-    void ZeusEffect();
-
-    void response_doCentaurWarrunnerEffect(QJsonObject);
-    void response_doKeeperoftheLightEffect(QJsonObject);
-    void response_doLionEffect(QJsonObject);
-    void response_doMagnusEffect(QJsonObject);
-    void response_doNyxAssassinEffect(QJsonObject);
-    void response_doRubickEffect(QJsonObject);
-    void response_doTuskEffect(QJsonObject);
-    void response_doUndyingEffect(QJsonObject);
-    void response_doVengefulSpiritEffect(QJsonObject);
-    void response_doZeusEffect(QJsonObject);
+    void response_CentaurWarrunnerEffect(QJsonObject);
+    void response_KeeperoftheLightEffect(QJsonObject object);
+    void response_LionEffect(QJsonObject);
+    void response_MagnusEffect(QJsonObject);
+    void response_NyxAssassinEffect(QJsonObject);
+    void response_RubickEffect(QJsonObject);
+    void response_TuskEffect(QJsonObject);
+    void response_UndyingEffect(QJsonObject);
+    void response_VengefulSpiritEffect(QJsonObject);
+    void response_ZeusEffect(QJsonObject);
 };
 
 #endif // ROOMSCENE_H

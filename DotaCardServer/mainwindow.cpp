@@ -72,7 +72,13 @@ void MainWindow::readFromFirstClient(QByteArray byteArray)
         jsonObject.insert("request", "askForResponse");
         write(clients[1], jsonObject);
     }
-    if (jsonObject["command"].toInt() == 2000)
+    else if (jsonObject["command"].toInt() == 777)
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert("request", "tellForRequest");
+        write(clients[1], jsonObject);
+    }
+    else if (jsonObject["command"].toInt() == 2000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "setupDeck");
@@ -147,7 +153,13 @@ void MainWindow::readFromSecondClient(QByteArray byteArray)
         jsonObject.insert("request", "askForResponse");
         write(clients[0], jsonObject);
     }
-    if (jsonObject["command"].toInt() == 1000)
+    else if (jsonObject["command"].toInt() == 777)
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert("request", "tellForRequest");
+        write(clients[0], jsonObject);
+    }
+    else if (jsonObject["command"].toInt() == 1000)
     {
         QJsonObject jsonObject;
         jsonObject.insert("request", "setupDeck");

@@ -39,31 +39,47 @@ MainWindow::MainWindow(QWidget* parent)
         {
             //首先一张卡被hover，左上角大图肯定要更新
             //但对方的（除前后场的face-up卡）不该显示，我方卡组也不该显示
-            ui->label->setStyleSheet(QString("image: url(:/pic/monster/%1.jpg)").arg(name));
+            ui->label->setStyleSheet(QString("image: url(:/image/%1.jpg)").arg(name));
             ui->textEdit->setText(description);
         });
     connect(ui->buttonBP, &QPushButton::pressed, [=]()
         {
+            if (Rule::instance()->getPicking())
+            {
+                return;
+            }
             if (Rule::instance()->getphase() == Rule::myM1)
             {
                 Rule::instance()->setPhase(Rule::myBP);
                 Rule::instance()->setDoing(false);
+                Net::instance()->sendMessage(666); //询问对方是否连锁
             }
         });
     connect(ui->buttonM2, &QPushButton::pressed, [=]()
         {
+            if (Rule::instance()->getPicking())
+            {
+                return;
+            }
             if (Rule::instance()->getphase() == Rule::myBP)
             {
                 Rule::instance()->setPhase(Rule::myM2);
                 Rule::instance()->setDoing(false);
+                Net::instance()->sendMessage(666); //询问对方是否连锁
             }
         });
     connect(ui->buttonEP, &QPushButton::pressed, [=]()
         {
-            if (Rule::instance()->getphase() == Rule::myM1 || Rule::instance()->getphase() == Rule::myM2)
+            if (Rule::instance()->getPicking())
+            {
+                return;
+            }
+            Rule::Phase phase = Rule::instance()->getphase();
+            if (phase == Rule::myM1 || phase == Rule::myBP || phase == Rule::myM2)
             {
                 Rule::instance()->setPhase(Rule::myEP);
                 Rule::instance()->setDoing(false);
+                Net::instance()->sendMessage(666); //TODO: //询问对方是否连锁，处理结束阶段的连锁
             }
         });
 }

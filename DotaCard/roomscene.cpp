@@ -10,26 +10,28 @@
 #include "net.h"
 #include "card.h"
 
-#define DeckAreaRect QSize(50, 72)
-#define HandAreaRect QSize(512, 70)
-#define FieldyardAreaRect QSize(384, 92)
-#define FieldgroundAreaRect QSize(384, 92)
-#define GraveyardAreaRect QSize(50, 72)
-#define EnemyDeckAreaRect QSize(50, 72)
-#define EnemyHandAreaRect QSize(512, 70)
-#define EnemyFieldyardAreaRect QSize(384, 92)
-#define EnemyFieldgroundAreaRect QSize(384, 92)
-#define EnemyGraveyardAreaRect QSize(50, 72)
+//#define DeckAreaRect QSize(50, 72)
+//#define HandAreaRect QSize(512, 75)
+//#define FieldyardAreaRect QSize(384, 92)
+//#define FieldgroundAreaRect QSize(384, 92)
+//#define GraveyardAreaRect QSize(50, 72)
+
+//#define EnemyDeckAreaRect QSize(50, 72)
+//#define EnemyHandAreaRect QSize(512, 75)
+//#define EnemyFieldyardAreaRect QSize(384, 92)
+//#define EnemyFieldgroundAreaRect QSize(384, 92)
+//#define EnemyGraveyardAreaRect QSize(50, 72)
 
 #define DeckPos QPointF(485, 426)
 #define HandPos QPointF(19, 529)
 #define FieldyardPos QPointF(94, 317)
 #define FieldgroundPos QPointF(94, 424)
+#define GraveyardPos QPointF(0, 0)
+
 #define EnemyDeckPos QPointF(14, 105)
 #define EnemyHandPos QPointF(17, -71)
 #define EnemyFieldyardPos QPointF(94, 213)
 #define EnemyFieldgroundPos QPointF(94, 105)
-#define GraveyardPos QPointF(0, 0)
 #define EnemyGraveyardPos QPointF(0, 0)
 
 RoomScene::RoomScene(QObject* parent)
@@ -37,28 +39,28 @@ RoomScene::RoomScene(QObject* parent)
 {
     setBackgroundBrush(QBrush(QPixmap(":/png/png/b.png")));
 
-    myContextMenu = new QMenu;
-    goBP = new QAction("goBP", myContextMenu);
-    goM2 = new QAction("goM2", myContextMenu);
-    goEP = new QAction("goEP", myContextMenu);
-    myContextMenu->addAction(goBP);
-    myContextMenu->addAction(goM2);
-    myContextMenu->addAction(goEP);
+//    myContextMenu = new QMenu;
+//    goBP = new QAction("goBP", myContextMenu);
+//    goM2 = new QAction("goM2", myContextMenu);
+//    goEP = new QAction("goEP", myContextMenu);
+//    myContextMenu->addAction(goBP);
+//    myContextMenu->addAction(goM2);
+//    myContextMenu->addAction(goEP);
+//    connect(goBP, SIGNAL(triggered(bool)), this, SLOT(actionBP(bool)));
+//    connect(goM2, SIGNAL(triggered(bool)), this, SLOT(actionM2(bool)));
+//    connect(goEP, SIGNAL(triggered(bool)), this, SLOT(actionEP(bool)));
 
-    connect(goBP, SIGNAL(triggered(bool)), this, SLOT(actionBP(bool)));
-    connect(goM2, SIGNAL(triggered(bool)), this, SLOT(actionM2(bool)));
-    connect(goEP, SIGNAL(triggered(bool)), this, SLOT(actionEP(bool)));
+    DeckArea::instance()->setPixmap(QPixmap(":/png/png/deck.png"));
+    HandArea::instance()->setPixmap(QPixmap(":/png/png/hand.png"));
+    FieldyardArea::instance()->setPixmap(QPixmap(":/png/png/fieldyard.png"));
+    FieldgroundArea::instance()->setPixmap(QPixmap(":/png/png/fieldground.png"));
+    GraveyardArea::instance()->setPixmap(QPixmap(":/png/png/graveyard.png"));
 
-    DeckArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(DeckAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    HandArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(HandAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    FieldyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(FieldyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    FieldgroundArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(FieldgroundAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    GraveyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(GraveyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    EnemyDeckArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyDeckAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    EnemyHandArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyHandAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    EnemyFieldyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyFieldyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    EnemyFieldgroundArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyFieldgroundAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    EnemyGraveyardArea::instance()->setPixmap(QPixmap(":/png/png/temp.png").scaled(EnemyGraveyardAreaRect, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    EnemyDeckArea::instance()->setPixmap(QPixmap(":/png/png/enemydeck.png"));
+    EnemyHandArea::instance()->setPixmap(QPixmap(":/png/png/enemyhand.png"));
+    EnemyFieldyardArea::instance()->setPixmap(QPixmap(":/png/png/enemyfieldyard.png"));
+    EnemyFieldgroundArea::instance()->setPixmap(QPixmap(":/png/png/enemyfieldground.png"));
+    EnemyGraveyardArea::instance()->setPixmap(QPixmap(":/png/png/enemygraveyard.png"));
 
     DeckArea::instance()->setPos(DeckPos);
     HandArea::instance()->setPos(HandPos);
@@ -92,17 +94,18 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_main1Phase()), this, SLOT(response_main1Phase()));
     connect(Net::instance(), SIGNAL(request_doEndOpponentBattlePhase()), this, SLOT(response_doEndOpponentBattlePhase()));
     connect(Net::instance(), SIGNAL(request_askForResponse()), this, SLOT(response_askForResponse()));
+    connect(Net::instance(), SIGNAL(request_tellForRequest()), this, SLOT(response_tellForRequest()));
 
-    connect(Net::instance(), SIGNAL(request_doCentaurWarrunnerEffect(QJsonObject)), this, SLOT(response_doCentaurWarrunnerEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doKeeperoftheLightEffect(QJsonObject)), this, SLOT(response_doKeeperoftheLightEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doLionEffect(QJsonObject)), this, SLOT(response_doLionEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doMagnusEffect(QJsonObject)), this, SLOT(response_doMagnusEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doNyxAssassinEffect(QJsonObject)), this, SLOT(response_doNyxAssassinEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doRubickEffect(QJsonObject)), this, SLOT(response_doRubickEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doTuskEffect(QJsonObject)), this, SLOT(response_doTuskEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doUndyingEffect(QJsonObject)), this, SLOT(response_doUndyingEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doVengefulSpiritEffect(QJsonObject)), this, SLOT(response_doVengefulSpiritEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_doZeusEffect(QJsonObject)), this, SLOT(response_doZeusEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_CentaurWarrunnerEffect(QJsonObject)), this, SLOT(response_CentaurWarrunnerEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_KeeperoftheLightEffect(QJsonObject)), this, SLOT(response_KeeperoftheLightEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_LionEffect(QJsonObject)), this, SLOT(response_LionEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_MagnusEffect(QJsonObject)), this, SLOT(response_MagnusEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_NyxAssassinEffect(QJsonObject)), this, SLOT(response_NyxAssassinEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_RubickEffect(QJsonObject)), this, SLOT(response_RubickEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_TuskEffect(QJsonObject)), this, SLOT(response_TuskEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_UndyingEffect(QJsonObject)), this, SLOT(response_UndyingEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_VengefulSpiritEffect(QJsonObject)), this, SLOT(response_VengefulSpiritEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_ZeusEffect(QJsonObject)), this, SLOT(response_ZeusEffect(QJsonObject)));
 }
 
 //void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
@@ -114,24 +117,25 @@ RoomScene::RoomScene(QObject* parent)
 //    QGraphicsScene::mouseReleaseEvent(event);
 //}
 
-void RoomScene::actionBP(bool)
-{
-    Rule::instance()->setPhase(Rule::myBP);
-    Rule::instance()->setDoing(false);
-}
+//void RoomScene::actionBP(bool)
+//{
+//    Rule::instance()->setPhase(Rule::myBP);
+//    Rule::instance()->setDoing(false);
+//}
 
-void RoomScene::actionM2(bool)
-{
-    Rule::instance()->setPhase(Rule::myM2);
-    Rule::instance()->setDoing(false);
-}
+//void RoomScene::actionM2(bool)
+//{
+//    Rule::instance()->setPhase(Rule::myM2);
+//    Rule::instance()->setDoing(false);
+//}
 
-void RoomScene::actionEP(bool)
-{
-    Rule::instance()->setPhase(Rule::myEP);
-    Rule::instance()->setDoing(false);
-}
+//void RoomScene::actionEP(bool)
+//{
+//    Rule::instance()->setPhase(Rule::myEP);
+//    Rule::instance()->setDoing(false);
+//}
 
+//这里就是为什么不能主动调EnemyArea::instance()->response_addCard的原因
 void RoomScene::response_doAddCard(QJsonObject jsonObject)
 {
     int ISDN = jsonObject["ISDN"].toInt();
@@ -144,8 +148,7 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
     {
     case Deck_Area:
     {
-        Card* card = Engine::instance()->cloneCard(ISDN);
-        //TODO: 现在方便调试，加入对方手牌的hover
+        Card* card = Engine::instance()->cloneCard(ISDN);//TODO: 现在方便调试，加入对方手牌的hover
         connect(card, &Card::hover, [=]()
             {
                 QString name = card->getName();
@@ -161,9 +164,9 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
     case Fieldyard_Area:
         EnemyFieldyardArea::instance()->response_addCard(enemyTakedCard, face, stand);
         break;
-    //    case Fieldground_Area:
-    //        EnemyFieldgroundArea::instance()->response_addCard(enemyTakedCard);
-    //        break;
+//    case Fieldground_Area: //还没实现这个函数，等魔陷卡做的时候实现
+//        EnemyFieldgroundArea::instance()->response_addCard(enemyTakedCard);
+        break;
     case Graveyard_Area:
         EnemyGraveyardArea::instance()->response_addCard(enemyTakedCard);
         break;
@@ -172,6 +175,7 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
     }
 }
 
+//这里就是为什么不能主动调EnemyArea::instance()->response_takeCard
 void RoomScene::response_doTakeCard(QJsonObject jsonObject)
 {
     int area = jsonObject["area"].toInt();
@@ -188,9 +192,9 @@ void RoomScene::response_doTakeCard(QJsonObject jsonObject)
     case Fieldyard_Area:
         enemyTakedCard = EnemyFieldyardArea::instance()->response_takeCard(index);
         break;
-    //    case Fieldground_Area:
-    //        EnemyFieldgroundArea::instance()->response_takeCard(index);
-    //        break;
+//    case Fieldground_Area: //还没实现这个函数，等魔陷卡做的时候实现
+//        EnemyFieldgroundArea::instance()->response_takeCard(index);
+//        break;
     case Graveyard_Area:
         enemyTakedCard = EnemyGraveyardArea::instance()->response_takeCard(index);
         break;
@@ -220,8 +224,6 @@ void RoomScene::response_setupDeck()
             {
                 QString name = card->getName();
                 QString description = card->getDescription();
-                qDebug() << "hover Name: " << name;
-                qDebug() << "Description: " << description;
                 emit hover(name, description);
             });
 
@@ -239,13 +241,6 @@ void RoomScene::response_setupDeck()
             {
                 FieldyardArea::instance()->takeCard(card->getIndex());
                 GraveyardArea::instance()->addCard(card);
-            });
-        connect(card, &Card::activeEffect, [=]()
-            {
-                QString className = card->metaObject()->className();
-                qDebug() << "className: " << className;
-                className.append("Effect");
-                QMetaObject::invokeMethod(this, className.toLatin1().data());
             });
     }
     file.close();
@@ -283,7 +278,7 @@ void RoomScene::response_standbyPhase()
     }
     for (Card* card : HandArea::instance()->getMyHand())
     {
-        card->setOneTurnOneEffect(true);
+        card->setOneTurnHandEffect(true);
     }
     Net::instance()->sendMessage(30001);
 }
@@ -302,12 +297,12 @@ void RoomScene::response_askForResponse()
 {
     Rule::instance()->setDoing(true);
 
-    Rule::Phase phase = Rule::instance()->getphase();
-    if (phase == Rule::myDP || phase == Rule::mySP || phase == Rule::myM1
-        || phase == Rule::myBP || phase == Rule::myM2 || phase == Rule::myEP)
-    {
-        return;
-    }
+//    Rule::Phase phase = Rule::instance()->getphase();
+//    if (phase == Rule::myDP || phase == Rule::mySP || phase == Rule::myM1
+//        || phase == Rule::myBP || phase == Rule::myM2 || phase == Rule::myEP)
+//    {
+//        return;
+//    }
 
     bool responsible = false;
     for (Card* card : FieldyardArea::instance()->getMyFieldyard())
@@ -329,6 +324,7 @@ void RoomScene::response_askForResponse()
     {
         //没有可以Active的卡牌，我方进入“非 isDoing”模式，通知对方行动
         Rule::instance()->setDoing(false);
+        Net::instance()->sendMessage(777);
     }
     else
     {
@@ -339,10 +335,22 @@ void RoomScene::response_askForResponse()
         if (ret == QDialog::Rejected)
         {
             Rule::instance()->setDoing(false);
+            Net::instance()->sendMessage(777);
         }
         else
         {
             msgBox.hide();
         }
+    }
+}
+
+void RoomScene::response_tellForRequest()
+{
+    Rule::instance()->setDoing(true);
+
+    if (Rule::instance()->getphase() == Rule::myEP)
+    {
+        Rule::instance()->setDoing(false);
+        Net::instance()->sendMessage(70001);
     }
 }
