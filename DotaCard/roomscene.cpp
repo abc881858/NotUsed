@@ -73,6 +73,9 @@ RoomScene::RoomScene(QObject* parent)
     EnemyFieldgroundArea::instance()->setPos(EnemyFieldgroundPos);
     EnemyGraveyardArea::instance()->setPos(EnemyGraveyardPos);
 
+    FieldyardArea::instance()->initializePlace();
+    EnemyFieldyardArea::instance()->initializePlace();
+
     addItem(DeckArea::instance());
     addItem(HandArea::instance());
     addItem(FieldyardArea::instance());
@@ -140,7 +143,7 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
 {
     int ISDN = jsonObject["ISDN"].toInt();
     int area = jsonObject["area"].toInt();
-    //    int index = jsonObject["index"].toInt();
+    int index = jsonObject["index"].toInt();
     bool face = jsonObject["face"].toBool();
     bool stand = jsonObject["stand"].toBool();
 
@@ -162,7 +165,7 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
         EnemyHandArea::instance()->response_addCard(enemyTakedCard);
         break;
     case Fieldyard_Area:
-        EnemyFieldyardArea::instance()->response_addCard(enemyTakedCard, face, stand);
+        EnemyFieldyardArea::instance()->response_addCard(enemyTakedCard, index, face, stand);
         break;
 //    case Fieldground_Area: //还没实现这个函数，等魔陷卡做的时候实现
 //        EnemyFieldgroundArea::instance()->response_addCard(enemyTakedCard);
@@ -275,9 +278,11 @@ void RoomScene::response_standbyPhase()
     for (Card* card : FieldyardArea::instance()->getMyFieldyard())
     {
         card->setOneTurnOneEffect(true);
+        card->setOneTurnHandEffect(true);
     }
     for (Card* card : HandArea::instance()->getMyHand())
     {
+        card->setOneTurnOneEffect(true);
         card->setOneTurnHandEffect(true);
     }
     Net::instance()->sendMessage(30001);

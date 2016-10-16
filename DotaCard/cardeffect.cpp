@@ -122,6 +122,12 @@ CentaurWarrunner::CentaurWarrunner()
 
 bool CentaurWarrunner::testEffect()
 {
+    qDebug() << "testEffect: ";
+    qDebug() << "getDoing: " << Rule::instance()->getDoing();
+    qDebug() << "getFace: " << getFace();
+    qDebug() << "getphase: " << Rule::instance()->getphase();
+    qDebug() << "getOneTurnOneEffect: " << getOneTurnOneEffect();
+
     if (!Rule::instance()->getDoing() || !getFace())
     {
         return false;

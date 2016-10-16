@@ -3,6 +3,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
 #include <QCursor>
+#include <QMessageBox>
 
 #include "rule.h"
 #include "area.h"
@@ -12,7 +13,7 @@ Card::Card()
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
-    //setPixmap(QPixmap(":/png/png/NULL.jpg"));
+    //setPixmap(QPixmap(":/png/png/NULL.jpg")); //卡牌会在Deck的AddCard时setPixmap
     area = No_Area;
     type = No_Type;
     setTransformationMode(Qt::SmoothTransformation);
@@ -53,6 +54,12 @@ bool Card::testNormalSummon()
         return false;
     }
 
+    //是否在选择卡牌阶段
+    if(Rule::instance()->getPicking())
+    {
+        return false;
+    }
+
     if (!Rule::instance()->getDoing() || !face)
     {
         return false;
@@ -68,6 +75,11 @@ bool Card::testNormalSummon()
     Rule::Phase phase = Rule::instance()->getphase();
     if (phase == Rule::myM1 || phase == Rule::myM2)
     {
+        if (FieldyardArea::instance()->testAddCard() == 0)
+        {
+            return false;
+            //QMessageBox::question(0, QString(tr("Can not summon")), QString(tr("Fieldyard is full!")), QMessageBox::Ok);
+        }
         return true;
     }
 
@@ -77,6 +89,12 @@ bool Card::testNormalSummon()
 bool Card::testSetCard()
 {
     if (area != Hand_Area)
+    {
+        return false;
+    }
+
+    //是否在选择卡牌阶段
+    if(Rule::instance()->getPicking())
     {
         return false;
     }
@@ -94,6 +112,11 @@ bool Card::testSetCard()
     Rule::Phase phase = Rule::instance()->getphase();
     if (phase == Rule::myM1 || phase == Rule::myM2)
     {
+        if (FieldyardArea::instance()->testAddCard() == 0)
+        {
+            return false;
+            //QMessageBox::question(0, QString(tr("Can not set")), QString(tr("Fieldyard is full!")), QMessageBox::Ok);
+        }
         return true;
     }
 
@@ -103,6 +126,12 @@ bool Card::testSetCard()
 bool Card::testFlipSummon()
 {
     if (area != Fieldyard_Area)
+    {
+        return false;
+    }
+
+    //是否在选择卡牌阶段
+    if(Rule::instance()->getPicking())
     {
         return false;
     }
@@ -125,6 +154,11 @@ bool Card::testFlipSummon()
 
 bool Card::testDefencePosition()
 {
+    //是否在选择卡牌阶段
+    if(Rule::instance()->getPicking())
+    {
+        return false;
+    }
     //    if (face && stand)
     //    {
     //        return changePosition;
@@ -134,6 +168,11 @@ bool Card::testDefencePosition()
 
 bool Card::testAttackPosition()
 {
+    //是否在选择卡牌阶段
+    if(Rule::instance()->getPicking())
+    {
+        return false;
+    }
     //    if (face && !stand)
     //    {
     //        return changePosition;
@@ -143,6 +182,11 @@ bool Card::testAttackPosition()
 
 bool Card::testAttack()
 {
+    //是否在选择卡牌阶段
+    if(Rule::instance()->getPicking())
+    {
+        return false;
+    }
     //    return true;
     return false;
 }
@@ -203,7 +247,11 @@ void Card::setCurrentflag(Card::CardFlag flag)
     QCursor cursorAttackPosition = QCursor(QPixmap(":/png/png/8.cur"), 14, 21);
     QCursor cursorAttack = QCursor(QPixmap(":/png/png/7.cur"), 14, 19);
 
-    if (currentflag == Effect)
+    if (currentflag == Selectable)
+    {
+        //高亮卡牌
+    }
+    else if (currentflag == Effect)
     {
         setCursor(cursorEffect);
     }
@@ -256,20 +304,13 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
         return;
     }
 
-    //是否在选择卡牌阶段
-    if(Rule::instance()->getPicking())
-    {
-        //测试是否满足选择条件
-        if(myflags.testFlag(Selectable))
-        {
-            //高亮+4角选择框
-            setCurrentflag(Selectable);
-        }
-        return;
-    }
+    //TODO: 4角选择框
 
-    //高亮卡牌+4角选择框
-    if (myflags.testFlag(Effect))
+    if (myflags.testFlag(Selectable)) //测试是否满足选择条件
+    {
+        setCurrentflag(Selectable);
+    }
+    else if (myflags.testFlag(Effect))
     {
         setCurrentflag(Effect);
     }
@@ -371,53 +412,42 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
     }
     else if (event->button() == Qt::LeftButton)
     {
-        if (Rule::instance()->getPicking())
+        if (currentflag == Selectable)
         {
-            if (currentflag == Selectable)
-            {
-                activePicked();
-            }
-            return;
+            activePicked();
         }
-
-        switch (area)
+        else if (currentflag == Effect)
         {
-        case Hand_Area:
-            if (currentflag == NormalSummon)
-            {
-                Rule::instance()->setOneTurnOneNormalSummon(false);
-                emit normalSummon();
-            }
-            else if (currentflag == SetCard)
-            {
-                Rule::instance()->setOneTurnOneNormalSummon(false);
-                emit setCard();
-            }
-            else if (currentflag == Effect)
+            if (area == Hand_Area)
             {
                 //从手牌发动的特效
                 activeHandEffect();
             }
-            else if (currentflag == SpecialSummon)
-            {
-                //目前没有从手牌特殊召唤的卡牌
-                //emit specialSummon();
-            }
-            break;
-        case Fieldyard_Area:
-            if (currentflag == FlipSummon)
-            {
-                //目前没有翻转召唤
-                //emit flipSummon();
-            }
-            else if (currentflag == Effect)
+            else if (area == Fieldyard_Area)
             {
                 setOneTurnOneEffect(false);
                 activeEffect();
             }
-            break;
-        default:
-            break;
+        }
+        else if (currentflag == NormalSummon)
+        {
+            Rule::instance()->setOneTurnOneNormalSummon(false);
+            emit normalSummon();
+        }
+        else if (currentflag == SetCard)
+        {
+            Rule::instance()->setOneTurnOneNormalSummon(false);
+            emit setCard();
+        }
+        else if (currentflag == SpecialSummon)
+        {
+            //目前没有从手牌特殊召唤的卡牌
+            //emit specialSummon();
+        }
+        else if (currentflag == FlipSummon)
+        {
+            //目前没有翻转召唤
+            //emit flipSummon();
         }
     }
 }

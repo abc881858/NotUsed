@@ -37,11 +37,20 @@ class FieldyardArea : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 public:
     static FieldyardArea* instance();
-    void initializeCards();
-    void adjustCards();
-    void addCard(Card* card, bool face = true, bool stand = true);
-    Card* takeCard(int index);
     QList<Card*> getMyFieldyard() const;
+    void addCard(Card* card, bool face = true, bool stand = true);
+    Card* takeCard(int place);
+
+    void initializeCards();
+    void initializePlace();
+    int testAddCard();
+
+    struct Place
+    {
+        bool canPlace; //该位置是否可用
+        int at; //来自List的哪里
+        QPointF pos; //myFieldyard[i]->setPos
+    } one, two, three, four, five;
 
 private:
     QList<Card*> myFieldyard;
@@ -104,10 +113,17 @@ class EnemyFieldyardArea : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 public:
     static EnemyFieldyardArea* instance();
-    void adjustCards();
     QList<Card*> getYourFieldyard() const;
-    void response_addCard(Card* card, bool face = true, bool stand = true);
+    void initializePlace();
+    void response_addCard(Card* card, int place, bool face = true, bool stand = true);
     Card* response_takeCard(int index);
+
+    struct Place
+    {
+        bool canPlace;
+        int at;
+        QPointF pos; //从右往左排
+    } one, two, three, four, five;
 
 private:
     QList<Card*> yourFieldyard;
