@@ -1,16 +1,19 @@
 #include "graphicspixmapobject.h"
+#include <QGraphicsSceneMouseEvent>
 
 GraphicsPixmapObject::GraphicsPixmapObject()
 {
     canClick = false;
     setTransformOriginPoint(25,36);
-    setTransformationMode(Qt::SmoothTransformation);
 }
 
-void GraphicsPixmapObject::mousePressEvent(QGraphicsSceneMouseEvent *)
+void GraphicsPixmapObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(canClick)
+    if(event->button() & Qt::LeftButton)
     {
-        emit canMove();
+        if (canClick)
+        {
+            emit canMove();
+        }
     }
 }
