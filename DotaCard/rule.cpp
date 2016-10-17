@@ -19,6 +19,7 @@ void Rule::initialize()
     NameEffected.insert(KeeperoftheLightRequirement,"KeeperoftheLight");
     NameEffected.insert(KeeperoftheLightRequiremented,"KeeperoftheLight");
     NameEffected.insert(LionRequirement,"Lion");
+    NameEffected.insert(AttackedRequirement,"Attack");
 }
 
 bool Rule::getOneTurnOneNormalSummon() const
