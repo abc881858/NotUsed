@@ -4,6 +4,7 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <QFile>
 #include <QMessageBox>
+#include <QPropertyAnimation>
 
 #include "engine.h"
 #include "rule.h"
@@ -87,9 +88,29 @@ RoomScene::RoomScene(QObject* parent)
     addItem(EnemyFieldgroundArea::instance());
     addItem(EnemyGraveyardArea::instance());
 
+    for(int i=0;i<5;i++)
+    {
+        sword[i].setPixmap(QPixmap(":/png/png/sword.png"));
+        sword[i].setPos(QPointF(80*i,0)+FieldyardPos);
+        addItem(&sword[i]);
+        connect(&sword[i], &GraphicsPixmapObject::canMove, [=]()
+        {
+            currentMove = i;
+        });
+        sword[i].canClick = true;
+        sword[i].hide();
+    }
+    currentMove = -1;
+
+    duifangxingdong = new GraphicsPixmapObject;
+    duifangxingdong->setPixmap(QPixmap(":/png/png/dfxd"));
+    addItem(duifangxingdong);
+    duifangxingdong->hide();
+
     connect(Net::instance(), SIGNAL(request_doAddCard(QJsonObject)), this, SLOT(response_doAddCard(QJsonObject)));
     connect(Net::instance(), SIGNAL(request_doTakeCard(QJsonObject)), this, SLOT(response_doTakeCard(QJsonObject)));
     connect(Net::instance(), SIGNAL(request_doSetPhase(QJsonObject)), this, SLOT(response_doSetPhase(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_doSetDoing(QJsonObject)), this, SLOT(response_doSetDoing(QJsonObject)));
     connect(Net::instance(), SIGNAL(request_setupDeck()), this, SLOT(response_setupDeck()));
     connect(Net::instance(), SIGNAL(request_startGame()), this, SLOT(response_startGame()));
     connect(Net::instance(), SIGNAL(request_drawPhase()), this, SLOT(response_drawPhase()));
@@ -110,6 +131,26 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_VengefulSpiritEffect(QJsonObject)), this, SLOT(response_VengefulSpiritEffect(QJsonObject)));
     connect(Net::instance(), SIGNAL(request_ZeusEffect(QJsonObject)), this, SLOT(response_ZeusEffect(QJsonObject)));
 }
+
+void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsScene::mouseMoveEvent(event);
+    if (currentMove != -1)
+    {
+        qDebug() << "3333: " << sword[currentMove].pos() << "4444: " <<event->scenePos();//原来是scenePos，不是pos()!
+        QPointF p1 = sword[currentMove].pos() + QPointF(25,36);
+        QPointF p2 = sword[currentMove].pos() + QPointF(25,0);
+        QPointF p4 = event->scenePos();
+        qreal angle = QLineF(p1,p4).angleTo(QLineF(p1,p2));
+        sword[currentMove].setRotation(angle); //angle是弧度?
+    }
+}
+
+//void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    QGraphicsScene::mousePressEvent(event);
+//    QGraphicsItem* item = itemAt(event->pos(),QTransform());
+//}
 
 //void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 //{
@@ -212,6 +253,26 @@ void RoomScene::response_doSetPhase(QJsonObject jsonObject)
     Rule::instance()->setPhase(phase + 6);
 }
 
+void RoomScene::response_doSetDoing(QJsonObject jsonObject)
+{
+    int isDoing = jsonObject["doing"].toBool();
+    if(isDoing)
+    {
+        duifangxingdong->show();
+
+        QPropertyAnimation *animation = new QPropertyAnimation(duifangxingdong, "pos");
+        animation->setDuration(1000);
+        animation->setStartValue(QPointF(210,0));
+        animation->setEndValue(QPointF(210,20));
+        animation->setEasingCurve(QEasingCurve::OutBounce);
+        animation->start();
+    }
+    else
+    {
+        duifangxingdong->hide();
+    }
+}
+
 void RoomScene::response_setupDeck()
 {
     QFile file("test1.txt");
@@ -263,28 +324,31 @@ void RoomScene::response_startGame()
 
 void RoomScene::response_drawPhase()
 {
+    Rule::instance()->setDoing(true);
     Rule::instance()->setPhase(Rule::myDP);
     Card* card = DeckArea::instance()->takeCard();
     HandArea::instance()->addCard(card);
-    Net::instance()->sendMessage(20001);
+    Net::instance()->sendMessage(20001);//TODO: 准备修改服务器实现
 }
 
 void RoomScene::response_standbyPhase()
 {
     Rule::instance()->setPhase(Rule::mySP);
     FieldyardArea::instance()->initializeCards(); //一回合一次攻防转换
-    Rule::instance()->setDoing(true);
     Rule::instance()->setOneTurnOneNormalSummon(true);
-    for (Card* card : FieldyardArea::instance()->getMyFieldyard())
+    QList<Card*> allcards;
+    allcards << DeckArea::instance()->getMyDeck()
+             << HandArea::instance()->getMyHand()
+             << FieldyardArea::instance()->getMyFieldyard()
+             << FieldgroundArea::instance()->getMyFieldground()
+             << GraveyardArea::instance()->getMyGraveyard(); //TODO: 暂时还没有除外区和额外区
+    for (Card* card : allcards) //遍历所有卡牌，确保一回合一次，不会因为area变化而多次选发
     {
-        card->setOneTurnOneEffect(true);
+        card->setOneTurnOneEffect(true);//看卡牌是否写明一回合一次，比如有送入墓地必发选发的效果
         card->setOneTurnHandEffect(true);
+        card->setOneTurnOneAttack(true);
     }
-    for (Card* card : HandArea::instance()->getMyHand())
-    {
-        card->setOneTurnOneEffect(true);
-        card->setOneTurnHandEffect(true);
-    }
+
     Net::instance()->sendMessage(30001);
 }
 
@@ -353,7 +417,22 @@ void RoomScene::response_tellForRequest()
 {
     Rule::instance()->setDoing(true);
 
-    if (Rule::instance()->getphase() == Rule::myEP)
+    Rule::Phase phase = Rule::instance()->getphase();
+
+    if (phase == Rule::myBP)
+    {
+        //TODO: 1.是否可用在setPhase::MyBP的时候加载？
+        //2.就算在这加载，也不一定要全部显示为宝剑吧？
+        for (Card* card : FieldyardArea::instance()->getMyFieldyard())
+        {
+            if(card->getFace() && card->getStand())
+            {
+                //Fieldyard 的index是从1-5的，和其他的妖艳贱货不一样
+                sword[card->getIndex() - 1].show();
+            }
+        }
+    }
+    else if (phase == Rule::myEP)
     {
         Rule::instance()->setDoing(false);
         Net::instance()->sendMessage(70001);

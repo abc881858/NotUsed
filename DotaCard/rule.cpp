@@ -12,7 +12,9 @@ void Rule::initialize()
 {
     isDoing = false;
     oneTurnOneNormalSummon = false;
-    isPicking = false;
+//    isPicking = false; //只用pickRequirement==0判断? 万一要选2张呢? 那pickRequirement也不会等于0
+    // phase 就不初始化了
+    pickRequirement = 0;
 
     NameEffected.insert(KeeperoftheLightRequirement,"KeeperoftheLight");
     NameEffected.insert(KeeperoftheLightRequiremented,"KeeperoftheLight");
@@ -53,18 +55,19 @@ bool Rule::getDoing() const
 void Rule::setDoing(bool value)
 {
     isDoing = value;
+    Net::instance()->doSetDoing(isDoing);
 }
 
-bool Rule::getPicking() const
-{
-    return isPicking;
-}
+//bool Rule::getPicking() const
+//{
+//    return isPicking;
+//}
 
-void Rule::setPicking(bool value)
-{
-    qDebug() << "setPicking(bool value)" << value;
-    isPicking = value;
-}
+//void Rule::setPicking(bool value)
+//{
+//    qDebug() << "setPicking(bool value)" << value;
+//    isPicking = value;
+//}
 
 int Rule::getPickRequirement() const
 {

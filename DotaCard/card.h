@@ -178,6 +178,10 @@ public:
 
     bool getOneTurnOneEffect() const;
     void setOneTurnOneEffect(bool value);
+    bool getOneTurnHandEffect() const;
+    void setOneTurnHandEffect(bool value);
+    bool getOneTurnOneAttack() const;
+    void setOneTurnOneAttack(bool value);
 
     bool isMonstor(){ return (type==NormalMonster || type==EffectMonster); }
 
@@ -186,9 +190,6 @@ public:
 
     int getDebuff() const;
     void setDebuff(int value);
-
-    bool getOneTurnHandEffect() const;
-    void setOneTurnHandEffect(bool value);
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
@@ -219,6 +220,8 @@ private:
     bool changePosition; //每回合可以变更一次攻防表示
     bool oneTurnOneEffect; //每回合从场地上可以发动一次
     bool oneTurnHandEffect; //每回合从手上可以发动一次
+    bool oneTurnOneAttack; //每回合可以从场地上攻击一次
+    //以后已经还有每回合可以从墓地、除外、额外发动一次
 //    int currentRequire; //当前选择卡牌的原因，不能放在发动卡里，也不能放在选择卡里，请使用全局Rule里的pickRequirement
 
     int debuff; // 光之守卫 需要用到

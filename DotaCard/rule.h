@@ -1,6 +1,8 @@
 #ifndef RULE_H
 #define RULE_H
 
+#define NoRequiremente 0
+#define AttackedRequirement 100
 #define KeeperoftheLightRequirement 602
 #define KeeperoftheLightRequiremented 502
 #define LionRequirement 603
@@ -40,8 +42,8 @@ public:
     bool getDoing() const;
     void setDoing(bool value);
 
-    bool getPicking() const;
-    void setPicking(bool value);
+//    bool getPicking() const;
+//    void setPicking(bool value);
 
     int getPickRequirement() const;
     void setPickRequirement(int value);
@@ -56,8 +58,8 @@ private:
     bool isPicking;
     int pickRequirement;
 
-    int pickedArea;
-    int pickedIndex;
+//    int pickedArea;
+//    int pickedIndex;
 };
 
 #endif // RULE_H

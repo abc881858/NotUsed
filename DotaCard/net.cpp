@@ -63,6 +63,16 @@ void Net::doSetPhase(int phase) //告诉对方我的阶段
     write(object);
 }
 
+void Net::doSetDoing(bool doing)
+{
+    QJsonObject parameter;
+    parameter.insert("doing", doing);
+    QJsonObject object;
+    object.insert("request", "doSetDoing");
+    object.insert("parameter", parameter);
+    write(object);
+}
+
 void Net::connected()
 {
     QJsonObject jsonObject;

@@ -59,7 +59,7 @@ void Card::activePicked() //注意：这是你选择的卡，不是发动效果�
     object.insert("parameter", parameter);
     Net::instance()->write(object);
 
-    Rule::instance()->setPicking(false); //TODO 何时清空 isPicking 和 pickRequirement
+    Rule::instance()->setPickRequirement(NoRequiremente);
 }
 
 void RoomScene::response_CentaurWarrunnerEffect(QJsonObject jsonObject)
@@ -250,7 +250,6 @@ void KeeperoftheLight::activeEffect() //都是发动场上的特效
     QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
     //设置requirement的时候，把picking设为true，代表正在【选择】【需要】的卡
     Rule::instance()->setPickRequirement(KeeperoftheLightRequirement);
-    Rule::instance()->setPicking(true);
 }
 
 void KeeperoftheLight::activeHandEffect() //发动手上的特效
@@ -258,7 +257,6 @@ void KeeperoftheLight::activeHandEffect() //发动手上的特效
     setOneTurnHandEffect(false);
     QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select fieldyard card.")), QMessageBox::Ok);
     Rule::instance()->setPickRequirement(KeeperoftheLightRequiremented);
-    Rule::instance()->setPicking(true);
 }
 
 //恶魔巫师
@@ -309,7 +307,6 @@ void Lion::activeEffect()
     setOneTurnOneEffect(false);
     QMessageBox::question(0, QString(tr("active Lion's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
     Rule::instance()->setPickRequirement(LionRequirement);
-    Rule::instance()->setPicking(true);
 }
 
 //半人猛犸

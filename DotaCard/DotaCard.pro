@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     engine.cpp \
     net.cpp \
     rule.cpp \
-    cardeffect.cpp
+    cardeffect.cpp \
+    graphicspixmapobject.cpp
 
 HEADERS  += mainwindow.h \
     card.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     area.h \
     engine.h \
     net.h \
-    rule.h
+    rule.h \
+    graphicspixmapobject.h
 
 FORMS    += mainwindow.ui
 

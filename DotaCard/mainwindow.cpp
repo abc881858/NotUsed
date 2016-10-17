@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget* parent)
         });
     connect(ui->buttonBP, &QPushButton::pressed, [=]()
         {
-            if (Rule::instance()->getPicking())
+            if (Rule::instance()->getPickRequirement())
             {
                 return;
             }
@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget* parent)
         });
     connect(ui->buttonM2, &QPushButton::pressed, [=]()
         {
-            if (Rule::instance()->getPicking())
+            if (Rule::instance()->getPickRequirement())
             {
                 return;
             }
@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget* parent)
         });
     connect(ui->buttonEP, &QPushButton::pressed, [=]()
         {
-            if (Rule::instance()->getPicking())
+            if (Rule::instance()->getPickRequirement())
             {
                 return;
             }

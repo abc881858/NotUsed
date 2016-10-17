@@ -19,6 +19,9 @@ Card::Card()
     setTransformationMode(Qt::SmoothTransformation);
     isRotate = false;
     isBack = true;
+//    oneTurnHandEffect = false;
+//    oneTurnOneAttack = false;
+//    oneTurnOneEffect = false;
 }
 
 /////////////////////////// Begin Test All Card Status /////////////////////////////
@@ -55,7 +58,7 @@ bool Card::testNormalSummon()
     }
 
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPicking())
+    if(Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -94,7 +97,7 @@ bool Card::testSetCard()
     }
 
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPicking())
+    if(Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -131,7 +134,7 @@ bool Card::testFlipSummon()
     }
 
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPicking())
+    if(Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -155,7 +158,7 @@ bool Card::testFlipSummon()
 bool Card::testDefencePosition()
 {
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPicking())
+    if(Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -169,7 +172,7 @@ bool Card::testDefencePosition()
 bool Card::testAttackPosition()
 {
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPicking())
+    if(Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -182,12 +185,28 @@ bool Card::testAttackPosition()
 
 bool Card::testAttack()
 {
-    //是否在选择卡牌阶段
-    if(Rule::instance()->getPicking())
+    if (area != Fieldyard_Area)
     {
         return false;
     }
-    //    return true;
+
+    if (!Rule::instance()->getDoing() || !face)
+    {
+        return false;
+    }
+
+    if (Rule::instance()->getphase() != Rule::myBP)
+    {
+        return false;
+    }
+
+    if(Rule::instance()->getPickRequirement()==0)//是否在选择卡牌阶段
+    {
+        if(oneTurnOneAttack)
+        {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -197,7 +216,11 @@ bool Card::testSelectable()
 
     qDebug() << "Card::testSelectable() pickRequirement: " << pickRequirement;
 
-    if (pickRequirement == KeeperoftheLightRequirement)
+    if (pickRequirement == 0)
+    {
+        return false;
+    }
+    else if (pickRequirement == KeeperoftheLightRequirement)
     {
         return (area == EnemyFieldyard_Area && face && isMonstor());
     }
@@ -250,6 +273,7 @@ void Card::setCurrentflag(Card::CardFlag flag)
     if (currentflag == Selectable)
     {
         //高亮卡牌
+        //其实不是高亮，而是一开始就是透明度高的，改成了不透明而已！
     }
     else if (currentflag == Effect)
     {
@@ -326,11 +350,16 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     {
         setCurrentflag(SetCard);
     }
+    else if (myflags.testFlag(Attack))
+    {
+        setCurrentflag(Attack);
+    }
 }
 
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
     setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
+    //TODO: 移除 四角选择框
 
     if (area == Hand_Area || area == EnemyHand_Area)
     {
@@ -409,6 +438,12 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
                 setCurrentflag(NormalSummon);
             }
         }
+        else if (currentflag == Attack)
+        {
+            //这里不判断，在RoomScene里增加右键事件
+            //让宝剑居中，selectable为false
+            //并且让setPickRequirement(NoRequirement);
+        }
     }
     else if (event->button() == Qt::LeftButton)
     {
@@ -449,6 +484,19 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             //目前没有翻转召唤
             //emit flipSummon();
         }
+        else if (currentflag == DefencePosition)
+        {
+            //
+        }
+        else if (currentflag == AttackPosition)
+        {
+            //
+        }
+        else if (currentflag == Attack)
+        {
+            Rule::instance()->setPickRequirement(AttackedRequirement);
+            //emit clickSword();
+        }
     }
 }
 
@@ -458,6 +506,16 @@ void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     {
         setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
     }
+}
+
+bool Card::getOneTurnOneAttack() const
+{
+    return oneTurnOneAttack;
+}
+
+void Card::setOneTurnOneAttack(bool value)
+{
+    oneTurnOneAttack = value;
 }
 
 bool Card::getOneTurnHandEffect() const

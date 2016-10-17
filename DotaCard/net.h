@@ -18,6 +18,7 @@ public:
 
     void sendMessage(int command);
     void doSetPhase(int phase);
+    void doSetDoing(bool doing);
 private:
     QWebSocket* client;
 
@@ -29,6 +30,7 @@ signals:
     Q_INVOKABLE void request_doAddCard(QJsonObject);
     Q_INVOKABLE void request_doTakeCard(QJsonObject);
     Q_INVOKABLE void request_doSetPhase(QJsonObject);
+    Q_INVOKABLE void request_doSetDoing(QJsonObject);
     Q_INVOKABLE void request_setupDeck();
     Q_INVOKABLE void request_startGame();
     Q_INVOKABLE void request_drawPhase();

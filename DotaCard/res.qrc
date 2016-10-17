@@ -22,6 +22,8 @@
         <file>png/enemyhand.png</file>
         <file>png/fieldground.png</file>
         <file>png/fieldyard.png</file>
+        <file>png/sword.png</file>
+        <file>png/dfxd.png</file>
     </qresource>
     <qresource prefix="/old">
         <file>pic/monster/dota-CentaurWarrunner.jpg</file>

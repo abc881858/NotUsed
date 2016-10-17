@@ -54,7 +54,7 @@
     </size>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">background-color: rgb(190, 132, 80);</string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
@@ -277,7 +277,7 @@ p, li { white-space: pre-wrap; }
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">background-color: rgb(190, 145, 85);</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="spacing">
@@ -309,14 +309,23 @@ p, li { white-space: pre-wrap; }
            <height>50</height>
           </size>
          </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(40, 150, 255);</string>
+          <string notr="true">QPushButton{background-color: rgb(128, 185, 233); color: black;border:2px groove gray;border-radius:10px;padding:2px 4px;}
+QPushButton:hover{background-color: rgb(40, 145, 250); color: blue;}
+QPushButton:pressed{background-color:rgb(85, 170, 255); color: white;}
+</string>
          </property>
          <property name="text">
           <string>DP</string>
          </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -335,13 +344,15 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(40, 150, 255);</string>
+          <string notr="true">QPushButton{background-color: rgb(128, 185, 233); color: black;border:2px groove gray;border-radius:10px;padding:2px 4px;}
+QPushButton:hover{background-color: rgb(40, 145, 250); color: blue;}
+QPushButton:pressed{background-color:rgb(85, 170, 255); color: white;}</string>
          </property>
          <property name="text">
           <string>SP</string>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -360,13 +371,15 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(40, 150, 255);</string>
+          <string notr="true">QPushButton{background-color: rgb(128, 185, 233); color: black;border:2px groove gray;border-radius:10px;padding:2px 4px;}
+QPushButton:hover{background-color: rgb(40, 145, 250); color: blue;}
+QPushButton:pressed{background-color:rgb(85, 170, 255); color: white;}</string>
          </property>
          <property name="text">
           <string>M1</string>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -385,13 +398,15 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(40, 150, 255);</string>
+          <string notr="true">QPushButton{background-color: rgb(128, 185, 233); color: black;border:2px groove gray;border-radius:10px;padding:2px 4px;}
+QPushButton:hover{background-color: rgb(40, 145, 250); color: blue;}
+QPushButton:pressed{background-color:rgb(85, 170, 255); color: white;}</string>
          </property>
          <property name="text">
           <string>BP</string>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -410,13 +425,15 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(40, 150, 255);</string>
+          <string notr="true">QPushButton{background-color: rgb(128, 185, 233); color: black;border:2px groove gray;border-radius:10px;padding:2px 4px;}
+QPushButton:hover{background-color: rgb(40, 145, 250); color: blue;}
+QPushButton:pressed{background-color:rgb(85, 170, 255); color: white;}</string>
          </property>
          <property name="text">
           <string>M2</string>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -435,13 +452,15 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(40, 150, 255);</string>
+          <string notr="true">QPushButton{background-color: rgb(128, 185, 233); color: black;border:2px groove gray;border-radius:10px;padding:2px 4px;}
+QPushButton:hover{background-color: rgb(40, 145, 250); color: blue;}
+QPushButton:pressed{background-color:rgb(85, 170, 255); color: white;}</string>
          </property>
          <property name="text">
           <string>EP</string>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
