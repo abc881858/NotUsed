@@ -56,6 +56,8 @@ public slots:
     void response_UndyingEffect(QJsonObject);
     void response_VengefulSpiritEffect(QJsonObject);
     void response_ZeusEffect(QJsonObject);
+    
+    void response_AttackEffect(QJsonObject jsonObject);
 
     //protected:
     //    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
