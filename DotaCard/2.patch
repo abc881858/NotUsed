@@ -1,0 +1,182 @@
+Index: DotaCard/graphicspixmapobject.cpp
+===================================================================
+--- DotaCard/graphicspixmapobject.cpp	(ѦѾ 52)
++++ DotaCard/graphicspixmapobject.cpp	(٤طرѾ)
+@@ -1,10 +1,10 @@
+ #include "graphicspixmapobject.h"
+ #include <QDebug>
++#include "rule.h"
+ 
+ GraphicsPixmapObject::GraphicsPixmapObject()
+ {
+-    canClick = false;
+-    canMove = false; // roomScene是否可以通过mouseMoveEvent移动宝剑指向
++//    canMove = false; // roomScene是否可以通过mouseMoveEvent移动宝剑指向,keyi
+     setTransformOriginPoint(25, 36);
+     setTransformationMode(Qt::SmoothTransformation);
+ }
+@@ -14,7 +14,7 @@
+     qDebug() << "GraphicsPixmapObject::mousePressEvent";
+     if (event->button() & Qt::LeftButton)
+     {
+-        if (canClick)
++        if (Rule::instance()->getIsPickingSource())
+         {
+             emit doMove();
+         }
+Index: DotaCard/graphicspixmapobject.h
+===================================================================
+--- DotaCard/graphicspixmapobject.h	(ѦѾ 52)
++++ DotaCard/graphicspixmapobject.h	(٤طرѾ)
+@@ -12,7 +12,6 @@
+     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+ public:
+     GraphicsPixmapObject();
+-    bool canClick;
+     bool canMove;
+ 
+ protected:
+Index: DotaCard/main.cpp
+===================================================================
+--- DotaCard/main.cpp	(ѦѾ 52)
++++ DotaCard/main.cpp	(٤طرѾ)
+@@ -16,7 +16,7 @@
+         txt = QString("Debug: %1").arg(msg);
+         break;
+     case QtWarningMsg:
+-        txt = QString("Warning: %1").arg(msg);
++        // txt = QString("Warning: %1").arg(msg);
+         break;
+     case QtCriticalMsg:
+         txt = QString("Critical: %1").arg(msg);
+Index: DotaCard/mainwindow.ui
+===================================================================
+--- DotaCard/mainwindow.ui	(ѦѾ 52)
++++ DotaCard/mainwindow.ui	(٤طرѾ)
+@@ -206,10 +206,7 @@
+ &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+ p, li { white-space: pre-wrap; }
+ &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+-&lt;p style=&quot; margin-top:9px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;【恶魔族·效果】&lt;/span&gt;&lt;/p&gt;
+-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;一回合一次，选择下面的其一的效果发动：&lt;/p&gt;
+-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;1、选择对方场上一张怪兽发动，选择的怪兽变为里侧守备表示。&lt;/p&gt;
+-&lt;p align=&quot;justify&quot; style=&quot; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;2、选择对方场上一张里侧守备表示的怪兽发动，选择的怪兽破坏。当这张卡装备了“dota-阿哈利姆神杖”时，同时破坏选择怪兽两边的卡。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
++&lt;p align=&quot;justify&quot; style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:9px; margin-left:3px; margin-right:3px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+Index: DotaCard/roomscene.cpp
+===================================================================
+--- DotaCard/roomscene.cpp	(ѦѾ 53)
++++ DotaCard/roomscene.cpp	(٤طرѾ)
+@@ -99,7 +99,6 @@
+                 currentMove = i;
+                 sword[i].canMove = true;
+             });
+-        sword[i].canClick = true;
+         sword[i].hide();
+     }
+     currentMove = -1;
+@@ -164,6 +163,7 @@
+                 currentMove = -1;
+                 sword[oldcurrentMove].setPos(startPos);
+                 sword[oldcurrentMove].setRotation(0);
++                Rule::instance()->setIsPickingSource(true);//暂时放这里，以后处理战斗流程放在Net返回结果里
+             });
+     }
+     else if (pickRequirement == KeeperoftheLightRequirement)
+@@ -403,11 +403,12 @@
+         connect(card, SIGNAL(pickTarget()), this, SLOT(doPickTarget()));
+         connect(card, &Card::pressSword, [=](int index)
+             {
+-                if (sword[index - 1].canClick)
++                if (Rule::instance()->getIsPickingSource())
+                 {
+                     qDebug() << "slot sword pressSword";
+                     currentMove = index - 1;
+                     sword[index - 1].canMove = true;
++                    Rule::instance()->setIsPickingSource(false);//右键可以setTrue
+                 }
+             });
+     }
+@@ -529,8 +530,9 @@
+         {
+             if (card->getFace() && card->getStand())
+             {
+-                //Fieldyard 的index是从1-5的，和其他的妖艳贱货不一样
++                //Fieldyard 的index是从1-5的
+                 sword[card->getIndex() - 1].show();
++                Rule::instance()->setIsPickingSource(true);
+             }
+         }
+     }
+Index: DotaCard/rule.cpp
+===================================================================
+--- DotaCard/rule.cpp	(ѦѾ 52)
++++ DotaCard/rule.cpp	(٤طرѾ)
+@@ -15,6 +15,7 @@
+     //    isPicking = false; //只用pickRequirement==0判断? 万一要选2张呢? 那pickRequirement也不会等于0
+     // phase 就不初始化了
+     pickRequirement = 0;
++    isPickingSource = false;
+ }
+ 
+ bool Rule::getOneTurnOneNormalSummon() const
+@@ -64,3 +65,13 @@
+     qDebug() << "setPickRequirement(int value)" << value;
+     pickRequirement = value;
+ }
++
++bool Rule::getIsPickingSource() const
++{
++    return isPickingSource;
++}
++
++void Rule::setIsPickingSource(bool value)
++{
++    isPickingSource = value;
++}
+Index: DotaCard/rule.h
+===================================================================
+--- DotaCard/rule.h	(ѦѾ 52)
++++ DotaCard/rule.h	(٤طرѾ)
+@@ -44,6 +44,9 @@
+     int getPickRequirement() const;
+     void setPickRequirement(int value);
+ 
++    bool getIsPickingSource() const;
++    void setIsPickingSource(bool value);
++
+ private:
+     bool oneTurnOneNormalSummon;
+     Rule::Phase phase;
+@@ -50,6 +53,7 @@
+     bool isDoing;
+     bool isPicking;
+     int pickRequirement;
++    bool isPickingSource;
+ };
+ 
+ #endif // RULE_H
+Index: DotaCardServer/main.cpp
+===================================================================
+--- DotaCardServer/main.cpp	(ѦѾ 48)
++++ DotaCardServer/main.cpp	(٤طرѾ)
+@@ -14,7 +14,7 @@
+         txt = QString("Debug: %1").arg(msg);
+         break;
+     case QtWarningMsg:
+-        txt = QString("Warning: %1").arg(msg);
++//        txt = QString("Warning: %1").arg(msg);
+         break;
+     case QtCriticalMsg:
+         txt = QString("Critical: %1").arg(msg);
+@@ -39,7 +39,7 @@
+ 
+     QApplication a(argc, argv);
+     MainWindow w;
+-    w.show();
++    w.showMinimized();
+ 
+     return a.exec();
+ }
