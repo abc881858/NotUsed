@@ -8,106 +8,6 @@
 #include "net.h"
 #include "rule.h"
 
-void Card::activePicked() //注意：这是你选择的卡，不是发动效果的卡！选好了卡牌，真正active，并发送Net
-{
-    bool oldFace = face;
-    int oldArea = area;
-    bool oldStand = stand;
-    int oldIndex = index;
-
-    int pickRequirement = Rule::instance()->getPickRequirement();
-    qDebug() << "Card::activePicked() pickRequirement: " << pickRequirement;
-    if (pickRequirement == KeeperoftheLightRequirement)
-    {
-        //给选择的对方卡牌一个debuff
-        setDebuff(KeeperoftheLightRequirement);
-    }
-    else if (pickRequirement == KeeperoftheLightRequiremented)
-    {
-        //一般只有动对方场地的东西，才会触发Net相关的事件
-        //如果只动自己场地，因为本地的add和take卡牌都做了Net发射，所以可以跳过。
-        HandArea::instance()->addCard(FieldyardArea::instance()->takeCard(index));
-    }
-    else if (pickRequirement == LionRequirement)
-    {
-        if (face)
-        {
-            setFace(false);
-            setArea(EnemyFieldyard_Area);
-            setStand(false);
-        }
-        else
-        {
-            //不应该去操作任何 EnemyArea 的 addCard 和takeCard，因为这会触发对方再次发送给我add和take，记住！
-            //EnemyGraveyardArea::instance()->response_addCard(EnemyFieldyardArea::instance()->response_takeCard(index));
-        }
-    }
-
-    QJsonObject parameter;
-    parameter.insert("oldFace", oldFace);
-    parameter.insert("oldArea", oldArea);//点击的卡的旧位置
-    parameter.insert("oldStand", oldStand);
-    parameter.insert("oldIndex", oldIndex);
-    parameter.insert("newFace", face);
-    parameter.insert("newArea", area);//点击的卡的新位置
-    parameter.insert("newStand", stand);
-    parameter.insert("newIndex", index);
-    QJsonObject object;
-    QString request = QString(Rule::instance()->NameEffected[pickRequirement]).append("Effect");
-    qDebug() << "I have actived some card's effect! The effect is : " << request;
-    object.insert("request", request);
-    object.insert("parameter", parameter);
-    Net::instance()->write(object);
-
-    Rule::instance()->setPickRequirement(NoRequiremente);
-}
-
-void RoomScene::response_CentaurWarrunnerEffect(QJsonObject jsonObject)
-{
-    bool all = jsonObject["all"].toBool();
-    for (Card* card : EnemyFieldyardArea::instance()->getYourFieldyard())
-    {
-        //可以修改EnemyArea的face、area、stand，但不能去AddCard、TakeCard，记住！
-        if (card->getFace())
-        {
-            card->setStand(all);
-        }
-    }
-}
-
-void RoomScene::response_KeeperoftheLightEffect(QJsonObject jsonObject)
-{
-//    int oldArea = jsonObject["oldArea"].toInt();
-//    int oldIndex = jsonObject["oldIndex"].toInt();
-//    if (oldArea == Hand_Area)
-//    {
-//        //EnemyHandArea::instance()->response_addCard(EnemyFieldyardArea::instance()->response_takeCard(oldIndex));
-//    }
-//    else if (oldArea == Fieldyard_Area)
-//    {
-//        Card* card = FieldyardArea::instance()->getMyFieldyard().at(oldIndex);
-//        //选择的怪兽在进行攻击宣言前必须丢弃一张手牌
-//        card->setDebuff(KeeperoftheLightRequirement);
-//    }
-}
-
-void RoomScene::response_LionEffect(QJsonObject jsonObject)
-{
-    qDebug() << "response_LionEffect";
-    int index = jsonObject["index"].toInt();
-    Card* card = FieldyardArea::instance()->getMyFieldyard().at(index);
-    if (card->getFace())
-    {
-        card->setFace(false);
-        card->setArea(Fieldyard_Area);
-        card->setStand(false);
-    }
-    else
-    {
-        GraveyardArea::instance()->addCard(FieldyardArea::instance()->takeCard(index));
-    }
-}
-
 CentaurWarrunner::CentaurWarrunner()
 {
     ISDN = 601;
@@ -358,10 +258,6 @@ void Magnus::activeEffect()
     QMessageBox::question(0, QString(tr("active Magnus's effect")), QString(tr("Select fieldyard card.")), QMessageBox::Ok);
 }
 
-void RoomScene::response_MagnusEffect(QJsonObject jsonObject)
-{
-}
-
 //地穴刺客
 NyxAssassin::NyxAssassin()
 {
@@ -411,11 +307,6 @@ void NyxAssassin::activeEffect()
     setOneTurnOneEffect(false);
 }
 
-void RoomScene::response_NyxAssassinEffect(QJsonObject jsonObject)
-{
-    //
-}
-
 //大魔导师
 Rubick::Rubick()
 {
@@ -462,11 +353,6 @@ void Rubick::activeEffect()
     setOneTurnOneEffect(false);
 }
 
-void RoomScene::response_RubickEffect(QJsonObject jsonObject)
-{
-    //
-}
-
 //巨牙海民
 Tusk::Tusk()
 {
@@ -500,11 +386,6 @@ bool Tusk::testEffect()
 void Tusk::activeEffect()
 {
     setOneTurnOneEffect(false);
-}
-
-void RoomScene::response_TuskEffect(QJsonObject jsonObject)
-{
-    //
 }
 
 //不朽尸王
@@ -551,10 +432,6 @@ bool Undying::testEffect()
 void Undying::activeEffect()
 {
     setOneTurnOneEffect(false);
-}
-
-void RoomScene::response_UndyingEffect(QJsonObject jsonObject)
-{
 }
 
 //复仇之魂
@@ -607,10 +484,6 @@ void VengefulSpirit::activeEffect()
     setOneTurnOneEffect(false);
 }
 
-void RoomScene::response_VengefulSpiritEffect(QJsonObject jsonObject)
-{
-}
-
 //奥林匹斯之王
 Zeus::Zeus()
 {
@@ -656,8 +529,4 @@ bool Zeus::testEffect()
 void Zeus::activeEffect()
 {
     setOneTurnOneEffect(false);
-}
-
-void RoomScene::response_ZeusEffect(QJsonObject jsonObject)
-{
 }

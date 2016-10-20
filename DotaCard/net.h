@@ -39,16 +39,9 @@ signals:
     Q_INVOKABLE void request_doEndOpponentBattlePhase();
     Q_INVOKABLE void request_askForResponse();
     Q_INVOKABLE void request_tellForRequest();
+    Q_INVOKABLE void request_Effect(QJsonObject);
     Q_INVOKABLE void request_CentaurWarrunnerEffect(QJsonObject);
-    Q_INVOKABLE void request_KeeperoftheLightEffect(QJsonObject);
-    Q_INVOKABLE void request_LionEffect(QJsonObject);
-    Q_INVOKABLE void request_MagnusEffect(QJsonObject);
-    Q_INVOKABLE void request_NyxAssassinEffect(QJsonObject);
-    Q_INVOKABLE void request_RubickEffect(QJsonObject);
-    Q_INVOKABLE void request_TuskEffect(QJsonObject);
-    Q_INVOKABLE void request_UndyingEffect(QJsonObject);
-    Q_INVOKABLE void request_VengefulSpiritEffect(QJsonObject);
-    Q_INVOKABLE void request_ZeusEffect(QJsonObject);
+
 };
 
 #endif // NET_H

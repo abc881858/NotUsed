@@ -93,14 +93,25 @@ RoomScene::RoomScene(QObject* parent)
         sword[i].setPixmap(QPixmap(":/png/png/sword.png"));
         sword[i].setPos(QPointF(80*i,0)+FieldyardPos);
         addItem(&sword[i]);
-        connect(&sword[i], &GraphicsPixmapObject::canMove, [=]()
+        connect(&sword[i], &GraphicsPixmapObject::doMove, [=]()
         {
+            qDebug() << "slot sword doMove";
             currentMove = i;
+            sword[i].canMove = true;
         });
         sword[i].canClick = true;
         sword[i].hide();
     }
     currentMove = -1;
+
+    for (int j = 5; j < 10; j++)
+    {
+        sword[j].setPixmap(QPixmap(":/png/png/sword.png"));
+        sword[j].setRotation(180);
+        sword[j].setPos(QPointF(320 - 80 * (j-5), 0) + EnemyFieldyardPos);
+        addItem(&sword[j]);
+        sword[j].hide();
+    }
 
     duifangxingdong = new GraphicsPixmapObject;
     duifangxingdong->setPixmap(QPixmap(":/png/png/dfxd"));
@@ -121,29 +132,98 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_tellForRequest()), this, SLOT(response_tellForRequest()));
 
     connect(Net::instance(), SIGNAL(request_CentaurWarrunnerEffect(QJsonObject)), this, SLOT(response_CentaurWarrunnerEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_KeeperoftheLightEffect(QJsonObject)), this, SLOT(response_KeeperoftheLightEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_LionEffect(QJsonObject)), this, SLOT(response_LionEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_MagnusEffect(QJsonObject)), this, SLOT(response_MagnusEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_NyxAssassinEffect(QJsonObject)), this, SLOT(response_NyxAssassinEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_RubickEffect(QJsonObject)), this, SLOT(response_RubickEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_TuskEffect(QJsonObject)), this, SLOT(response_TuskEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_UndyingEffect(QJsonObject)), this, SLOT(response_UndyingEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_VengefulSpiritEffect(QJsonObject)), this, SLOT(response_VengefulSpiritEffect(QJsonObject)));
-    connect(Net::instance(), SIGNAL(request_ZeusEffect(QJsonObject)), this, SLOT(response_ZeusEffect(QJsonObject)));
+    connect(Net::instance(), SIGNAL(request_Effect(QJsonObject)), this, SLOT(response_Effect(QJsonObject)));
+}
+
+void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动效果的卡！选好了卡牌，真正active，并发送Net
+{
+    Card *card = qobject_cast<Card *>(sender());
+    bool oldFace = card->getFace();
+    int oldArea = card->getArea();
+    bool oldStand = card->getStand();
+    int oldIndex = card->getIndex();
+    int oldcurrentMove = currentMove;
+
+    int pickRequirement = Rule::instance()->getPickRequirement();
+    qDebug() << "Card::doPickTarget() pickRequirement: " << pickRequirement;
+
+    if (pickRequirement == AttackedRequirement)
+    {
+        sword[currentMove].canMove = false;
+        QPropertyAnimation* animation = new QPropertyAnimation(&sword[currentMove], "pos");
+        animation->setDuration(1000);
+        QPointF startPos = sword[currentMove].pos();
+        animation->setStartValue(startPos);
+        animation->setEndValue(sword[4+oldIndex].pos());
+        animation->setEasingCurve(QEasingCurve::Linear);
+        animation->start();
+        connect(animation, &QPropertyAnimation::finished, [=]()
+            {
+                sword[currentMove].hide();
+                sword[currentMove].canMove = true;
+                currentMove = -1;
+                sword[oldcurrentMove].setPos(startPos);
+                sword[oldcurrentMove].setRotation(0);
+            });
+    }
+    else if (pickRequirement == KeeperoftheLightRequirement)
+    {
+        //给选择的对方卡牌一个debuff
+        card->setDebuff(KeeperoftheLightRequirement);
+    }
+    else if (pickRequirement == KeeperoftheLightRequiremented)
+    {
+        //一般只有动对方场地的东西，才会触发Net相关的事仿
+        //如果只动自己场地，因为本地的add和take卡牌都做了Net发射，所以可以跳过
+        HandArea::instance()->addCard(FieldyardArea::instance()->takeCard(oldIndex));
+    }
+    else if (pickRequirement == LionRequirement)
+    {
+        if (oldFace)
+        {
+            card->setFace(false);
+            card->setArea(EnemyFieldyard_Area);
+            card->setStand(false);
+        }
+        else
+        {
+            //不应该去操作任何 EnemyArea 的addCard 和takeCard，因为这会触发对方再次发送给我add和take，记住！
+            //EnemyGraveyardArea::instance()->response_addCard(EnemyFieldyardArea::instance()->response_takeCard(index));
+       }
+    }
+
+    QJsonObject parameter;
+    parameter.insert("pickRequirement", pickRequirement); //int型
+    parameter.insert("oldFace", oldFace);
+    parameter.insert("oldArea", oldArea); //点击的卡的旧位置
+    parameter.insert("oldStand", oldStand);
+    parameter.insert("oldIndex", oldIndex);
+    parameter.insert("newFace", card->getFace());
+    parameter.insert("newArea", card->getArea()); //点击的卡的新位置
+    parameter.insert("newStand", card->getStand());
+    parameter.insert("newIndex", card->getIndex());
+    parameter.insert("oldcurrentMove", oldcurrentMove);
+    QJsonObject object;
+    qDebug() << "I have actived some card's effect! The effect is : " << pickRequirement;
+    object.insert("request", "Effect");
+    object.insert("parameter", parameter);
+    Net::instance()->write(object);
+
+    Rule::instance()->setPickRequirement(NoRequiremente);
+
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    QGraphicsScene::mouseMoveEvent(event);
-    if (currentMove != -1)
+    if (currentMove != -1 && sword[currentMove].canMove)
     {
-        qDebug() << "3333: " << sword[currentMove].pos() << "4444: " <<event->scenePos();//原来是scenePos，不是pos()!
         QPointF p1 = sword[currentMove].pos() + QPointF(25,36);
         QPointF p2 = sword[currentMove].pos() + QPointF(25,0);
         QPointF p4 = event->scenePos();
         qreal angle = QLineF(p1,p4).angleTo(QLineF(p1,p2));
         sword[currentMove].setRotation(angle); //angle是弧度?
     }
+    QGraphicsScene::mouseMoveEvent(event);
 }
 
 //void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -199,6 +279,7 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
                 QString description = card->getDescription();
                 emit hover(name, description);
             });
+        connect(card, SIGNAL(pickTarget()), this, SLOT(doPickTarget())); //选择对方卡牌时触
         EnemyDeckArea::instance()->response_addCard(card);
         break;
     }
@@ -251,6 +332,20 @@ void RoomScene::response_doSetPhase(QJsonObject jsonObject)
 {
     int phase = jsonObject["phase"].toInt();
     Rule::instance()->setPhase(phase + 6);
+    if(phase == 3)
+    {
+        //TODO: 1.是否可用在setPhase::MyBP的时候加载？
+        //2.就算在这加载，也不一定要全部显示为宝剑吧？
+        for (Card* card : EnemyFieldyardArea::instance()->getYourFieldyard())
+        {
+            if (card->getFace() && card->getStand())
+            {
+                //Fieldyard 的index是从1-5 对应的sword数组下标 0-4
+                //EnemyFieldyard 的index是从 1-5, 对应的sword数组下标 9-5
+                sword[4 + card->getIndex()].show();
+            }
+        }
+     }
 }
 
 void RoomScene::response_doSetDoing(QJsonObject jsonObject)
@@ -305,6 +400,16 @@ void RoomScene::response_setupDeck()
             {
                 FieldyardArea::instance()->takeCard(card->getIndex());
                 GraveyardArea::instance()->addCard(card);
+            });
+        connect(card, SIGNAL(pickTarget()), this, SLOT(doPickTarget()));
+        connect(card,  &Card::pressSword, [=](int index)
+            {
+                if (sword[index-1].canClick)
+                {
+                    qDebug() << "slot sword pressSword";
+                    currentMove = index-1;
+                    sword[index-1].canMove = true;
+                }
             });
     }
     file.close();
@@ -421,8 +526,6 @@ void RoomScene::response_tellForRequest()
 
     if (phase == Rule::myBP)
     {
-        //TODO: 1.是否可用在setPhase::MyBP的时候加载？
-        //2.就算在这加载，也不一定要全部显示为宝剑吧？
         for (Card* card : FieldyardArea::instance()->getMyFieldyard())
         {
             if(card->getFace() && card->getStand())
@@ -437,4 +540,82 @@ void RoomScene::response_tellForRequest()
         Rule::instance()->setDoing(false);
         Net::instance()->sendMessage(70001);
     }
+}
+
+void RoomScene::response_CentaurWarrunnerEffect(QJsonObject jsonObject)
+{
+    bool all = jsonObject["all"].toBool();
+    for (Card* card : EnemyFieldyardArea::instance()->getYourFieldyard())
+    {
+        //可以修改EnemyArea的face、area、stand，但不能去AddCard、TakeCard，记住！
+        if (card->getFace())
+        {
+            card->setStand(all);
+        }
+    }
+}
+
+void RoomScene::response_Effect(QJsonObject object)
+{
+    int pickRequirement = object["pickRequirement"].toInt();
+    qDebug() << "response_Effect pickRequirement: " << pickRequirement;
+    if (pickRequirement == AttackedRequirement)
+    {
+        //收到Net消息的对端做出反应
+        int oldcurrentMove = object["oldcurrentMove"].toInt();
+        int oldIndex = object["oldIndex"].toInt();
+        QPointF startPos = sword[5+oldcurrentMove].pos();
+        QPropertyAnimation* animation = new QPropertyAnimation(&sword[5+oldcurrentMove], "pos");
+        animation->setDuration(1000);
+        animation->setStartValue(startPos);
+        animation->setEndValue(sword[oldIndex-1].pos());
+        animation->setEasingCurve(QEasingCurve::Linear);
+        animation->start();
+        connect(animation, &QPropertyAnimation::finished, [=]()
+            {
+                sword[5+oldcurrentMove].hide();
+                sword[5+oldcurrentMove].setPos(startPos);
+            });
+    }
+    else if (pickRequirement == KeeperoftheLightRequirement)
+    {
+        //    int oldArea = jsonObject["oldArea"].toInt();
+        //    int oldIndex = jsonObject["oldIndex"].toInt();
+        //    if (oldArea == Hand_Area)
+        //    {
+        //        //EnemyHandArea::instance()->response_addCard(EnemyFieldyardArea::instance()->response_takeCard(oldIndex));
+        //    }
+        //    else if (oldArea == Fieldyard_Area)
+        //    {
+        //        Card* card = FieldyardArea::instance()->getMyFieldyard().at(oldIndex);
+        //        //选择的怪兽在进行攻击宣言前必须丢弃一张手牌
+        //        card->setDebuff(KeeperoftheLightRequirement);
+        //    }
+    }
+    else if (pickRequirement == KeeperoftheLightRequiremented)
+    {
+
+    }
+    else if (pickRequirement == LionRequirement)
+    {
+        qDebug() << "response_LionEffect";
+        int index = object["index"].toInt();
+        Card* card = FieldyardArea::instance()->getMyFieldyard().at(index);
+        if (card->getFace())
+        {
+            card->setFace(false);
+            card->setArea(Fieldyard_Area);
+            card->setStand(false);
+        }
+        else
+        {
+            GraveyardArea::instance()->addCard(FieldyardArea::instance()->takeCard(index));
+        }
+    }
+    else
+    {
+        //
+    }
+
+
 }

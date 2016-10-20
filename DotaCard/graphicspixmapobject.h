@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsSceneMouseEvent>
 
 //Scene中所有可以动的Item都用这个类
 class GraphicsPixmapObject : public QObject, public QGraphicsPixmapItem
@@ -12,10 +13,11 @@ class GraphicsPixmapObject : public QObject, public QGraphicsPixmapItem
 public:
     GraphicsPixmapObject();
     bool canClick;
+    bool canMove;
 protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
 signals:
-    void canMove();
+    void doMove();
 };
 
 #endif // GRAPHICSPIXMAPOBJECT_H

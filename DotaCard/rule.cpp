@@ -16,10 +16,10 @@ void Rule::initialize()
     // phase 就不初始化了
     pickRequirement = 0;
 
-    NameEffected.insert(KeeperoftheLightRequirement,"KeeperoftheLight");
-    NameEffected.insert(KeeperoftheLightRequiremented,"KeeperoftheLight");
-    NameEffected.insert(LionRequirement,"Lion");
-    NameEffected.insert(AttackedRequirement,"Attack");
+//    NameEffected.insert(KeeperoftheLightRequirement,"KeeperoftheLight");
+//    NameEffected.insert(KeeperoftheLightRequiremented,"KeeperoftheLight");
+//    NameEffected.insert(LionRequirement,"Lion");
+//    NameEffected.insert(AttackedRequirement,"Attack");
 }
 
 bool Rule::getOneTurnOneNormalSummon() const

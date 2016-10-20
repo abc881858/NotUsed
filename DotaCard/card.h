@@ -33,7 +33,8 @@ public:
         DefencePosition = 0x20, //可以防守表示
         AttackPosition = 0x40, //可以攻击表示
         Attack = 0x80,
-        Selectable = 0x100
+        Selectable = 0x100,
+        NoFlag = 0x200
     };
     Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
@@ -168,7 +169,6 @@ public:
     virtual bool testEffect() { return false; }
     virtual void activeEffect() {}
     virtual void activeHandEffect() {}
-    void activePicked();
 
     bool getChangePosition() const;
     void setChangePosition(bool value); //area需要
@@ -231,6 +231,8 @@ signals:
     void normalSummon();
     void setCard();
     void tribute();
+    void pickTarget();
+    void pressSword(int);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)

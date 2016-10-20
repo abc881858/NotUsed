@@ -15,6 +15,8 @@ Card::Card()
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     //setPixmap(QPixmap(":/png/png/NULL.jpg")); //卡牌会在Deck的AddCard时setPixmap
     area = No_Area;
+    face = false;
+    stand = true;
     type = No_Type;
     setTransformationMode(Qt::SmoothTransformation);
     isRotate = false;
@@ -28,7 +30,14 @@ Card::Card()
 
 Card::CardFlags Card::testAll()
 {
-    testEffect() ? setCardFlag(Effect, true) : setCardFlag(Effect, false);
+    if (testEffect() && Rule::instance()->getPickRequirement()==NoRequiremente)
+    {
+        setCardFlag(Effect, true);
+    }
+    else
+    {
+        setCardFlag(Effect, false);
+    }
     testSpecialSummon() ? setCardFlag(SpecialSummon, true) : setCardFlag(SpecialSummon, false);
     testNormalSummon() ? setCardFlag(NormalSummon, true) : setCardFlag(NormalSummon, false);
     testSetCard() ? setCardFlag(SetCard, true) : setCardFlag(SetCard, false);
@@ -200,7 +209,7 @@ bool Card::testAttack()
         return false;
     }
 
-    if(Rule::instance()->getPickRequirement()==0)//是否在选择卡牌阶段
+    if(Rule::instance()->getPickRequirement()==NoRequiremente)//是否在选择卡牌阶段
     {
         if(oneTurnOneAttack)
         {
@@ -219,6 +228,13 @@ bool Card::testSelectable()
     if (pickRequirement == 0)
     {
         return false;
+    }
+    else if (pickRequirement == AttackedRequirement)
+    {
+        qDebug() << "if area == EnemyFieldyard_Area: " << (area == EnemyFieldyard_Area);
+        return (area == EnemyFieldyard_Area);
+        //无论表侧里侧，都可以选择作为目标target
+        //不再判断isMonster了，前排肯定是怪嘛
     }
     else if (pickRequirement == KeeperoftheLightRequirement)
     {
@@ -334,6 +350,10 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     {
         setCurrentflag(Selectable);
     }
+    else if (myflags.testFlag(Attack))
+    {
+        setCurrentflag(Attack);
+    }
     else if (myflags.testFlag(Effect))
     {
         setCurrentflag(Effect);
@@ -349,10 +369,6 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     else if (myflags.testFlag(SetCard))
     {
         setCurrentflag(SetCard);
-    }
-    else if (myflags.testFlag(Attack))
-    {
-        setCurrentflag(Attack);
     }
 }
 
@@ -449,7 +465,8 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         if (currentflag == Selectable)
         {
-            activePicked();
+            qDebug() << "emit pickTarget()";
+            emit pickTarget();
         }
         else if (currentflag == Effect)
         {
@@ -494,8 +511,10 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         }
         else if (currentflag == Attack)
         {
+            qDebug() << "currentflag == Attack";
             Rule::instance()->setPickRequirement(AttackedRequirement);
-            //emit clickSword();
+            setOneTurnOneAttack(false);
+            emit pressSword(index);
         }
     }
 }
@@ -504,6 +523,7 @@ void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton)
     {
+        currentflag = NoFlag;
         setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
     }
 }
@@ -796,17 +816,32 @@ void Card::setStand(bool value)
     {
         if (isRotate)
         {
-            if (area==Deck_Area || area==EnemyDeck_Area)
+            isRotate = false;
+            if (area==Hand_Area)
             {
-                setTransformOriginPoint(100, 145);
+                setTransformOriginPoint(50, 72);
                 setRotation(0);
-                isRotate = false;
             }
-            else
+            else if (area==Deck_Area
+                     || area==Fieldyard_Area
+                     || area==Fieldground_Area
+                     || area==Graveyard_Area)
             {
                 setTransformOriginPoint(25, 36);
                 setRotation(0);
-                isRotate = false;
+            }
+            else if (area==EnemyHand_Area)
+            {
+                setTransformOriginPoint(50, 72);
+                setRotation(180);
+            }
+            else if (area==EnemyDeck_Area
+                     || area==EnemyFieldyard_Area
+                     || area==EnemyFieldground_Area
+                     || area==EnemyGraveyard_Area) //以后加入除外额外环境区域
+            {
+                setTransformOriginPoint(25, 36);
+                setRotation(180);
             }
         }
     }
@@ -814,17 +849,32 @@ void Card::setStand(bool value)
     {
         if (!isRotate)
         {
-            if (area==Deck_Area || area==EnemyDeck_Area)
+            isRotate = true;
+            if (area==Hand_Area)
             {
-                setTransformOriginPoint(100, 145);
+                setTransformOriginPoint(50, 72);
                 setRotation(-90);
-                isRotate = true;
             }
-            else
+            else if (area==Deck_Area
+                     || area==Fieldyard_Area
+                     || area==Fieldground_Area
+                     || area==Graveyard_Area)
             {
                 setTransformOriginPoint(25, 36);
                 setRotation(-90);
-                isRotate = true;
+            }
+            else if (area==EnemyHand_Area)
+            {
+                setTransformOriginPoint(50, 72);
+                setRotation(-270);
+            }
+            else if (area==EnemyDeck_Area
+                     || area==EnemyFieldyard_Area
+                     || area==EnemyFieldground_Area
+                     || area==EnemyGraveyard_Area) //以后加入除外额外环境区域
+            {
+                setTransformOriginPoint(25, 36);
+                setRotation(-270);
             }
         }
     }

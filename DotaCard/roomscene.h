@@ -15,7 +15,7 @@ class RoomScene : public QGraphicsScene
 public:
     explicit RoomScene(QObject* parent = 0);
     Card* enemyTakedCard;
-    GraphicsPixmapObject sword[5];
+    GraphicsPixmapObject sword[10];
     GraphicsPixmapObject* duifangxingdong;
 //    GraphicsPixmapObject currentSword;
     int currentMove;
@@ -47,23 +47,12 @@ public slots:
     void response_tellForRequest();
 
     void response_CentaurWarrunnerEffect(QJsonObject);
-    void response_KeeperoftheLightEffect(QJsonObject object);
-    void response_LionEffect(QJsonObject);
-    void response_MagnusEffect(QJsonObject);
-    void response_NyxAssassinEffect(QJsonObject);
-    void response_RubickEffect(QJsonObject);
-    void response_TuskEffect(QJsonObject);
-    void response_UndyingEffect(QJsonObject);
-    void response_VengefulSpiritEffect(QJsonObject);
-    void response_ZeusEffect(QJsonObject);
-    
-    void response_AttackEffect(QJsonObject jsonObject);
 
-    //protected:
-    //    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+    void doPickTarget();
+
+    void response_Effect(QJsonObject object);
 
 protected:
-    //    void mousePressEvent(QGraphicsSceneMouseEvent* event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 };
 

@@ -30,7 +30,7 @@ public:
 
     static Rule* instance();
     void initialize();
-    QHash<int,QString> NameEffected;
+//    QHash<int,QString> NameEffected;
 
     bool getOneTurnOneNormalSummon() const;
     void setOneTurnOneNormalSummon(bool value);
