@@ -1,0 +1,22 @@
+    if (pickRequirement == AttackedRequirement)
+    {
+        //收到Net消息的对端做出反应
+        int oldcurrentMove = object["oldcurrentMove"].toInt();
+        int oldIndex = object["oldIndex"].toInt();
+        QPointF startPos = sword[5 + oldcurrentMove].pos();
+        QPointF p1 = sword[oldIndex - 1].pos();
+        qreal angle = QLineF(p1, startPos).angleTo(QLineF(p1, p1 + QPointF(0, -1)));
+        sword[5 + oldcurrentMove].setRotation(180 + angle);
+        QPropertyAnimation* animation = new QPropertyAnimation(&sword[5 + oldcurrentMove], "pos");
+        animation->setDuration(1000);
+        animation->setStartValue(startPos);
+        animation->setEndValue(sword[oldIndex - 1].pos());
+        animation->setEasingCurve(QEasingCurve::Linear);
+        animation->start();
+        connect(animation, &QPropertyAnimation::finished, [=]()
+            {
+                sword[5 + oldcurrentMove].hide();
+                sword[5 + oldcurrentMove].setPos(startPos);
+                sword[5 + oldcurrentMove].setRotation(180);
+            });
+    }
