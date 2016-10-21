@@ -38,20 +38,20 @@ public:
     };
     Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
-//    enum
-//    {
-//        NoArea = 0,
-//        DeckArea = 1,
-//        HandArea = 2,
-//        FieldyardArea = 3,
-//        FieldgroundArea = 4,
-//        GraveyardArea = 5,
-//        EnemyDeckArea = 6,
-//        EnemyHandArea = 7,
-//        EnemyFieldyardArea = 8,
-//        EnemyFieldgroundArea = 9,
-//        EnemyGraveyardArea = 10
-//    };
+    //    enum
+    //    {
+    //        NoArea = 0,
+    //        DeckArea = 1,
+    //        HandArea = 2,
+    //        FieldyardArea = 3,
+    //        FieldgroundArea = 4,
+    //        GraveyardArea = 5,
+    //        EnemyDeckArea = 6,
+    //        EnemyHandArea = 7,
+    //        EnemyFieldyardArea = 8,
+    //        EnemyFieldgroundArea = 9,
+    //        EnemyGraveyardArea = 10
+    //    };
 
     //    怪兽 Monster
     //    通常怪兽 Normal monster
@@ -183,13 +183,16 @@ public:
     bool getOneTurnOneAttack() const;
     void setOneTurnOneAttack(bool value);
 
-    bool isMonstor(){ return (type==NormalMonster || type==EffectMonster); }
+    bool isMonstor() { return (type == NormalMonster || type == EffectMonster); }
 
     int getType() const;
     void setType(int value);
 
-    int getDebuff() const;
-    void setDebuff(int value);
+    bool getBuff_604() const;
+    void setBuff_604(bool value);
+
+    bool getBuff_602() const;
+    void setBuff_602(bool value);
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
@@ -206,6 +209,8 @@ protected:
     int attribute; //种族
     int index; //从左往右数第几张(第1张是index==0)
     QString description; //卡牌描述
+    bool buff_604; //猛犸分裂buff
+    bool buff_602; //光法致盲buff
 
 private:
     bool isRotate; //是否显示为横置
@@ -222,7 +227,7 @@ private:
     bool oneTurnHandEffect; //每回合从手上可以发动一次
     bool oneTurnOneAttack; //每回合可以从场地上攻击一次
     //以后已经还有每回合可以从墓地、除外、额外发动一次
-//    int currentRequire; //当前选择卡牌的原因，不能放在发动卡里，也不能放在选择卡里，请使用全局Rule里的pickRequirement
+    //    int currentRequire; //当前选择卡牌的原因，不能放在发动卡里，也不能放在选择卡里，请使用全局Rule里的pickRequirement
 
     int debuff; // 光之守卫 需要用到
 
