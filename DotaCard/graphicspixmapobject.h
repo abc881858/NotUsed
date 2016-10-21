@@ -12,6 +12,7 @@ class GraphicsPixmapObject : public QObject, public QGraphicsPixmapItem
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
     GraphicsPixmapObject();
+    bool canMove;
 };
 
 #endif // GRAPHICSPIXMAPOBJECT_H
