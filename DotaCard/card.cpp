@@ -209,9 +209,11 @@ bool Card::testAttack()
         return false;
     }
 
-    if(Rule::instance()->getPickRequirement()==NoRequiremente)//是否在选择卡牌阶段
+    //是否在处理某张卡的效果，处于选择target卡牌阶段
+    if(Rule::instance()->getPickRequirement()==NoRequiremente)
     {
-        if(oneTurnOneAttack)
+        //保证1回合只能攻击一次，宝剑只出现一次
+        if(oneTurnOneAttack)//这个欠考虑，如果战斗流程发动陷阱卡墓地苏生
         {
             return true;
         }
@@ -512,6 +514,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         else if (currentflag == Attack)
         {
             qDebug() << "currentflag == Attack";
+            //setPickRequirement 和 getIsPickingSource 重复了，去除后者
             Rule::instance()->setPickRequirement(AttackedRequirement);
             setOneTurnOneAttack(false);
             emit pressSword(index);

@@ -15,11 +15,6 @@ void Rule::initialize()
 //    isPicking = false; //只用pickRequirement==0判断? 万一要选2张呢? 那pickRequirement也不会等于0
     // phase 就不初始化了
     pickRequirement = 0;
-
-//    NameEffected.insert(KeeperoftheLightRequirement,"KeeperoftheLight");
-//    NameEffected.insert(KeeperoftheLightRequiremented,"KeeperoftheLight");
-//    NameEffected.insert(LionRequirement,"Lion");
-//    NameEffected.insert(AttackedRequirement,"Attack");
 }
 
 bool Rule::getOneTurnOneNormalSummon() const
@@ -59,17 +54,6 @@ void Rule::setDoing(bool value)
     Net::instance()->doSetDoing(isDoing);
 }
 
-//bool Rule::getPicking() const
-//{
-//    return isPicking;
-//}
-
-//void Rule::setPicking(bool value)
-//{
-//    qDebug() << "setPicking(bool value)" << value;
-//    isPicking = value;
-//}
-
 int Rule::getPickRequirement() const
 {
     return pickRequirement;
@@ -80,19 +64,3 @@ void Rule::setPickRequirement(int value)
     qDebug() << "setPickRequirement(int value)" << value;
     pickRequirement = value;
 }
-
-//int Rule::getPickedArea() const
-//{
-//    return pickedArea;
-//}
-
-//int Rule::getPickedIndex() const
-//{
-//    return pickedIndex;
-//}
-
-//void Rule::setPickedCard(int area, int index)
-//{
-//    pickedArea = area;
-//    pickedIndex = index;
-//}

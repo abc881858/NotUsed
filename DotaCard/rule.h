@@ -30,7 +30,6 @@ public:
 
     static Rule* instance();
     void initialize();
-//    QHash<int,QString> NameEffected;
 
     bool getOneTurnOneNormalSummon() const;
     void setOneTurnOneNormalSummon(bool value);
@@ -42,14 +41,8 @@ public:
     bool getDoing() const;
     void setDoing(bool value);
 
-//    bool getPicking() const;
-//    void setPicking(bool value);
-
     int getPickRequirement() const;
     void setPickRequirement(int value);
-
-//    int getPickedArea() const;
-//    int getPickedIndex() const;
 
 private:
     bool oneTurnOneNormalSummon;
@@ -58,8 +51,6 @@ private:
     bool isPicking;
     int pickRequirement;
 
-//    int pickedArea;
-//    int pickedIndex;
 };
 
 #endif // RULE_H

@@ -93,13 +93,6 @@ RoomScene::RoomScene(QObject* parent)
         sword[i].setPixmap(QPixmap(":/png/png/sword.png"));
         sword[i].setPos(QPointF(80*i,0)+FieldyardPos);
         addItem(&sword[i]);
-        connect(&sword[i], &GraphicsPixmapObject::doMove, [=]()
-        {
-            qDebug() << "slot sword doMove";
-            currentMove = i;
-            sword[i].canMove = true;
-        });
-        sword[i].canClick = true;
         sword[i].hide();
     }
     currentMove = -1;
@@ -164,6 +157,8 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
                 currentMove = -1;
                 sword[oldcurrentMove].setPos(startPos);
                 sword[oldcurrentMove].setRotation(0);
+//                Rule::instance()->setIsPickingSource(true);//暂时放这里，以后处理战斗流程放在Net返回结果里
+                Rule::instance()->setPickRequirement(NoRequiremente);
             });
     }
     else if (pickRequirement == KeeperoftheLightRequirement)
@@ -208,9 +203,6 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
     object.insert("request", "Effect");
     object.insert("parameter", parameter);
     Net::instance()->write(object);
-
-    Rule::instance()->setPickRequirement(NoRequiremente);
-
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -402,14 +394,11 @@ void RoomScene::response_setupDeck()
                 GraveyardArea::instance()->addCard(card);
             });
         connect(card, SIGNAL(pickTarget()), this, SLOT(doPickTarget()));
-        connect(card,  &Card::pressSword, [=](int index)
+        connect(card, &Card::pressSword, [=](int index)
             {
-                if (sword[index-1].canClick)
-                {
                     qDebug() << "slot sword pressSword";
-                    currentMove = index-1;
-                    sword[index-1].canMove = true;
-                }
+                    currentMove = index - 1;
+                    sword[index - 1].canMove = true;
             });
     }
     file.close();
@@ -528,9 +517,9 @@ void RoomScene::response_tellForRequest()
     {
         for (Card* card : FieldyardArea::instance()->getMyFieldyard())
         {
-            if(card->getFace() && card->getStand())
+            if (card->getFace() && card->getStand())
             {
-                //Fieldyard 的index是从1-5的，和其他的妖艳贱货不一样
+                //Fieldyard 的index是从1-5的
                 sword[card->getIndex() - 1].show();
             }
         }
@@ -564,17 +553,21 @@ void RoomScene::response_Effect(QJsonObject object)
         //收到Net消息的对端做出反应
         int oldcurrentMove = object["oldcurrentMove"].toInt();
         int oldIndex = object["oldIndex"].toInt();
-        QPointF startPos = sword[5+oldcurrentMove].pos();
-        QPropertyAnimation* animation = new QPropertyAnimation(&sword[5+oldcurrentMove], "pos");
+        QPointF startPos = sword[5 + oldcurrentMove].pos();
+        QPointF p1 = sword[oldIndex - 1].pos();
+        qreal angle = QLineF(p1, startPos).angleTo(QLineF(p1, p1 + QPointF(0, -1)));
+        sword[5 + oldcurrentMove].setRotation(180 + angle);
+        QPropertyAnimation* animation = new QPropertyAnimation(&sword[5 + oldcurrentMove], "pos");
         animation->setDuration(1000);
         animation->setStartValue(startPos);
-        animation->setEndValue(sword[oldIndex-1].pos());
+        animation->setEndValue(sword[oldIndex - 1].pos());
         animation->setEasingCurve(QEasingCurve::Linear);
         animation->start();
         connect(animation, &QPropertyAnimation::finished, [=]()
             {
-                sword[5+oldcurrentMove].hide();
-                sword[5+oldcurrentMove].setPos(startPos);
+                sword[5 + oldcurrentMove].hide();
+                sword[5 + oldcurrentMove].setPos(startPos);
+                sword[5 + oldcurrentMove].setRotation(180);
             });
     }
     else if (pickRequirement == KeeperoftheLightRequirement)
