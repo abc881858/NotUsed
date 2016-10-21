@@ -6,6 +6,7 @@
 #define KeeperoftheLightRequirement 602
 #define KeeperoftheLightRequiremented 502
 #define LionRequirement 603
+#define MagnusRequirement 604
 
 #include <QHash>
 
