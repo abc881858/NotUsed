@@ -25,19 +25,6 @@
         <file>png/sword.png</file>
         <file>png/dfxd.png</file>
     </qresource>
-    <qresource prefix="/old">
-        <file>pic/monster/dota-CentaurWarrunner.jpg</file>
-        <file>pic/monster/dota-KeeperoftheLight.jpg</file>
-        <file>pic/monster/dota-Lion.jpg</file>
-        <file>pic/monster/dota-Magnus.jpg</file>
-        <file>pic/monster/dota-NyxAssassin.jpg</file>
-        <file>pic/monster/dota-Rubick.jpg</file>
-        <file>pic/monster/dota-Tusk.jpg</file>
-        <file>pic/monster/dota-Undying.jpg</file>
-        <file>pic/monster/dota-VengefulSpirit.jpg</file>
-        <file>pic/monster/dota-Zeus.jpg</file>
-        <file>pic/monster/NULL.jpg</file>
-    </qresource>
     <qresource prefix="/">
         <file>hand/dota-CentaurWarrunner.jpg</file>
         <file>hand/dota-KeeperoftheLight.jpg</file>
