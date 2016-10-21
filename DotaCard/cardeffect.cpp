@@ -61,7 +61,6 @@ bool CentaurWarrunner::testEffect()
  */
 void CentaurWarrunner::activeEffect()
 {
-    setOneTurnOneEffect(false);
     QMessageBox::StandardButton ret;
     ret = QMessageBox::question(0, QString(tr("active CentaurWarrunner's effect")), QString(tr("Select all atk or all def?")), QMessageBox::Yes | QMessageBox::No);
     bool all = (ret == QMessageBox::Yes);
@@ -146,7 +145,6 @@ bool KeeperoftheLight::testEffect()
  */
 void KeeperoftheLight::activeEffect() //都是发动场上的特效
 {
-    setOneTurnOneEffect(false);
     QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
     //设置requirement的时候，把picking设为true，代表正在【选择】【需要】的卡
     Rule::instance()->setPickRequirement(KeeperoftheLightRequirement);
@@ -204,7 +202,6 @@ bool Lion::testEffect()
  */
 void Lion::activeEffect()
 {
-    setOneTurnOneEffect(false);
     QMessageBox::question(0, QString(tr("active Lion's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
     Rule::instance()->setPickRequirement(LionRequirement);
 }
@@ -243,7 +240,7 @@ bool Magnus::testEffect()
 /*!
  * \brief 半人猛犸
  *
- * ①一回合一次，令自己场上一只名字带有“dota”的怪兽，
+ * ①一回合一次，令自己场上表侧表示的一只名字带有“dota”的怪兽，
  * 在你下回合开始前攻击力上升400点，且在攻击之后，
  * 可以降低600点攻击对对方场上所有怪兽进行一次攻击。
  *
@@ -254,8 +251,8 @@ bool Magnus::testEffect()
  */
 void Magnus::activeEffect()
 {
-    setOneTurnOneEffect(false);
     QMessageBox::question(0, QString(tr("active Magnus's effect")), QString(tr("Select fieldyard card.")), QMessageBox::Ok);
+    Rule::instance()->setPickRequirement(MagnusRequirement);
 }
 
 //地穴刺客
@@ -304,7 +301,6 @@ bool NyxAssassin::testEffect()
  */
 void NyxAssassin::activeEffect()
 {
-    setOneTurnOneEffect(false);
 }
 
 //大魔导师
@@ -350,7 +346,6 @@ bool Rubick::testEffect()
  */
 void Rubick::activeEffect()
 {
-    setOneTurnOneEffect(false);
 }
 
 //巨牙海民
@@ -385,7 +380,6 @@ bool Tusk::testEffect()
  */
 void Tusk::activeEffect()
 {
-    setOneTurnOneEffect(false);
 }
 
 //不朽尸王
@@ -431,7 +425,6 @@ bool Undying::testEffect()
  */
 void Undying::activeEffect()
 {
-    setOneTurnOneEffect(false);
 }
 
 //复仇之魂
@@ -481,7 +474,6 @@ bool VengefulSpirit::testEffect()
  */
 void VengefulSpirit::activeEffect()
 {
-    setOneTurnOneEffect(false);
 }
 
 //奥林匹斯之王
@@ -528,5 +520,4 @@ bool Zeus::testEffect()
  */
 void Zeus::activeEffect()
 {
-    setOneTurnOneEffect(false);
 }
