@@ -1,0 +1,175 @@
+*** C:\Users\wWX317720\AppData\Local\Temp\card.cpp-rev55.svn002.tmp.cpp	2016-10-20 14:26:03.000000000 +0800
+--- C:\Users\wWX317720\AppData\Local\Temp\card.cpp-rev56.svn002.tmp.cpp	2016-10-21 15:21:21.000000000 +0800
+***************
+*** 21,32 ****
+--- 21,34 ----
+      setTransformationMode(Qt::SmoothTransformation);
+      isRotate = false;
+      isBack = true;
+  //    oneTurnHandEffect = false;
+  //    oneTurnOneAttack = false;
+  //    oneTurnOneEffect = false;
++     buff_602 = false;
++     buff_604 = false;
+  }
+  
+  /////////////////////////// Begin Test All Card Status /////////////////////////////
+  
+  Card::CardFlags Card::testAll()
+  {
+***************
+*** 55,63 ****
+--- 57,102 ----
+      if (area != Hand_Area)
+      {
+          return false;
+      }
+  
+      //是否在选择卡牌阶段
++     if(Rule::instance()->getPickRequirement())
++     {
++         return false;
++     }
+  
++     if (!Rule::instance()->getDoing() || !face)
++     {
++         return false;
++     }
+  
+      //TODO: 后续增加被其他卡影响，无法特殊召唤的判断，现在在手牌就可以特招，无次数限制
+  
++     Rule::Phase phase = Rule::instance()->getphase();
++     if (phase != Rule::myM1 && phase != Rule::myM2)
++     {
++         return false;
++     }
+  
++     if (FieldyardArea::instance()->testAddCard() == 0)
++     {
++         return false;
+          //QMessageBox::question(0, QString(tr("Can not summon")), QString(tr("Fieldyard is full!")), QMessageBox::Ok);
++     }
+  
++     if (ISDN == 610)
++     {
++         for (Card* card : FieldyardArea::instance()->getMyFieldyard())
++         {
++             if (card->getName().startsWith("dota"))
++             {
++                 return true;
++             }
++         }
++     }
+  
+      return false;
+  }
+  
+  bool Card::testNormalSummon()
+  {
+***************
+*** 244,255 ****
+--- 285,300 ----
+      {
+          return (area == Fieldyard_Area && face && isMonstor());
+      }
+      else if (pickRequirement == LionRequirement)
+      {
+          return (area == EnemyFieldyard_Area && isMonstor());
++     }
++     else if (pickRequirement == MagnusRequirement)
++     {
++         return (area == Fieldyard_Area && face && isMonstor());
+      }
+  
+      return false;
+  }
+  
+  /////////////////////////// End Test All Card Status /////////////////////////////
+***************
+*** 491,503 ****
+              Rule::instance()->setOneTurnOneNormalSummon(false);
+              emit setCard();
+          }
+          else if (currentflag == SpecialSummon)
+          {
+              //目前没有从手牌特殊召唤的卡牌
+!             //emit specialSummon();
+          }
+          else if (currentflag == FlipSummon)
+          {
+              //目前没有翻转召唤
+              //emit flipSummon();
+          }
+--- 536,547 ----
+              Rule::instance()->setOneTurnOneNormalSummon(false);
+              emit setCard();
+          }
+          else if (currentflag == SpecialSummon)
+          {
+!             emit normalSummon();
+          }
+          else if (currentflag == FlipSummon)
+          {
+              //目前没有翻转召唤
+              //emit flipSummon();
+          }
+***************
+*** 523,534 ****
+--- 568,599 ----
+  {
+      if (event->button() == Qt::LeftButton)
+      {
+          currentflag = NoFlag;
+          setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
+      }
++ }
+  
++ bool Card::getBuff_602() const
++ {
++     return buff_602;
++ }
+  
++ void Card::setBuff_602(bool value)
++ {
++     buff_602 = value;
++ }
+  
++ bool Card::getBuff_604() const
++ {
++     return buff_604;
++ }
+  
++ void Card::setBuff_604(bool value)
++ {
++     buff_604 = value;
+  }
+  
+  bool Card::getOneTurnOneAttack() const
+  {
+      return oneTurnOneAttack;
+  }
+***************
+*** 543,564 ****
+      return oneTurnHandEffect;
+  }
+  
+  void Card::setOneTurnHandEffect(bool value)
+  {
+      oneTurnHandEffect = value;
+- }
+  
+- int Card::getDebuff() const
+- {
+-     return debuff;
+- }
+  
+- void Card::setDebuff(int value)
+- {
+-     debuff = value;
+  }
+  
+  int Card::getType() const
+  {
+      return type;
+  }
+--- 608,619 ----
