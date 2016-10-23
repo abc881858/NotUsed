@@ -36,7 +36,6 @@ public slots:
     void response_drawPhase();
     void response_standbyPhase();
     void response_main1Phase();
-    void response_doEndOpponentBattlePhase();
     void response_askForResponse();
     void response_tellForRequest();
     void response_CentaurWarrunnerEffect(QJsonObject);

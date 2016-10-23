@@ -93,7 +93,7 @@ RoomScene::RoomScene(QObject* parent)
 
     for (int l = 5; l < 10; l++)
     {
-        word[l].setPos(402-78*(l-5), 190);
+        word[l].setPos(402-78*(l-5), 192);
         addItem(&word[l]);
         word[l].setDefaultTextColor(Qt::white);
         word[l].hide();
@@ -145,7 +145,6 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_drawPhase()), this, SLOT(response_drawPhase()));
     connect(Net::instance(), SIGNAL(request_standbyPhase()), this, SLOT(response_standbyPhase()));
     connect(Net::instance(), SIGNAL(request_main1Phase()), this, SLOT(response_main1Phase()));
-    connect(Net::instance(), SIGNAL(request_doEndOpponentBattlePhase()), this, SLOT(response_doEndOpponentBattlePhase()));
     connect(Net::instance(), SIGNAL(request_askForResponse()), this, SLOT(response_askForResponse()));
     connect(Net::instance(), SIGNAL(request_tellForRequest()), this, SLOT(response_tellForRequest()));
 
@@ -448,11 +447,6 @@ void RoomScene::response_standbyPhase()
 void RoomScene::response_main1Phase()
 {
     Rule::instance()->setPhase(Rule::myM1);
-}
-
-void RoomScene::response_doEndOpponentBattlePhase()
-{
-    Rule::instance()->setPhase(Rule::myM2);
 }
 
 void RoomScene::response_askForResponse()
