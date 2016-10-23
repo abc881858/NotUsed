@@ -54,6 +54,10 @@ public:
 
 private:
     QList<Card*> myFieldyard;
+
+signals:
+    void showWord(int);
+    void hideWord(int);
 };
 
 class FieldgroundArea : public QObject, public QGraphicsPixmapItem
@@ -127,6 +131,10 @@ public:
 
 private:
     QList<Card*> yourFieldyard;
+
+signals:
+    void showWord(int);
+    void hideWord(int);
 };
 
 class EnemyFieldgroundArea : public QObject, public QGraphicsPixmapItem

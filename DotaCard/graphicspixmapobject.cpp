@@ -8,3 +8,8 @@ GraphicsPixmapObject::GraphicsPixmapObject()
     setTransformOriginPoint(25, 36);
     setTransformationMode(Qt::SmoothTransformation);
 }
+
+//GraphicsTextObject::GraphicsTextObject()
+//{
+
+//}

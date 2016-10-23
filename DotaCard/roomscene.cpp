@@ -11,18 +11,6 @@
 #include "net.h"
 #include "card.h"
 
-//#define DeckAreaRect QSize(50, 72)
-//#define HandAreaRect QSize(512, 75)
-//#define FieldyardAreaRect QSize(384, 92)
-//#define FieldgroundAreaRect QSize(384, 92)
-//#define GraveyardAreaRect QSize(50, 72)
-
-//#define EnemyDeckAreaRect QSize(50, 72)
-//#define EnemyHandAreaRect QSize(512, 75)
-//#define EnemyFieldyardAreaRect QSize(384, 92)
-//#define EnemyFieldgroundAreaRect QSize(384, 92)
-//#define EnemyGraveyardAreaRect QSize(50, 72)
-
 #define DeckPos QPointF(485, 426)
 #define HandPos QPointF(19, 529)
 #define FieldyardPos QPointF(94, 317)
@@ -31,8 +19,8 @@
 
 #define EnemyDeckPos QPointF(14, 105)
 #define EnemyHandPos QPointF(17, -71)
-#define EnemyFieldyardPos QPointF(94, 213)
-#define EnemyFieldgroundPos QPointF(94, 105)
+#define EnemyFieldyardPos QPointF(91, 213)
+#define EnemyFieldgroundPos QPointF(91, 105)
 #define EnemyGraveyardPos QPointF(0, 0)
 
 RoomScene::RoomScene(QObject* parent)
@@ -95,6 +83,54 @@ RoomScene::RoomScene(QObject* parent)
         sword[j].hide();
     }
 
+    for (int k = 0; k < 5; k++)
+    {
+        word[k].setPos(90 + 78*k, 390);
+        addItem(&word[k]);
+        word[k].setDefaultTextColor(Qt::white);
+        word[k].hide();
+    }
+
+    for (int l = 5; l < 10; l++)
+    {
+        word[l].setPos(402-78*(l-5), 190);
+        addItem(&word[l]);
+        word[l].setDefaultTextColor(Qt::white);
+        word[l].hide();
+    }
+
+    connect(FieldyardArea::instance(), &FieldyardArea::showWord, [=](int i)
+    {
+        Card *card = FieldyardArea::instance()->getMyFieldyard().at(i);
+        int index = card->getIndex();
+        word[index].setPlainText(QString::number(card->getATK()).append("/ ").append(QString::number(card->getDEF())));
+        word[index].show();
+    });
+
+    connect(FieldyardArea::instance(), &FieldyardArea::hideWord, [=](int i)
+    {
+        Card *card = FieldyardArea::instance()->getMyFieldyard().at(i);
+        int index = card->getIndex();
+        word[index].setPlainText("");
+        word[index].hide();
+    });
+
+    connect(EnemyFieldyardArea::instance(), &EnemyFieldyardArea::showWord, [=](int i)
+    {
+        Card *card = EnemyFieldyardArea::instance()->getYourFieldyard().at(i);
+        int index = card->getIndex();
+        word[index+5].setPlainText(QString::number(card->getATK()).append("/ ").append(QString::number(card->getDEF())));
+        word[index+5].show();
+    });
+
+    connect(EnemyFieldyardArea::instance(), &EnemyFieldyardArea::hideWord, [=](int i)
+    {
+        Card *card = EnemyFieldyardArea::instance()->getYourFieldyard().at(i);
+        int index = card->getIndex();
+        word[index+5].setPlainText("");
+        word[index+5].hide();
+    });
+
     duifangxingdong = new GraphicsPixmapObject;
     duifangxingdong->setPixmap(QPixmap(":/png/png/dfxd"));
     addItem(duifangxingdong);
@@ -133,10 +169,10 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
     {
         sword[currentMove].canMove = false;
         QPropertyAnimation* animation = new QPropertyAnimation(&sword[currentMove], "pos");
-        animation->setDuration(1000);
+        animation->setDuration(300);
         QPointF startPos = sword[currentMove].pos();
         animation->setStartValue(startPos);
-        animation->setEndValue(sword[4 + oldIndex].pos());
+        animation->setEndValue(sword[5 + oldIndex].pos());
         animation->setEasingCurve(QEasingCurve::Linear);
         animation->start();
         connect(animation, &QPropertyAnimation::finished, [=]()
@@ -297,7 +333,7 @@ void RoomScene::response_doSetPhase(QJsonObject jsonObject)
             {
                 //Fieldyard 的index是从1-5 对应的sword数组下标 0-4
                 //EnemyFieldyard 的index是从 1-5, 对应的sword数组下标 9-5
-                sword[4 + card->getIndex()].show();
+                sword[5 + card->getIndex()].show();
             }
         }
     }
@@ -360,8 +396,8 @@ void RoomScene::response_setupDeck()
         connect(card, &Card::pressSword, [=](int index)
             {
                 qDebug() << "slot sword pressSword";
-                currentMove = index - 1;
-                sword[index - 1].canMove = true;
+                currentMove = index ;
+                sword[index].canMove = true;
             });
     }
     file.close();
@@ -469,7 +505,7 @@ void RoomScene::response_tellForRequest()
             if (card->getFace() && card->getStand())
             {
                 //Fieldyard 的index是从1-5的
-                sword[card->getIndex() - 1].show();
+                sword[card->getIndex()].show();
             }
         }
     }
@@ -512,13 +548,13 @@ void RoomScene::response_Effect(QJsonObject object)
         int oldcurrentMove = object["oldcurrentMove"].toInt();
         int oldIndex = object["oldIndex"].toInt();
         QPointF startPos = sword[5 + oldcurrentMove].pos();
-        QPointF p1 = sword[oldIndex - 1].pos();
+        QPointF p1 = sword[oldIndex].pos();
         qreal angle = QLineF(p1, startPos).angleTo(QLineF(p1, p1 + QPointF(0, -1)));
         sword[5 + oldcurrentMove].setRotation(180 + angle);
         QPropertyAnimation* animation = new QPropertyAnimation(&sword[5 + oldcurrentMove], "pos");
-        animation->setDuration(1000);
+        animation->setDuration(300);
         animation->setStartValue(startPos);
-        animation->setEndValue(sword[oldIndex - 1].pos());
+        animation->setEndValue(sword[oldIndex].pos());
         animation->setEasingCurve(QEasingCurve::Linear);
         animation->start();
         connect(animation, &QPropertyAnimation::finished, [=]()

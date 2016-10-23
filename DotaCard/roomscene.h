@@ -8,6 +8,7 @@
 
 #include "area.h"
 #include "graphicspixmapobject.h"
+#include <QGraphicsTextItem>
 
 class RoomScene : public QGraphicsScene
 {
@@ -16,23 +17,16 @@ public:
     explicit RoomScene(QObject* parent = 0);
     Card* enemyTakedCard;
     GraphicsPixmapObject sword[10];
+    QGraphicsTextItem word[10];
     GraphicsPixmapObject* duifangxingdong;
-//    GraphicsPixmapObject currentSword;
     int currentMove;
 
 private:
-    //    QMenu* myContextMenu;
-    //    QAction* goBP;
-    //    QAction* goM2;
-    //    QAction* goEP;
 
 signals:
     void hover(QString, QString);
 
 public slots:
-    //    void actionBP(bool);
-    //    void actionM2(bool);
-    //    void actionEP(bool);
     void response_doAddCard(QJsonObject jsonObject);
     void response_doTakeCard(QJsonObject jsonObject);
     void response_doSetPhase(QJsonObject jsonObject);
@@ -45,11 +39,8 @@ public slots:
     void response_doEndOpponentBattlePhase();
     void response_askForResponse();
     void response_tellForRequest();
-
     void response_CentaurWarrunnerEffect(QJsonObject);
-
     void doPickTarget();
-
     void response_Effect(QJsonObject object);
 
 protected:

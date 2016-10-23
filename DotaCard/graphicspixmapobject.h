@@ -15,4 +15,11 @@ public:
     bool canMove;
 };
 
+//class GraphicsTextObject : public QGraphicsTextItem
+//{
+//    Q_OBJECT
+//public:
+//    GraphicsTextObject();
+//};
+
 #endif // GRAPHICSPIXMAPOBJECT_H

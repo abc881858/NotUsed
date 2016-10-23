@@ -194,6 +194,12 @@ public:
     bool getBuff_602() const;
     void setBuff_602(bool value);
 
+    int getATK() const;
+    void setATK(int value);
+
+    int getDEF() const;
+    void setDEF(int value);
+
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);

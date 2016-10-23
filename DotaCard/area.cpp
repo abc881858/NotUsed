@@ -187,27 +187,27 @@ int FieldyardArea::testAddCard()
 {
     if (one.canPlace)
     {
-        return 1;
+        return 0;
     }
     else if (two.canPlace)
     {
-        return 2;
+        return 1;
     }
     else if (three.canPlace)
     {
-        return 3;
+        return 2;
     }
     else if (four.canPlace)
     {
-        return 4;
+        return 3;
     }
     else if (five.canPlace)
     {
-        return 5;
+        return 4;
     }
     else
     {
-        return 0;
+        return -1;
     }
 }
 
@@ -224,36 +224,38 @@ void FieldyardArea::addCard(Card* card, bool face, bool stand)
 
     //不能采用handarea的雷同处理，去除了adjust函数
     int i = myFieldyard.size() - 1;
-    if (place==1)
+    if (place==0)
     {
         one.canPlace = false;
         one.at = i;
         myFieldyard[i]->setPos(one.pos);
     }
-    else if (place==2)
+    else if (place==1)
     {
         two.canPlace = false;
         two.at = i;
         myFieldyard[i]->setPos(two.pos);
     }
-    else if (place==3)
+    else if (place==2)
     {
         three.canPlace = false;
         three.at = i;
         myFieldyard[i]->setPos(three.pos);
     }
-    else if (place==4)
+    else if (place==3)
     {
         four.canPlace = false;
         four.at = i;
         myFieldyard[i]->setPos(four.pos);
     }
-    else if (place==5)
+    else if (place==4)
     {
         five.canPlace = false;
         five.at = i;
         myFieldyard[i]->setPos(five.pos);
     }
+
+    emit showWord(i);
 
     Net::instance()->doAddCard(card->getISDN(), Fieldyard_Area, place, face, stand);
 }
@@ -264,8 +266,9 @@ Card* FieldyardArea::takeCard(int place) //place = 12345
 
     Card* card;
 
-    if (place==1)
+    if (place==0)
     {
+        emit hideWord(one.at);
         card = myFieldyard.takeAt(one.at);
         one.canPlace = true;
         if(two.at>one.at)
@@ -286,8 +289,9 @@ Card* FieldyardArea::takeCard(int place) //place = 12345
         }
         one.at = -1;
     }
-    else if (place==2)
+    else if (place==1)
     {
+        emit hideWord(two.at);
         card = myFieldyard.takeAt(two.at);
         two.canPlace = true;
         if(one.at>two.at)
@@ -308,8 +312,9 @@ Card* FieldyardArea::takeCard(int place) //place = 12345
         }
         two.at = -1;
     }
-    else if (place==3)
+    else if (place==2)
     {
+        emit hideWord(three.at);
         card = myFieldyard.takeAt(three.at);
         three.canPlace = true;
         if(one.at>three.at)
@@ -330,8 +335,9 @@ Card* FieldyardArea::takeCard(int place) //place = 12345
         }
         three.at = -1;
     }
-    else if (place==4)
+    else if (place==3)
     {
+        emit hideWord(four.at);
         card = myFieldyard.takeAt(four.at);
         four.canPlace = true;
         if(one.at>four.at)
@@ -352,8 +358,9 @@ Card* FieldyardArea::takeCard(int place) //place = 12345
         }
         four.at = -1;
     }
-    else if (place==5)
+    else if (place==4)
     {
+        emit hideWord(five.at);
         card = myFieldyard.takeAt(five.at);
         five.canPlace = true;
         if(one.at>five.at)
@@ -562,36 +569,38 @@ void EnemyFieldyardArea::response_addCard(Card* card, int place, bool face, bool
     yourFieldyard << card;
 
     int i = yourFieldyard.size() - 1;
-    if (place==1)
+    if (place==0)
     {
         one.canPlace = false;
         one.at = i;
         yourFieldyard[i]->setPos(one.pos);
     }
-    else if (place==2)
+    else if (place==1)
     {
         two.canPlace = false;
         two.at = i;
         yourFieldyard[i]->setPos(two.pos);
     }
-    else if (place==3)
+    else if (place==2)
     {
         three.canPlace = false;
         three.at = i;
         yourFieldyard[i]->setPos(three.pos);
     }
-    else if (place==4)
+    else if (place==3)
     {
         four.canPlace = false;
         four.at = i;
         yourFieldyard[i]->setPos(four.pos);
     }
-    else if (place==5)
+    else if (place==4)
     {
         five.canPlace = false;
         five.at = i;
         yourFieldyard[i]->setPos(five.pos);
     }
+
+    emit showWord(i);
 }
 
 Card* EnemyFieldyardArea::response_takeCard(int place)
@@ -599,8 +608,9 @@ Card* EnemyFieldyardArea::response_takeCard(int place)
     qDebug() << "EnemyFieldyardArea::response_takeCard index: " << place;
     Card* card;
 
-    if (place==1)
+    if (place==0)
     {
+        emit hideWord(one.at);
         card = yourFieldyard.takeAt(one.at);
         one.canPlace = true;
         if(two.at>one.at)
@@ -621,8 +631,9 @@ Card* EnemyFieldyardArea::response_takeCard(int place)
         }
         one.at = -1;
     }
-    else if (place==2)
+    else if (place==1)
     {
+        emit hideWord(two.at);
         card = yourFieldyard.takeAt(two.at);
         two.canPlace = true;
         if(one.at>two.at)
@@ -643,8 +654,9 @@ Card* EnemyFieldyardArea::response_takeCard(int place)
         }
         two.at = -1;
     }
-    else if (place==3)
+    else if (place==2)
     {
+        emit hideWord(three.at);
         card = yourFieldyard.takeAt(three.at);
         three.canPlace = true;
         if(one.at>three.at)
@@ -665,8 +677,9 @@ Card* EnemyFieldyardArea::response_takeCard(int place)
         }
         three.at = -1;
     }
-    else if (place==4)
+    else if (place==3)
     {
+        emit hideWord(four.at);
         card = yourFieldyard.takeAt(four.at);
         four.canPlace = true;
         if(one.at>four.at)
@@ -687,8 +700,9 @@ Card* EnemyFieldyardArea::response_takeCard(int place)
         }
         four.at = -1;
     }
-    else if (place==5)
+    else if (place==4)
     {
+        emit hideWord(five.at);
         card = yourFieldyard.takeAt(five.at);
         five.canPlace = true;
         if(one.at>five.at)

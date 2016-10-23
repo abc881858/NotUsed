@@ -24,6 +24,8 @@ Card::Card()
 //    oneTurnHandEffect = false;
 //    oneTurnOneAttack = false;
 //    oneTurnOneEffect = false;
+    buff_602 = false;
+    buff_604 = false;
 }
 
 /////////////////////////// Begin Test All Card Status /////////////////////////////
@@ -56,6 +58,43 @@ bool Card::testSpecialSummon()
     {
         return false;
     }
+
+    //是否在选择卡牌阶段
+    if(Rule::instance()->getPickRequirement())
+    {
+        return false;
+    }
+
+    if (!Rule::instance()->getDoing() || !face)
+    {
+        return false;
+    }
+
+    //TODO: 后续增加被其他卡影响，无法特殊召唤的判断，现在在手牌就可以特招，无次数限制
+
+    Rule::Phase phase = Rule::instance()->getphase();
+    if (phase != Rule::myM1 && phase != Rule::myM2)
+    {
+        return false;
+    }
+
+    if (FieldyardArea::instance()->testAddCard() == -1)
+    {
+        return false;
+        //QMessageBox::question(0, QString(tr("Can not summon")), QString(tr("Fieldyard is full!")), QMessageBox::Ok);
+    }
+
+    if (ISDN == 610)
+    {
+        for (Card* card : FieldyardArea::instance()->getMyFieldyard())
+        {
+            if (card->getName().startsWith("dota"))
+            {
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 
@@ -87,7 +126,7 @@ bool Card::testNormalSummon()
     Rule::Phase phase = Rule::instance()->getphase();
     if (phase == Rule::myM1 || phase == Rule::myM2)
     {
-        if (FieldyardArea::instance()->testAddCard() == 0)
+        if (FieldyardArea::instance()->testAddCard() == -1)
         {
             return false;
             //QMessageBox::question(0, QString(tr("Can not summon")), QString(tr("Fieldyard is full!")), QMessageBox::Ok);
@@ -124,7 +163,7 @@ bool Card::testSetCard()
     Rule::Phase phase = Rule::instance()->getphase();
     if (phase == Rule::myM1 || phase == Rule::myM2)
     {
-        if (FieldyardArea::instance()->testAddCard() == 0)
+        if (FieldyardArea::instance()->testAddCard() == -1)
         {
             return false;
             //QMessageBox::question(0, QString(tr("Can not set")), QString(tr("Fieldyard is full!")), QMessageBox::Ok);
@@ -249,6 +288,10 @@ bool Card::testSelectable()
     else if (pickRequirement == LionRequirement)
     {
         return (area == EnemyFieldyard_Area && isMonstor());
+    }
+    else if (pickRequirement == MagnusRequirement)
+    {
+        return (area == Fieldyard_Area && face && isMonstor());
     }
 
     return false;
@@ -496,7 +539,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         else if (currentflag == SpecialSummon)
         {
             //目前没有从手牌特殊召唤的卡牌
-            //emit specialSummon();
+            emit normalSummon();
         }
         else if (currentflag == FlipSummon)
         {
@@ -531,6 +574,46 @@ void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     }
 }
 
+int Card::getDEF() const
+{
+    return DEF;
+}
+
+void Card::setDEF(int value)
+{
+    DEF = value;
+}
+
+int Card::getATK() const
+{
+    return ATK;
+}
+
+void Card::setATK(int value)
+{
+    ATK = value;
+}
+
+bool Card::getBuff_602() const
+{
+    return buff_602;
+}
+
+void Card::setBuff_602(bool value)
+{
+    buff_602 = value;
+}
+
+bool Card::getBuff_604() const
+{
+    return buff_604;
+}
+
+void Card::setBuff_604(bool value)
+{
+    buff_604 = value;
+}
+
 bool Card::getOneTurnOneAttack() const
 {
     return oneTurnOneAttack;
@@ -549,16 +632,6 @@ bool Card::getOneTurnHandEffect() const
 void Card::setOneTurnHandEffect(bool value)
 {
     oneTurnHandEffect = value;
-}
-
-int Card::getDebuff() const
-{
-    return debuff;
-}
-
-void Card::setDebuff(int value)
-{
-    debuff = value;
 }
 
 int Card::getType() const

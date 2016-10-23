@@ -112,10 +112,3 @@ void Net::sendMessage(int command)
     jsonObject.insert("command", command);
     write(jsonObject);
 }
-
-//void Net::doEndOpponentBattlePhase() //结束对方的战斗阶段
-//{
-//    QJsonObject object;
-//    object.insert("request", "doEndOpponentBattlePhase");
-//    write(object);
-//}
