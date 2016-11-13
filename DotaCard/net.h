@@ -1,8 +1,8 @@
 #ifndef NET_H
 #define NET_H
 
-#include <QWebSocket>
 #include <QJsonObject>
+#include <QWebSocket>
 
 class Net : public QObject
 {
@@ -19,6 +19,7 @@ public:
     void sendMessage(int command);
     void doSetPhase(int phase);
     void doSetDoing(bool doing);
+
 private:
     QWebSocket* client;
 
@@ -40,7 +41,6 @@ signals:
     Q_INVOKABLE void request_tellForRequest();
     Q_INVOKABLE void request_Effect(QJsonObject);
     Q_INVOKABLE void request_CentaurWarrunnerEffect(QJsonObject);
-
 };
 
 #endif // NET_H

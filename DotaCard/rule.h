@@ -51,7 +51,6 @@ private:
     bool isDoing;
     bool isPicking;
     int pickRequirement;
-
 };
 
 #endif // RULE_H

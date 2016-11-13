@@ -1,10 +1,10 @@
+#include "engine.h"
+#include "mainwindow.h"
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
 #include <QTranslator>
 #include <QtDebug>
-#include "engine.h"
-#include "mainwindow.h"
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {

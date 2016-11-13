@@ -2,8 +2,8 @@
 #define ENGINE_H
 
 #include <QHash>
-#include <QMetaObject>
 #include <QList>
+#include <QMetaObject>
 
 class Card;
 

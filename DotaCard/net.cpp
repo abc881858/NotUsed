@@ -1,8 +1,8 @@
 #include "net.h"
 #include <QHostAddress>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonValue>
-#include <QJsonArray>
 #include <QUrl>
 
 Q_GLOBAL_STATIC(Net, net)
@@ -16,6 +16,7 @@ void Net::initialize()
 {
     client = new QWebSocket;
     client->open(QUrl("ws://localhost:7720"));
+    //    client->open(QUrl("ws://139.196.72.104:7720"));
     connect(client, SIGNAL(connected()), this, SLOT(connected()));
     connect(client, SIGNAL(binaryMessageReceived(QByteArray)), this, SLOT(readFromServer(QByteArray)));
 }
@@ -95,7 +96,7 @@ void Net::readFromServer(QByteArray json)
     {
         request.prepend("request_");
         QJsonObject parameter = object["parameter"].toObject();
-        if(parameter.isEmpty())
+        if (parameter.isEmpty())
         {
             QMetaObject::invokeMethod(this, request.toLatin1().data());
         }

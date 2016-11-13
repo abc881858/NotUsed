@@ -1,6 +1,6 @@
 #include "graphicspixmapobject.h"
-#include <QDebug>
 #include "rule.h"
+#include <QDebug>
 
 GraphicsPixmapObject::GraphicsPixmapObject()
 {

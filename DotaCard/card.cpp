@@ -1,13 +1,12 @@
 #include "card.h"
 
-#include <QGraphicsSceneMouseEvent>
 #include <QDebug>
-#include <QCursor>
+#include <QGraphicsSceneMouseEvent>
 #include <QMessageBox>
 
-#include "rule.h"
 #include "area.h"
 #include "net.h"
+#include "rule.h"
 
 Card::Card()
 {
@@ -21,35 +20,23 @@ Card::Card()
     setTransformationMode(Qt::SmoothTransformation);
     isRotate = false;
     isBack = true;
-//    oneTurnHandEffect = false;
-//    oneTurnOneAttack = false;
-//    oneTurnOneEffect = false;
+    //    oneTurnHandEffect = false;
+    //    oneTurnOneAttack = false;
+    //    oneTurnOneEffect = false;
     buff_602 = false;
     buff_604 = false;
-}
 
-/////////////////////////// Begin Test All Card Status /////////////////////////////
+    currentFingerFlag = NoFlag;
 
-Card::CardFlags Card::testAll()
-{
-    if (testEffect() && Rule::instance()->getPickRequirement()==NoRequiremente)
-    {
-        setCardFlag(Effect, true);
-    }
-    else
-    {
-        setCardFlag(Effect, false);
-    }
-    testSpecialSummon() ? setCardFlag(SpecialSummon, true) : setCardFlag(SpecialSummon, false);
-    testNormalSummon() ? setCardFlag(NormalSummon, true) : setCardFlag(NormalSummon, false);
-    testSetCard() ? setCardFlag(SetCard, true) : setCardFlag(SetCard, false);
-    testFlipSummon() ? setCardFlag(Card::FlipSummon, true) : setCardFlag(Card::FlipSummon, false);
-    testDefencePosition() ? setCardFlag(Card::DefencePosition, true) : setCardFlag(Card::DefencePosition, false);
-    testAttackPosition() ? setCardFlag(Card::AttackPosition, true) : setCardFlag(Card::AttackPosition, false);
-    testAttack() ? setCardFlag(Card::Attack, true) : setCardFlag(Card::Attack, false);
-    testSelectable() ? setCardFlag(Card::Selectable, true) : setCardFlag(Card::Selectable, false);
-
-    return myflags;
+    cursorNoFlag = QCursor(QPixmap(":/png/png/3.cur"), 31, 15);
+    cursorEffect = QCursor(QPixmap(":/png/png/4.cur"), 15, 19);
+    cursorSpecialSummon = QCursor(QPixmap(":/png/png/5.cur"), 8, 26);
+    cursorNormalSummon = QCursor(QPixmap(":/png/png/1.cur"), 13, 19);
+    cursorSetCard = QCursor(QPixmap(":/png/png/2.cur"), 13, 19);
+    cursorFlipSummon = QCursor(QPixmap(":/png/png/1.cur"), 13, 19); //暂时先用1.cur替代
+    cursorDefencePosition = QCursor(QPixmap(":/png/png/6.cur"), 14, 21);
+    cursorAttackPosition = QCursor(QPixmap(":/png/png/8.cur"), 14, 21);
+    cursorAttack = QCursor(QPixmap(":/png/png/7.cur"), 14, 19);
 }
 
 bool Card::testSpecialSummon()
@@ -60,7 +47,7 @@ bool Card::testSpecialSummon()
     }
 
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPickRequirement())
+    if (Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -106,7 +93,7 @@ bool Card::testNormalSummon()
     }
 
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPickRequirement())
+    if (Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -145,7 +132,7 @@ bool Card::testSetCard()
     }
 
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPickRequirement())
+    if (Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -182,7 +169,7 @@ bool Card::testFlipSummon()
     }
 
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPickRequirement())
+    if (Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -206,7 +193,7 @@ bool Card::testFlipSummon()
 bool Card::testDefencePosition()
 {
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPickRequirement())
+    if (Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -220,7 +207,7 @@ bool Card::testDefencePosition()
 bool Card::testAttackPosition()
 {
     //是否在选择卡牌阶段
-    if(Rule::instance()->getPickRequirement())
+    if (Rule::instance()->getPickRequirement())
     {
         return false;
     }
@@ -249,10 +236,10 @@ bool Card::testAttack()
     }
 
     //是否在处理某张卡的效果，处于选择target卡牌阶段
-    if(Rule::instance()->getPickRequirement()==NoRequiremente)
+    if (Rule::instance()->getPickRequirement() == NoRequiremente)
     {
         //保证1回合只能攻击一次，宝剑只出现一次
-        if(oneTurnOneAttack)//这个欠考虑，如果战斗流程发动陷阱卡墓地苏生
+        if (oneTurnOneAttack) //这个欠考虑，如果战斗流程发动陷阱卡墓地苏生
         {
             return true;
         }
@@ -266,7 +253,7 @@ bool Card::testSelectable()
 
     qDebug() << "Card::testSelectable() pickRequirement: " << pickRequirement;
 
-    if (pickRequirement == 0)
+    if (pickRequirement == NoRequiremente)
     {
         return false;
     }
@@ -297,82 +284,26 @@ bool Card::testSelectable()
     return false;
 }
 
-/////////////////////////// End Test All Card Status /////////////////////////////
+//    if (currentflag == Selectable)
+//    {
+//        //高亮卡牌
+//        //其实不是高亮，而是一开始就是透明度高的，改成了不透明而已！
+//    }
+//    //TODO: 4角选择框
+//    if (myflags.testFlag(Selectable)) //测试是否满足选择条件
 
-Card::CardFlags Card::getCardFlags() const
+void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
-    return myflags;
-}
-
-void Card::setCardFlag(Card::CardFlag flag, bool enabled)
-{
-    if (enabled)
+    setCursor(cursorNoFlag);
+    //TODO: 移除 四角选择框
+    if (area == Hand_Area || area == EnemyHand_Area)
     {
-        myflags |= flag;
-    }
-    else
-    {
-        myflags &= ~flag;
-    }
-}
-
-void Card::setCurrentflag(Card::CardFlag flag)
-{
-    currentflag = flag;
-
-    qDebug() << "setCurrentflag: " << currentflag;
-
-    QCursor cursorEffect = QCursor(QPixmap(":/png/png/4.cur"), 15, 19);
-    QCursor cursorSpecialSummon = QCursor(QPixmap(":/png/png/5.cur"), 8, 26);
-    QCursor cursorNormalSummon = QCursor(QPixmap(":/png/png/1.cur"), 13, 19);
-    QCursor cursorSetCard = QCursor(QPixmap(":/png/png/2.cur"), 13, 19);
-    QCursor cursorFlipSummon = QCursor(QPixmap(":/png/png/1.cur"), 13, 19); //暂时先用1.cur替代
-    QCursor cursorDefencePosition = QCursor(QPixmap(":/png/png/6.cur"), 14, 21);
-    QCursor cursorAttackPosition = QCursor(QPixmap(":/png/png/8.cur"), 14, 21);
-    QCursor cursorAttack = QCursor(QPixmap(":/png/png/7.cur"), 14, 19);
-
-    if (currentflag == Selectable)
-    {
-        //高亮卡牌
-        //其实不是高亮，而是一开始就是透明度高的，改成了不透明而已！
-    }
-    else if (currentflag == Effect)
-    {
-        setCursor(cursorEffect);
-    }
-    else if (currentflag == SpecialSummon)
-    {
-        setCursor(cursorSpecialSummon);
-    }
-    else if (currentflag == NormalSummon)
-    {
-        setCursor(cursorNormalSummon);
-    }
-    else if (currentflag == SetCard)
-    {
-        setCursor(cursorSetCard);
-    }
-    else if (currentflag == FlipSummon)
-    {
-        setCursor(cursorFlipSummon);
-    }
-    else if (currentflag == DefencePosition)
-    {
-        setCursor(cursorDefencePosition);
-    }
-    else if (currentflag == AttackPosition)
-    {
-        setCursor(cursorAttackPosition);
-    }
-    else if (currentflag == Attack)
-    {
-        setCursor(cursorAttack);
+        setY(0);
     }
 }
 
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
-    qDebug() << "hoverEnterEvent: area = " << area;
     emit hover();
     if (area == Hand_Area)
     {
@@ -383,178 +314,194 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
         setY(35);
     }
 
-    if(testAll() == CardFlags())
+    if (Rule::instance()->getPickRequirement() != NoRequiremente)
     {
-        qDebug() << "testAll() == CardFlags()";
         return;
     }
 
-    //TODO: 4角选择框
+    allFingerFlags.clear();
+    Rule::Phase phase = Rule::instance()->getphase();
+    if (phase == Rule::myM1 || phase == Rule::myM2)
+    {
+        if (area == Hand_Area)
+        {
+            if (testEffect())
+            {
+                allFingerFlags << Effect;
+            }
+            if (testSpecialSummon())
+            {
+                allFingerFlags << SpecialSummon;
+            }
+            if (testNormalSummon())
+            {
+                allFingerFlags << NormalSummon;
+            }
+            if (testSetCard())
+            {
+                allFingerFlags << SetCard;
+            }
+        }
+        else if (area == Fieldyard_Area)
+        {
+            if (face)
+            {
+                if (stand)
+                {
+                    if (testEffect())
+                    {
+                        allFingerFlags << Effect;
+                    }
+                    if (testDefencePosition())
+                    {
+                        allFingerFlags << DefencePosition;
+                    }
+                }
+                else
+                {
+                    if (testEffect())
+                    {
+                        allFingerFlags << Effect;
+                    }
+                    if (testAttackPosition())
+                    {
+                        allFingerFlags << AttackPosition;
+                    }
+                }
+            }
+            else
+            {
+                if (testFlipSummon())
+                {
+                    allFingerFlags << FlipSummon;
+                }
+            }
+        }
+        else if (area == Fieldground_Area)
+        {
+            //
+        }
+    }
+    else if (phase == Rule::myBP)
+    {
+        if (area == Fieldyard_Area)
+        {
+            if (testAttack())
+            {
+                allFingerFlags << Attack;
+            }
+        }
+        else if (area == Fieldground_Area)
+        {
+            //
+        }
+    }
 
-    if (myflags.testFlag(Selectable)) //测试是否满足选择条件
+    if (allFingerFlags.isEmpty())
     {
-        setCurrentflag(Selectable);
+        currentFingerFlag = NoFlag;
     }
-    else if (myflags.testFlag(Attack))
+    else
     {
-        setCurrentflag(Attack);
-    }
-    else if (myflags.testFlag(Effect))
-    {
-        setCurrentflag(Effect);
-    }
-    else if (myflags.testFlag(SpecialSummon))
-    {
-        setCurrentflag(SpecialSummon);
-    }
-    else if (myflags.testFlag(NormalSummon))
-    {
-        setCurrentflag(NormalSummon);
-    }
-    else if (myflags.testFlag(SetCard))
-    {
-        setCurrentflag(SetCard);
-    }
-}
-
-void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
-{
-    setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
-    //TODO: 移除 四角选择框
-
-    if (area == Hand_Area || area == EnemyHand_Area)
-    {
-        setY(0);
+        currentFingerFlag = allFingerFlags.first();
+        if (currentFingerFlag == Effect)
+        {
+            setCursor(cursorEffect);
+        }
+        else if (currentFingerFlag == SpecialSummon)
+        {
+            setCursor(cursorSpecialSummon);
+        }
+        else if (currentFingerFlag == NormalSummon)
+        {
+            setCursor(cursorNormalSummon);
+        }
+        else if (currentFingerFlag == SetCard)
+        {
+            setCursor(cursorSetCard);
+        }
+        else if (currentFingerFlag == FlipSummon)
+        {
+            setCursor(cursorFlipSummon);
+        }
+        else if (currentFingerFlag == DefencePosition)
+        {
+            setCursor(cursorDefencePosition);
+        }
+        else if (currentFingerFlag == AttackPosition)
+        {
+            setCursor(cursorAttackPosition);
+        }
+        else if (currentFingerFlag == Attack)
+        {
+            setCursor(cursorAttack);
+        }
     }
 }
 
 // 当我点击任意一张卡牌时
 void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
-    if(myflags == CardFlags())
+    if (event->button() == Qt::RightButton) // 右键点击的话， 切换到下一种鼠标手势， 包括发动效果、特招、普招等等
     {
-        return;
-    }
+        //allFingerFlags 肯定非空
+        int currentIndex = allFingerFlags.indexOf(currentFingerFlag);
+        currentFingerFlag = currentFingerFlag == allFingerFlags.last() ? allFingerFlags.first() : allFingerFlags.at(currentIndex + 1);
 
-    // 右键点击的话， 切换到下一种鼠标手势， 包括发动效果、特招、普招等等
-    if (event->button() == Qt::RightButton)
-    {
-        if (currentflag == Effect)
-        {
-            if (myflags.testFlag(SpecialSummon))
-            {
-                setCurrentflag(SpecialSummon);
-            }
-            else if (myflags.testFlag(NormalSummon))
-            {
-                setCurrentflag(NormalSummon);
-            }
-            else if (myflags.testFlag(SetCard))
-            {
-                setCurrentflag(SetCard);
-            }
-        }
-        else if (currentflag == SpecialSummon)
-        {
-            if (myflags.testFlag(NormalSummon))
-            {
-                setCurrentflag(NormalSummon);
-            }
-            else if (myflags.testFlag(SetCard))
-            {
-                setCurrentflag(SetCard);
-            }
-            else if (myflags.testFlag(Effect))
-            {
-                setCurrentflag(Effect);
-            }
-        }
-        else if (currentflag == NormalSummon)
-        {
-            if (myflags.testFlag(SetCard))
-            {
-                setCurrentflag(SetCard);
-            }
-            else if (myflags.testFlag(Effect))
-            {
-                setCurrentflag(Effect);
-            }
-            else if (myflags.testFlag(SpecialSummon))
-            {
-                setCurrentflag(SpecialSummon);
-            }
-        }
-        else if (currentflag == SetCard)
-        {
-            if (myflags.testFlag(Effect))
-            {
-                setCurrentflag(Effect);
-            }
-            else if (myflags.testFlag(SpecialSummon))
-            {
-                setCurrentflag(SpecialSummon);
-            }
-            else if (myflags.testFlag(NormalSummon))
-            {
-                setCurrentflag(NormalSummon);
-            }
-        }
-        else if (currentflag == Attack)
-        {
-            //这里不判断，在RoomScene里增加右键事件
-            //让宝剑居中，selectable为false
-            //并且让setPickRequirement(NoRequirement);
-        }
+        //        if (currentFingerFlag == Attack)
+        //        {
+        //            //这里不判断，在RoomScene里增加右键事件
+        //            //让宝剑居中，selectable为false
+        //            //并且让setPickRequirement(NoRequirement);
+        //        }
     }
     else if (event->button() == Qt::LeftButton)
     {
-        if (currentflag == Selectable)
+        if (testSelectable())
         {
             qDebug() << "emit pickTarget()";
             emit pickTarget();
+            return;
         }
-        else if (currentflag == Effect)
+        else if (currentFingerFlag == NoFlag)
         {
-            if (area == Hand_Area)
-            {
-                //从手牌发动的特效
-                activeHandEffect();
-            }
-            else if (area == Fieldyard_Area)
-            {
-                setOneTurnOneEffect(false);
-                activeEffect();
-            }
+            return;
         }
-        else if (currentflag == NormalSummon)
+
+        if (currentFingerFlag == Effect)
+        {
+            setOneTurnOneEffect(false);
+            activeEffect();
+        }
+        else if (currentFingerFlag == NormalSummon)
         {
             Rule::instance()->setOneTurnOneNormalSummon(false);
             emit normalSummon();
         }
-        else if (currentflag == SetCard)
+        else if (currentFingerFlag == SetCard)
         {
             Rule::instance()->setOneTurnOneNormalSummon(false);
             emit setCard();
         }
-        else if (currentflag == SpecialSummon)
+        else if (currentFingerFlag == SpecialSummon)
         {
             //目前没有从手牌特殊召唤的卡牌
             emit normalSummon();
         }
-        else if (currentflag == FlipSummon)
+        else if (currentFingerFlag == FlipSummon)
         {
             //目前没有翻转召唤
             //emit flipSummon();
         }
-        else if (currentflag == DefencePosition)
+        else if (currentFingerFlag == DefencePosition)
         {
             //
         }
-        else if (currentflag == AttackPosition)
+        else if (currentFingerFlag == AttackPosition)
         {
             //
         }
-        else if (currentflag == Attack)
+        else if (currentFingerFlag == Attack)
         {
             qDebug() << "currentflag == Attack";
             //setPickRequirement 和 getIsPickingSource 重复了，去除后者
@@ -569,8 +516,8 @@ void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        currentflag = NoFlag;
-        setCursor(QCursor(QPixmap(":/png/png/3.cur"), 31, 15));
+        currentFingerFlag = NoFlag;
+        setCursor(cursorNoFlag);
     }
 }
 
@@ -703,18 +650,18 @@ void Card::setArea(int value)
 {
     area = value;
 
-    if (area==Deck_Area)
+    if (area == Deck_Area)
     {
-        if(!isBack || !isField)
+        if (!isBack || !isField)
         {
             setPixmap(QPixmap(":/field/NULL.jpg"));
             isBack = true;
             isField = true;
         }
     }
-    else if (area==Hand_Area)
+    else if (area == Hand_Area)
     {
-        if(isBack || isField)
+        if (isBack || isField)
         {
             //默认没有face==false的卡牌
             setPixmap(QPixmap(QString(":/hand/%1.jpg").arg(name)));
@@ -722,11 +669,11 @@ void Card::setArea(int value)
             isField = false;
         }
     }
-    else if (area==Fieldyard_Area)
+    else if (area == Fieldyard_Area)
     {
         if (face)
         {
-            if(isBack || !isField)
+            if (isBack || !isField)
             {
                 setPixmap(QPixmap(QString(":/field/%1.jpg").arg(name)));
                 isBack = false;
@@ -735,7 +682,7 @@ void Card::setArea(int value)
         }
         else
         {
-            if(!isBack || !isField)
+            if (!isBack || !isField)
             {
                 setPixmap(QPixmap(":/field/NULL.jpg"));
                 isBack = true;
@@ -743,11 +690,11 @@ void Card::setArea(int value)
             }
         }
     }
-    else if (area==Fieldground_Area)
+    else if (area == Fieldground_Area)
     {
         if (face)
         {
-            if(isBack || !isField)
+            if (isBack || !isField)
             {
                 setPixmap(QPixmap(QString(":/field/%1.jpg").arg(name)));
                 isBack = false;
@@ -756,7 +703,7 @@ void Card::setArea(int value)
         }
         else
         {
-            if(!isBack || !isField)
+            if (!isBack || !isField)
             {
                 setPixmap(QPixmap(":/field/NULL.jpg"));
                 isBack = true;
@@ -764,11 +711,11 @@ void Card::setArea(int value)
             }
         }
     }
-    else if (area==Graveyard_Area)
+    else if (area == Graveyard_Area)
     {
         if (face)
         {
-            if(isBack || !isField)
+            if (isBack || !isField)
             {
                 setPixmap(QPixmap(QString(":/field/%1.jpg").arg(name)));
                 isBack = false;
@@ -777,7 +724,7 @@ void Card::setArea(int value)
         }
         else
         {
-            if(!isBack || !isField)
+            if (!isBack || !isField)
             {
                 setPixmap(QPixmap(":/field/NULL.jpg"));
                 isBack = true;
@@ -785,20 +732,20 @@ void Card::setArea(int value)
             }
         }
     }
-    else if (area==EnemyDeck_Area)
+    else if (area == EnemyDeck_Area)
     {
-        if(!isBack || !isField)
+        if (!isBack || !isField)
         {
             setPixmap(QPixmap(":/field/NULL.jpg"));
             isBack = true;
             isField = true;
         }
     }
-    else if (area==EnemyHand_Area)
+    else if (area == EnemyHand_Area)
     {
         if (face)
         {
-            if(isBack || isField)
+            if (isBack || isField)
             {
                 setPixmap(QPixmap(QString(":/hand/%1.jpg").arg(name)));
                 isBack = false;
@@ -807,7 +754,7 @@ void Card::setArea(int value)
         }
         else
         {
-            if(!isBack || isField)
+            if (!isBack || isField)
             {
                 setPixmap(QPixmap(":/hand/NULL.jpg"));
                 isBack = true;
@@ -815,11 +762,11 @@ void Card::setArea(int value)
             }
         }
     }
-    else if (area==EnemyFieldyard_Area)
+    else if (area == EnemyFieldyard_Area)
     {
         if (face)
         {
-            if(isBack || !isField)
+            if (isBack || !isField)
             {
                 setPixmap(QPixmap(QString(":/field/%1.jpg").arg(name)));
                 isBack = false;
@@ -828,7 +775,7 @@ void Card::setArea(int value)
         }
         else
         {
-            if(!isBack || !isField)
+            if (!isBack || !isField)
             {
                 setPixmap(QPixmap(":/field/NULL.jpg"));
                 isBack = true;
@@ -836,11 +783,11 @@ void Card::setArea(int value)
             }
         }
     }
-    else if (area==EnemyFieldground_Area)
+    else if (area == EnemyFieldground_Area)
     {
         if (face)
         {
-            if(isBack || !isField)
+            if (isBack || !isField)
             {
                 setPixmap(QPixmap(QString(":/field/%1.jpg").arg(name)));
                 isBack = false;
@@ -849,7 +796,7 @@ void Card::setArea(int value)
         }
         else
         {
-            if(!isBack || !isField)
+            if (!isBack || !isField)
             {
                 setPixmap(QPixmap(":/field/NULL.jpg"));
                 isBack = true;
@@ -857,11 +804,11 @@ void Card::setArea(int value)
             }
         }
     }
-    else if (area==EnemyGraveyard_Area)
+    else if (area == EnemyGraveyard_Area)
     {
         if (face)
         {
-            if(isBack || !isField)
+            if (isBack || !isField)
             {
                 setPixmap(QPixmap(QString(":/field/%1.jpg").arg(name)));
                 isBack = false;
@@ -870,7 +817,7 @@ void Card::setArea(int value)
         }
         else
         {
-            if(!isBack || !isField)
+            if (!isBack || !isField)
             {
                 setPixmap(QPixmap(":/field/NULL.jpg"));
                 isBack = true;
@@ -893,28 +840,28 @@ void Card::setStand(bool value)
         if (isRotate)
         {
             isRotate = false;
-            if (area==Hand_Area)
+            if (area == Hand_Area)
             {
                 setTransformOriginPoint(50, 72);
                 setRotation(0);
             }
-            else if (area==Deck_Area
-                     || area==Fieldyard_Area
-                     || area==Fieldground_Area
-                     || area==Graveyard_Area)
+            else if (area == Deck_Area
+                || area == Fieldyard_Area
+                || area == Fieldground_Area
+                || area == Graveyard_Area)
             {
                 setTransformOriginPoint(25, 36);
                 setRotation(0);
             }
-            else if (area==EnemyHand_Area)
+            else if (area == EnemyHand_Area)
             {
                 setTransformOriginPoint(50, 72);
                 setRotation(180);
             }
-            else if (area==EnemyDeck_Area
-                     || area==EnemyFieldyard_Area
-                     || area==EnemyFieldground_Area
-                     || area==EnemyGraveyard_Area) //以后加入除外额外环境区域
+            else if (area == EnemyDeck_Area
+                || area == EnemyFieldyard_Area
+                || area == EnemyFieldground_Area
+                || area == EnemyGraveyard_Area) //以后加入除外额外环境区域
             {
                 setTransformOriginPoint(25, 36);
                 setRotation(180);
@@ -926,28 +873,28 @@ void Card::setStand(bool value)
         if (!isRotate)
         {
             isRotate = true;
-            if (area==Hand_Area)
+            if (area == Hand_Area)
             {
                 setTransformOriginPoint(50, 72);
                 setRotation(-90);
             }
-            else if (area==Deck_Area
-                     || area==Fieldyard_Area
-                     || area==Fieldground_Area
-                     || area==Graveyard_Area)
+            else if (area == Deck_Area
+                || area == Fieldyard_Area
+                || area == Fieldground_Area
+                || area == Graveyard_Area)
             {
                 setTransformOriginPoint(25, 36);
                 setRotation(-90);
             }
-            else if (area==EnemyHand_Area)
+            else if (area == EnemyHand_Area)
             {
                 setTransformOriginPoint(50, 72);
                 setRotation(-270);
             }
-            else if (area==EnemyDeck_Area
-                     || area==EnemyFieldyard_Area
-                     || area==EnemyFieldground_Area
-                     || area==EnemyGraveyard_Area) //以后加入除外额外环境区域
+            else if (area == EnemyDeck_Area
+                || area == EnemyFieldyard_Area
+                || area == EnemyFieldground_Area
+                || area == EnemyGraveyard_Area) //以后加入除外额外环境区域
             {
                 setTransformOriginPoint(25, 36);
                 setRotation(-270);

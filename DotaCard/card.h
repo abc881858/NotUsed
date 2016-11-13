@@ -1,7 +1,9 @@
 #ifndef CARD_H
 #define CARD_H
 
+#include <QCursor>
 #include <QGraphicsPixmapItem>
+#include <QList>
 
 #define No_Area 0
 #define Deck_Area 1
@@ -23,20 +25,18 @@ class Card : public QObject, public QGraphicsPixmapItem
 public:
     explicit Card();
 
-    enum CardFlag
+    enum FingerFlag
     {
-        Effect = 0x1, //可以发动怪兽效果
-        SpecialSummon = 0x2,
-        NormalSummon = 0x4,
-        SetCard = 0x8,
-        FlipSummon = 0x10, //可以翻转召唤
-        DefencePosition = 0x20, //可以防守表示
-        AttackPosition = 0x40, //可以攻击表示
-        Attack = 0x80,
-        Selectable = 0x100,
-        NoFlag = 0x200
+        NoFlag,
+        Effect, //可以发动怪兽效果
+        SpecialSummon,
+        NormalSummon,
+        SetCard,
+        FlipSummon, //可以翻转召唤
+        DefencePosition, //可以防守表示
+        AttackPosition, //可以攻击表示
+        Attack
     };
-    Q_DECLARE_FLAGS(CardFlags, CardFlag)
 
     //    enum
     //    {
@@ -133,9 +133,9 @@ public:
         Plant
     };
 
-    CardFlags getCardFlags() const;
-    void setCardFlag(CardFlag flag, bool enabled = true);
-    void setCurrentflag(Card::CardFlag flag);
+    //    CardFlags getCardFlags() const;
+    //    void setCardFlag(CardFlag flag, bool enabled = true);
+    //    void setCurrentflag(Card::CardFlag flag);
 
     int getISDN() const;
 
@@ -156,7 +156,7 @@ public:
     bool getInActive() const;
     void setInActive(bool value);
 
-    Card::CardFlags testAll();
+    //    Card::CardFlags testAll();
     bool testSpecialSummon();
     bool testNormalSummon();
     bool testSetCard();
@@ -168,7 +168,6 @@ public:
 
     virtual bool testEffect() { return false; }
     virtual void activeEffect() {}
-    virtual void activeHandEffect() {}
 
     bool getChangePosition() const;
     void setChangePosition(bool value); //area需要
@@ -219,14 +218,26 @@ protected:
     bool buff_602; //光法致盲buff
 
 private:
+    FingerFlag currentFingerFlag;
+    QList<FingerFlag> allFingerFlags;
+    QCursor cursorNoFlag;
+    QCursor cursorEffect;
+    QCursor cursorSpecialSummon;
+    QCursor cursorNormalSummon;
+    QCursor cursorSetCard;
+    QCursor cursorFlipSummon;
+    QCursor cursorDefencePosition;
+    QCursor cursorAttackPosition;
+    QCursor cursorAttack;
+
     bool isRotate; //是否显示为横置
     bool isBack; //是否显示为背面
     bool isField; //是否显示为field文件夹的卡（即50*72类型）
     int area; //卡牌位置，比如在手上或者在前场
     bool face; // 卡牌表侧表示或者里侧表示
     bool stand; // 卡牌攻击表示或者防御表示
-    CardFlags myflags; //右键可以显示的全部cursor
-    Card::CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
+    //    CardFlags myflags; //右键可以显示的全部cursor
+    //    Card::CardFlag currentflag; //当前如果鼠标移上去该显示的cursor
 
     bool changePosition; //每回合可以变更一次攻防表示
     bool oneTurnOneEffect; //每回合从场地上可以发动一次
@@ -246,7 +257,7 @@ signals:
     void pressSword(int);
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
+//Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
 
 ///////////////////////////////////////////////
 
@@ -291,7 +302,6 @@ public:
     Q_INVOKABLE KeeperoftheLight();
     virtual bool testEffect();
     virtual void activeEffect();
-    virtual void activeHandEffect();
 };
 
 /*!

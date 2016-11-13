@@ -143,18 +143,21 @@ bool KeeperoftheLight::testEffect()
  * ③一回合一次，选择对方场上的一只表侧表示怪兽发动，选择的怪兽在进行攻击宣言前必须丢弃一张手牌。
  *
  */
-void KeeperoftheLight::activeEffect() //都是发动场上的特效
+void KeeperoftheLight::activeEffect()
 {
-    QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
-    //设置requirement的时候，把picking设为true，代表正在【选择】【需要】的卡
-    Rule::instance()->setPickRequirement(KeeperoftheLightRequirement);
-}
-
-void KeeperoftheLight::activeHandEffect() //发动手上的特效
-{
-    setOneTurnHandEffect(false);
-    QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select fieldyard card.")), QMessageBox::Ok);
-    Rule::instance()->setPickRequirement(KeeperoftheLightRequiremented);
+    int area = getArea();
+    if (area == Fieldyard_Area) //发动场上的特效
+    {
+        QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
+        //设置requirement的时候，把picking设为true，代表正在【选择】【需要】的卡
+        Rule::instance()->setPickRequirement(KeeperoftheLightRequirement);
+    }
+    else if (area == Hand_Area) //发动手上的特效
+    {
+        setOneTurnHandEffect(false);
+        QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select fieldyard card.")), QMessageBox::Ok);
+        Rule::instance()->setPickRequirement(KeeperoftheLightRequiremented);
+    }
 }
 
 //恶魔巫师

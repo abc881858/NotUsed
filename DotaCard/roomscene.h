@@ -22,7 +22,6 @@ public:
     int currentMove;
 
 private:
-
 signals:
     void hover(QString, QString);
 
@@ -43,7 +42,7 @@ public slots:
     void response_Effect(QJsonObject object);
 
 protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
 };
 
 #endif // ROOMSCENE_H

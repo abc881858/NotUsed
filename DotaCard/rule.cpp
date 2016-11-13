@@ -12,7 +12,7 @@ void Rule::initialize()
 {
     isDoing = false;
     oneTurnOneNormalSummon = false;
-//    isPicking = false; //只用pickRequirement==0判断? 万一要选2张呢? 那pickRequirement也不会等于0
+    //    isPicking = false; //只用pickRequirement==0判断? 万一要选2张呢? 那pickRequirement也不会等于0
     // phase 就不初始化了
     pickRequirement = 0;
 }

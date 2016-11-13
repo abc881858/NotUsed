@@ -56,3 +56,6 @@ QMAKE_CXXFLAGS+=/wd"4819"
 }
 
 TRANSLATIONS += dc_zh_cn.ts
+
+DISTFILES += \
+    none

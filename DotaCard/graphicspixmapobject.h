@@ -1,9 +1,9 @@
 #ifndef GRAPHICSPIXMAPOBJECT_H
 #define GRAPHICSPIXMAPOBJECT_H
 
-#include <QObject>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QObject>
 
 //Scene中所有可以动的Item都用这个类
 class GraphicsPixmapObject : public QObject, public QGraphicsPixmapItem
