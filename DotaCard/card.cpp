@@ -1,12 +1,10 @@
 #include "card.h"
-
-#include <QDebug>
-#include <QGraphicsSceneMouseEvent>
-#include <QMessageBox>
-
 #include "area.h"
 #include "net.h"
 #include "rule.h"
+#include <QDebug>
+#include <QGraphicsSceneMouseEvent>
+#include <QMessageBox>
 
 Card::Card()
 {
@@ -404,38 +402,43 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     else
     {
         currentFingerFlag = allFingerFlags.first();
-        if (currentFingerFlag == Effect)
-        {
-            setCursor(cursorEffect);
-        }
-        else if (currentFingerFlag == SpecialSummon)
-        {
-            setCursor(cursorSpecialSummon);
-        }
-        else if (currentFingerFlag == NormalSummon)
-        {
-            setCursor(cursorNormalSummon);
-        }
-        else if (currentFingerFlag == SetCard)
-        {
-            setCursor(cursorSetCard);
-        }
-        else if (currentFingerFlag == FlipSummon)
-        {
-            setCursor(cursorFlipSummon);
-        }
-        else if (currentFingerFlag == DefencePosition)
-        {
-            setCursor(cursorDefencePosition);
-        }
-        else if (currentFingerFlag == AttackPosition)
-        {
-            setCursor(cursorAttackPosition);
-        }
-        else if (currentFingerFlag == Attack)
-        {
-            setCursor(cursorAttack);
-        }
+        showCurrentFingerFlag();
+    }
+}
+
+void Card::showCurrentFingerFlag()
+{
+    if (currentFingerFlag == Effect)
+    {
+        setCursor(cursorEffect);
+    }
+    else if (currentFingerFlag == SpecialSummon)
+    {
+        setCursor(cursorSpecialSummon);
+    }
+    else if (currentFingerFlag == NormalSummon)
+    {
+        setCursor(cursorNormalSummon);
+    }
+    else if (currentFingerFlag == SetCard)
+    {
+        setCursor(cursorSetCard);
+    }
+    else if (currentFingerFlag == FlipSummon)
+    {
+        setCursor(cursorFlipSummon);
+    }
+    else if (currentFingerFlag == DefencePosition)
+    {
+        setCursor(cursorDefencePosition);
+    }
+    else if (currentFingerFlag == AttackPosition)
+    {
+        setCursor(cursorAttackPosition);
+    }
+    else if (currentFingerFlag == Attack)
+    {
+        setCursor(cursorAttack);
     }
 }
 
@@ -447,7 +450,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         //allFingerFlags 肯定非空
         int currentIndex = allFingerFlags.indexOf(currentFingerFlag);
         currentFingerFlag = currentFingerFlag == allFingerFlags.last() ? allFingerFlags.first() : allFingerFlags.at(currentIndex + 1);
-
+        showCurrentFingerFlag();
         //        if (currentFingerFlag == Attack)
         //        {
         //            //这里不判断，在RoomScene里增加右键事件
@@ -519,6 +522,26 @@ void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         currentFingerFlag = NoFlag;
         setCursor(cursorNoFlag);
     }
+}
+
+int Card::getCurrentDEF() const
+{
+    return currentDEF;
+}
+
+void Card::setCurrentDEF(int value)
+{
+    currentDEF = value;
+}
+
+int Card::getCurrentATK() const
+{
+    return currentATK;
+}
+
+void Card::setCurrentATK(int value)
+{
+    currentATK = value;
 }
 
 int Card::getDEF() const

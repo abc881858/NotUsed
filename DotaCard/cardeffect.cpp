@@ -1,12 +1,10 @@
-#include "roomscene.h"
-
-#include <QDebug>
-#include <QMessageBox>
-
 #include "area.h"
 #include "card.h"
 #include "net.h"
+#include "roomscene.h"
 #include "rule.h"
+#include <QDebug>
+#include <QMessageBox>
 
 CentaurWarrunner::CentaurWarrunner()
 {
@@ -18,6 +16,9 @@ CentaurWarrunner::CentaurWarrunner()
     level = 3;
     attribute = Earth;
     description = tr("CentaurWarrunner");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool CentaurWarrunner::testEffect()
@@ -90,6 +91,9 @@ KeeperoftheLight::KeeperoftheLight()
     DEF = 300;
     level = 3;
     description = tr("KeeperoftheLight");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool KeeperoftheLight::testEffect()
@@ -170,6 +174,9 @@ Lion::Lion()
     DEF = 700;
     level = 4;
     description = tr("Lion");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool Lion::testEffect()
@@ -219,6 +226,9 @@ Magnus::Magnus()
     DEF = 700;
     level = 4;
     description = tr("Magnus");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool Magnus::testEffect()
@@ -268,6 +278,9 @@ NyxAssassin::NyxAssassin()
     DEF = 800;
     level = 4;
     description = tr("NyxAssassin");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool NyxAssassin::testEffect()
@@ -316,6 +329,9 @@ Rubick::Rubick()
     DEF = 300;
     level = 4;
     description = tr("Rubick");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool Rubick::testEffect()
@@ -361,6 +377,9 @@ Tusk::Tusk()
     DEF = 1000;
     level = 4;
     description = tr("Tusk");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool Tusk::testEffect()
@@ -395,6 +414,9 @@ Undying::Undying()
     DEF = 1300;
     level = 3;
     description = tr("Undying");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool Undying::testEffect()
@@ -440,6 +462,9 @@ VengefulSpirit::VengefulSpirit()
     DEF = 500;
     level = 3;
     description = tr("VengefulSpirit");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool VengefulSpirit::testEffect()
@@ -489,6 +514,9 @@ Zeus::Zeus()
     DEF = 350;
     level = 2;
     description = tr("Zeus");
+
+    currentATK = ATK;
+    currentDEF = DEF;
 }
 
 bool Zeus::testEffect()

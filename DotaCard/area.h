@@ -39,7 +39,7 @@ public:
     static FieldyardArea* instance();
     QList<Card*> getMyFieldyard() const;
     void addCard(Card* card, bool face = true, bool stand = true);
-    Card* takeCard(int place);
+    Card* takeCard(int index);
 
     void initializeCards();
     void initializePlace();
@@ -50,7 +50,7 @@ public:
         bool canPlace; //该位置是否可用
         int at; //来自List的哪里
         QPointF pos; //myFieldyard[i]->setPos
-    } one, two, three, four, five;
+    } place[5];
 
 private:
     QList<Card*> myFieldyard;
@@ -119,7 +119,7 @@ public:
     static EnemyFieldyardArea* instance();
     QList<Card*> getYourFieldyard() const;
     void initializePlace();
-    void response_addCard(Card* card, int place, bool face = true, bool stand = true);
+    void response_addCard(Card* card, int index, bool face = true, bool stand = true);
     Card* response_takeCard(int index);
 
     struct Place
@@ -127,7 +127,7 @@ public:
         bool canPlace;
         int at;
         QPointF pos; //从右往左排
-    } one, two, three, four, five;
+    } place[5];
 
 private:
     QList<Card*> yourFieldyard;

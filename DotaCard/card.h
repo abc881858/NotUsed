@@ -199,6 +199,13 @@ public:
     int getDEF() const;
     void setDEF(int value);
 
+    int getCurrentATK() const;
+    void setCurrentATK(int value);
+
+    int getCurrentDEF() const;
+    void setCurrentDEF(int value);
+
+    void showCurrentFingerFlag();
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
@@ -210,6 +217,8 @@ protected:
     int type; //类型
     int ATK;
     int DEF;
+    int currentATK;
+    int currentDEF;
     int level; //等级
     int attribute; //种族
     int index; //从左往右数第几张(第1张是index==0)

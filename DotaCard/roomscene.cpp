@@ -1,15 +1,13 @@
 #include "roomscene.h"
-
+#include "card.h"
+#include "engine.h"
+#include "net.h"
+#include "rule.h"
 #include <QDebug>
 #include <QFile>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QMessageBox>
 #include <QPropertyAnimation>
-
-#include "card.h"
-#include "engine.h"
-#include "net.h"
-#include "rule.h"
 
 #define DeckPos QPointF(485, 426)
 #define HandPos QPointF(19, 529)
@@ -102,7 +100,7 @@ RoomScene::RoomScene(QObject* parent)
     connect(FieldyardArea::instance(), &FieldyardArea::showWord, [=](int i) {
         Card* card = FieldyardArea::instance()->getMyFieldyard().at(i);
         int index = card->getIndex();
-        word[index].setPlainText(QString::number(card->getATK()).append("/ ").append(QString::number(card->getDEF())));
+        word[index].setPlainText(QString::number(card->getCurrentATK()).append("/ ").append(QString::number(card->getCurrentDEF())));
         word[index].show();
     });
 
@@ -116,7 +114,7 @@ RoomScene::RoomScene(QObject* parent)
     connect(EnemyFieldyardArea::instance(), &EnemyFieldyardArea::showWord, [=](int i) {
         Card* card = EnemyFieldyardArea::instance()->getYourFieldyard().at(i);
         int index = card->getIndex();
-        word[index + 5].setPlainText(QString::number(card->getATK()).append("/ ").append(QString::number(card->getDEF())));
+        word[index + 5].setPlainText(QString::number(card->getCurrentATK()).append("/ ").append(QString::number(card->getCurrentDEF())));
         word[index + 5].show();
     });
 
@@ -148,9 +146,21 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_Effect(QJsonObject)), this, SLOT(response_Effect(QJsonObject)));
 }
 
+void RoomScene::showSwords()
+{
+    for (Card* card : FieldyardArea::instance()->getMyFieldyard())
+    {
+        if (card->getFace() && card->getStand())
+        {
+            sword[card->getIndex()].show();
+        }
+    }
+}
+
 void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动效果的卡！选好了卡牌，真正active，并发送Net
 {
     Card* card = qobject_cast<Card*>(sender());
+    battleDestinationCard = card;
     bool oldFace = card->getFace();
     int oldArea = card->getArea();
     bool oldStand = card->getStand();
@@ -177,6 +187,11 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
             sword[oldcurrentMove].setPos(startPos);
             sword[oldcurrentMove].setRotation(0);
             Rule::instance()->setPickRequirement(NoRequiremente);
+
+            //Rule::instance()->setDoing(false);
+            //Net::instance()->sendMessage(666);
+            //damageStep();
+
         });
     }
     else if (pickRequirement == KeeperoftheLightRequirement)
@@ -211,6 +226,8 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
     {
         card->setBuff_604(true);
         Rule::instance()->setPickRequirement(NoRequiremente);
+        card->setCurrentATK(card->getCurrentATK() + 400);
+        word[card->getIndex()].setPlainText(QString::number(card->getCurrentATK()).append("/ ").append(QString::number(card->getCurrentDEF())));
     }
 
     QJsonObject parameter;
@@ -386,6 +403,7 @@ void RoomScene::response_setupDeck()
             qDebug() << "slot sword pressSword";
             currentMove = index;
             sword[index].canMove = true;
+            battleSourceCard = card;
         });
     }
     file.close();
@@ -483,14 +501,7 @@ void RoomScene::response_tellForRequest()
 
     if (phase == Rule::myBP)
     {
-        for (Card* card : FieldyardArea::instance()->getMyFieldyard())
-        {
-            if (card->getFace() && card->getStand())
-            {
-                //Fieldyard 的index是从1-5的
-                sword[card->getIndex()].show();
-            }
-        }
+        //
     }
     else if (phase == Rule::myEP)
     {
@@ -503,6 +514,8 @@ void RoomScene::response_tellForRequest()
             if (card->getBuff_604())
             {
                 card->setBuff_604(false);
+                card->setCurrentATK(card->getATK());
+                //refreshWord;
             }
         }
     }
@@ -544,6 +557,7 @@ void RoomScene::response_Effect(QJsonObject object)
             sword[5 + oldcurrentMove].hide();
             sword[5 + oldcurrentMove].setPos(startPos);
             sword[5 + oldcurrentMove].setRotation(180);
+            //            response_tellForRequest();
         });
     }
     else if (pickRequirement == KeeperoftheLightRequirement)

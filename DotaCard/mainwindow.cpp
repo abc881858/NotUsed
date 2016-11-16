@@ -1,15 +1,13 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
-
-#include <QBrush>
-#include <QCursor>
-#include <QPalette>
-#include <QPixmap>
-
 #include "card.h"
 #include "net.h"
 #include "roomscene.h"
 #include "rule.h"
+#include "ui_mainwindow.h"
+#include <QBrush>
+#include <QCursor>
+#include <QPalette>
+#include <QPixmap>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -49,6 +47,7 @@ MainWindow::MainWindow(QWidget* parent)
         if (Rule::instance()->getphase() == Rule::myM1)
         {
             Rule::instance()->setPhase(Rule::myBP);
+            roomScene->showSwords();
             Rule::instance()->setDoing(false);
             Net::instance()->sendMessage(666); //询问对方是否连锁
         }

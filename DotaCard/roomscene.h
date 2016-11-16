@@ -21,7 +21,10 @@ public:
     GraphicsPixmapObject* duifangxingdong;
     int currentMove;
 
+    void showSwords();
 private:
+    Card* battleSourceCard;
+    Card* battleDestinationCard;
 signals:
     void hover(QString, QString);
 
