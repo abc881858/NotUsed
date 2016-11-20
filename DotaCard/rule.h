@@ -1,7 +1,8 @@
 #ifndef RULE_H
 #define RULE_H
 
-#define NoRequiremente 0
+#define NoRequirement 0
+#define lostTheBattle 101
 #define AttackedRequirement 100
 #define KeeperoftheLightRequirement 602
 #define KeeperoftheLightRequiremented 502

@@ -263,7 +263,7 @@ signals:
     void setCard();
     void tribute();
     void pickTarget();
-    void pressSword(int);
+    void pressSword();
 };
 
 //Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)

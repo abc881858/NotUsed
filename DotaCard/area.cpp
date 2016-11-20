@@ -172,9 +172,9 @@ void FieldyardArea::initializePlace()
 
 int FieldyardArea::testAddCard()
 {
-    for (int i=0; i<5; i++)
+    for (int i = 0; i < 5; i++)
     {
-        if(place[i].canPlace)
+        if (place[i].canPlace)
         {
             return i;
         }
@@ -211,9 +211,9 @@ Card* FieldyardArea::takeCard(int index)
     emit hideWord(place[index].at);
     Card* card = myFieldyard.takeAt(place[index].at);
     place[index].canPlace = true;
-    for(int i=0; i<5; i++)
+    for (int i = 0; i < 5; i++)
     {
-        if(place[i].at > place[index].at)
+        if (place[i].at > place[index].at)
         {
             --place[i].at;
         }
@@ -411,7 +411,7 @@ Card* EnemyFieldyardArea::response_takeCard(int index)
 
     for (int i = 0; i < 5; ++i)
     {
-        if(place[i].at > place[index].at)
+        if (place[i].at > place[index].at)
         {
             --place[i].at;
         }

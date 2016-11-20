@@ -234,7 +234,7 @@ bool Card::testAttack()
     }
 
     //是否在处理某张卡的效果，处于选择target卡牌阶段
-    if (Rule::instance()->getPickRequirement() == NoRequiremente)
+    if (Rule::instance()->getPickRequirement() == NoRequirement)
     {
         //保证1回合只能攻击一次，宝剑只出现一次
         if (oneTurnOneAttack) //这个欠考虑，如果战斗流程发动陷阱卡墓地苏生
@@ -251,7 +251,7 @@ bool Card::testSelectable()
 
     qDebug() << "Card::testSelectable() pickRequirement: " << pickRequirement;
 
-    if (pickRequirement == NoRequiremente)
+    if (pickRequirement == NoRequirement)
     {
         return false;
     }
@@ -312,7 +312,7 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
         setY(35);
     }
 
-    if (Rule::instance()->getPickRequirement() != NoRequiremente)
+    if (Rule::instance()->getPickRequirement() != NoRequirement)
     {
         return;
     }
@@ -473,7 +473,14 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
         if (currentFingerFlag == Effect)
         {
-            setOneTurnOneEffect(false);
+            if (area == Hand_Area)
+            {
+                setOneTurnOneEffect(false);
+            }
+            else if (area == Fieldyard_Area)
+            {
+                setOneTurnHandEffect(false);
+            }
             activeEffect();
         }
         else if (currentFingerFlag == NormalSummon)
@@ -510,7 +517,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             //setPickRequirement 和 getIsPickingSource 重复了，去除后者
             Rule::instance()->setPickRequirement(AttackedRequirement);
             setOneTurnOneAttack(false);
-            emit pressSword(index);
+            emit pressSword();
         }
     }
 }

@@ -1,14 +1,13 @@
 #ifndef ROOMSCENE_H
 #define ROOMSCENE_H
 
-#include <QAction>
-#include <QGraphicsScene>
-#include <QJsonObject>
-#include <QMenu>
-
 #include "area.h"
 #include "graphicspixmapobject.h"
+#include <QAction>
+#include <QGraphicsScene>
 #include <QGraphicsTextItem>
+#include <QJsonObject>
+#include <QMenu>
 
 class RoomScene : public QGraphicsScene
 {
@@ -19,12 +18,12 @@ public:
     GraphicsPixmapObject sword[10];
     QGraphicsTextItem word[10];
     GraphicsPixmapObject* duifangxingdong;
-    int currentMove;
-
     void showSwords();
+
 private:
     Card* battleSourceCard;
     Card* battleDestinationCard;
+
 signals:
     void hover(QString, QString);
 
@@ -46,6 +45,7 @@ public slots:
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
+    void mousePressEvent(QGraphicsSceneMouseEvent* event);
 };
 
 #endif // ROOMSCENE_H
