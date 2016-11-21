@@ -74,6 +74,26 @@ void Net::doSetDoing(bool doing)
     write(object);
 }
 
+void Net::doAddMyLP(int value)
+{
+    QJsonObject parameter;
+    parameter.insert("addMyLP", value);
+    QJsonObject object;
+    object.insert("request", "doAddMyLP");
+    object.insert("parameter", parameter);
+    write(object);
+}
+
+void Net::doAddYourLP(int value)
+{
+    QJsonObject parameter;
+    parameter.insert("addYourLP", value);
+    QJsonObject object;
+    object.insert("request", "doAddYourLP");
+    object.insert("parameter", parameter);
+    write(object);
+}
+
 void Net::connected()
 {
     QJsonObject jsonObject;

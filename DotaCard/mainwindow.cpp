@@ -39,6 +39,16 @@ MainWindow::MainWindow(QWidget* parent)
         ui->label->setStyleSheet(QString("image: url(:/image/%1.jpg)").arg(name));
         ui->textEdit->setText(description);
     });
+
+    connect(roomScene, &RoomScene::addMyLP, [=](int value) {
+        myLP += value;
+        ui->myLcdNumber->display(myLP);
+    });
+    connect(roomScene, &RoomScene::addYourLP, [=](int value) {
+        yourLP += value;
+        ui->yourLcdNumber->display(yourLP);
+    });
+
     connect(ui->buttonBP, &QPushButton::pressed, [=]() {
         if (Rule::instance()->getPickRequirement())
         {
@@ -47,7 +57,13 @@ MainWindow::MainWindow(QWidget* parent)
         if (Rule::instance()->getphase() == Rule::myM1)
         {
             Rule::instance()->setPhase(Rule::myBP);
-            roomScene->showSwords();
+            for (Card* card : FieldyardArea::instance()->getMyFieldyard())
+            {
+                if (card->getFace() && card->getStand())
+                {
+                    roomScene->sword[card->getIndex()].show();
+                }
+            }
             Rule::instance()->setDoing(false);
             Net::instance()->sendMessage(666); //询问对方是否连锁
         }

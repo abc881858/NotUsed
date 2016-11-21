@@ -4,10 +4,13 @@
 #define NoRequirement 0
 #define lostTheBattle 101
 #define AttackedRequirement 100
+#define CentaurWarrunnerEffect 601
 #define KeeperoftheLightRequirement 602
 #define KeeperoftheLightRequiremented 502
 #define LionRequirement 603
 #define MagnusRequirement 604
+#define NyxAssassinRequirement1 505
+#define NyxAssassinRequirement2 605
 
 #include <QHash>
 

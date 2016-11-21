@@ -15,10 +15,11 @@ public:
     void write(QJsonObject jsonObject);
     void doAddCard(int ISDN, int area, int index, bool face, bool stand);
     void doTakeCard(int area, int index);
-
     void sendMessage(int command);
     void doSetPhase(int phase);
     void doSetDoing(bool doing);
+    void doAddMyLP(int value);
+    void doAddYourLP(int value);
 
 private:
     QWebSocket* client;
@@ -32,6 +33,8 @@ signals:
     Q_INVOKABLE void request_doTakeCard(QJsonObject);
     Q_INVOKABLE void request_doSetPhase(QJsonObject);
     Q_INVOKABLE void request_doSetDoing(QJsonObject);
+    Q_INVOKABLE void request_doAddMyLP(QJsonObject);
+    Q_INVOKABLE void request_doAddYourLP(QJsonObject);
     Q_INVOKABLE void request_setupDeck();
     Q_INVOKABLE void request_startGame();
     Q_INVOKABLE void request_drawPhase();
@@ -40,7 +43,6 @@ signals:
     Q_INVOKABLE void request_askForResponse();
     Q_INVOKABLE void request_tellForRequest();
     Q_INVOKABLE void request_Effect(QJsonObject);
-    Q_INVOKABLE void request_CentaurWarrunnerEffect(QJsonObject);
 };
 
 #endif // NET_H

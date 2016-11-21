@@ -447,7 +447,10 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     if (event->button() == Qt::RightButton) // 右键点击的话， 切换到下一种鼠标手势， 包括发动效果、特招、普招等等
     {
-        //allFingerFlags 肯定非空
+        if (allFingerFlags.isEmpty())//allFingerFlags 肯定非空
+        {
+            return;
+        }
         int currentIndex = allFingerFlags.indexOf(currentFingerFlag);
         currentFingerFlag = currentFingerFlag == allFingerFlags.last() ? allFingerFlags.first() : allFingerFlags.at(currentIndex + 1);
         showCurrentFingerFlag();
@@ -466,9 +469,12 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             emit pickTarget();
             return;
         }
-        else if (currentFingerFlag == NoFlag)
+        else
         {
-            return;
+            if (allFingerFlags.isEmpty())
+            {
+                return;
+            }
         }
 
         if (currentFingerFlag == Effect)
@@ -519,13 +525,7 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
             setOneTurnOneAttack(false);
             emit pressSword();
         }
-    }
-}
 
-void Card::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-    if (event->button() == Qt::LeftButton)
-    {
         currentFingerFlag = NoFlag;
         setCursor(cursorNoFlag);
     }

@@ -16,13 +16,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = 0);
     ~MainWindow();
-
 private:
     Ui::MainWindow* ui;
+    RoomScene* roomScene;
     int myLP;
     int yourLP;
-
-    RoomScene* roomScene;
 };
 
 #endif // MAINWINDOW_H

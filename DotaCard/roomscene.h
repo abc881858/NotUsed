@@ -18,7 +18,6 @@ public:
     GraphicsPixmapObject sword[10];
     QGraphicsTextItem word[10];
     GraphicsPixmapObject* duifangxingdong;
-    void showSwords();
 
 private:
     Card* battleSourceCard;
@@ -26,12 +25,16 @@ private:
 
 signals:
     void hover(QString, QString);
+    void addYourLP(int);
+    void addMyLP(int);
 
 public slots:
     void response_doAddCard(QJsonObject jsonObject);
     void response_doTakeCard(QJsonObject jsonObject);
     void response_doSetPhase(QJsonObject jsonObject);
     void response_doSetDoing(QJsonObject jsonObject);
+    void response_doAddMyLP(QJsonObject jsonObject);
+    void response_doAddYourLP(QJsonObject jsonObject);
     void response_setupDeck();
     void response_startGame();
     void response_drawPhase();
@@ -39,7 +42,6 @@ public slots:
     void response_main1Phase();
     void response_askForResponse();
     void response_tellForRequest();
-    void response_CentaurWarrunnerEffect(QJsonObject);
     void doPickTarget();
     void response_Effect(QJsonObject object);
 

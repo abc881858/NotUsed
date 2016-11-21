@@ -210,7 +210,6 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 
     int ISDN; //图片唯一ID
     QString name; //图片名字

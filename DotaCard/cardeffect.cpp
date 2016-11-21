@@ -5,6 +5,7 @@
 #include "rule.h"
 #include <QDebug>
 #include <QMessageBox>
+#include <QPushButton>
 
 CentaurWarrunner::CentaurWarrunner()
 {
@@ -74,9 +75,10 @@ void CentaurWarrunner::activeEffect()
     }
 
     QJsonObject parameter;
+    parameter.insert("pickRequirement", CentaurWarrunnerEffect);
     parameter.insert("all", all);
     QJsonObject object;
-    object.insert("request", "CentaurWarrunnerEffect");
+    object.insert("request", "Effect");
     object.insert("parameter", parameter);
     Net::instance()->write(object);
 }
@@ -317,6 +319,21 @@ bool NyxAssassin::testEffect()
  */
 void NyxAssassin::activeEffect()
 {
+    QMessageBox messageBox;
+    QPushButton *effect1 = messageBox.addButton(tr("active effect1"), QMessageBox::ActionRole);
+    messageBox.addButton(tr("active effect2"), QMessageBox::ActionRole);
+    messageBox.exec();
+    if (messageBox.clickedButton() == effect1)
+    {
+        //discard one card from hand area
+        QMessageBox::information(0, QString(tr("active NyxAssassin's effect")), QString(tr("Discard one card from hand area.")));
+        Rule::instance()->setPickRequirement(NyxAssassinRequirement1);
+    }
+    else
+    {
+        QMessageBox::information(0, QString(tr("active NyxAssassin's effect")), QString(tr("Discard one card from hand area.")));
+        Rule::instance()->setPickRequirement(NyxAssassinRequirement2);
+    }
 }
 
 //大魔导师
@@ -365,6 +382,21 @@ bool Rubick::testEffect()
  */
 void Rubick::activeEffect()
 {
+//    QMessageBox messageBox;
+//    QPushButton *effect1 = messageBox.addButton(tr("active effect1"), QMessageBox::ActionRole);
+//    messageBox.addButton(tr("active effect2"), QMessageBox::ActionRole);
+//    messageBox.exec();
+//    if (messageBox.clickedButton() == effect1)
+//    {
+//        //discard one card from hand area
+//        QMessageBox::information(0, QString(tr("active Rubick's effect")), QString(tr("Discard one card from hand area.")));
+//        Rule::instance()->setPickRequirement(NyxAssassinRequirement1);
+//    }
+//    else
+//    {
+//        QMessageBox::information(0, QString(tr("active Rubick's effect")), QString(tr("Discard one card from hand area.")));
+//        Rule::instance()->setPickRequirement(NyxAssassinRequirement2);
+//    }
 }
 
 //巨牙海民
