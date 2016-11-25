@@ -13,13 +13,13 @@
 #define HandPos QPointF(19, 529)
 #define FieldyardPos QPointF(94, 317)
 #define FieldgroundPos QPointF(94, 424)
-#define GraveyardPos QPointF(0, 0)
+#define GraveyardPos QPointF(485, 330)
 
 #define EnemyDeckPos QPointF(14, 105)
 #define EnemyHandPos QPointF(17, -71)
 #define EnemyFieldyardPos QPointF(91, 213)
 #define EnemyFieldgroundPos QPointF(91, 105)
-#define EnemyGraveyardPos QPointF(0, 0)
+#define EnemyGraveyardPos QPointF(15, 200)
 
 RoomScene::RoomScene(QObject* parent)
     : QGraphicsScene(parent)
@@ -51,6 +51,9 @@ RoomScene::RoomScene(QObject* parent)
 
     FieldyardArea::instance()->initializePlace();
     EnemyFieldyardArea::instance()->initializePlace();
+
+    HandArea::instance()->initializeBlue();
+    EnemyHandArea::instance()->initializeRed();
 
     addItem(DeckArea::instance());
     addItem(HandArea::instance());
@@ -129,6 +132,13 @@ RoomScene::RoomScene(QObject* parent)
     addItem(duifangxingdong);
     duifangxingdong->hide();
 
+    mySmallFrame.setPixmap(QPixmap(":/png/png/selectBlue.png"));
+    yourSmallFrame.setPixmap(QPixmap(":/png/png/selectRed.png"));
+    addItem(&mySmallFrame);
+    addItem(&yourSmallFrame);
+    mySmallFrame.hide();
+    yourSmallFrame.hide();
+
     battleSourceCard = nullptr;
     battleDestinationCard = nullptr;
 
@@ -148,6 +158,45 @@ RoomScene::RoomScene(QObject* parent)
     connect(Net::instance(), SIGNAL(request_Effect(QJsonObject)), this, SLOT(response_Effect(QJsonObject)));
 }
 
+void RoomScene::doPressSword()
+{
+    Card* card = qobject_cast<Card*>(sender());
+    qDebug() << "slot sword pressSword";
+    Rule::instance()->setPickRequirement(AttackedRequirement);
+    card->setOneTurnOneAttack(false);
+    battleSourceCard = card;
+
+    if(EnemyFieldyardArea::instance()->getYourFieldyard().isEmpty())
+    {
+        int source = battleSourceCard->getIndex();
+        QPointF p1 = sword[source].pos() + QPointF(25, 36);
+        QPointF p2 = sword[source].pos() + QPointF(25, 0);
+        qreal angle = QLineF(p1, QPointF(width()/2,0)).angleTo(QLineF(p1, p2));
+        sword[source].setRotation(angle);
+        QPropertyAnimation* animation = new QPropertyAnimation(&sword[source], "pos");
+        animation->setDuration(300);
+        QPointF startPos = sword[source].pos();
+        animation->setStartValue(startPos);
+        animation->setEndValue(QPointF(width()/2,0));
+        animation->setEasingCurve(QEasingCurve::Linear);
+        animation->start();
+        connect(animation, &QPropertyAnimation::finished, [=]() {
+            sword[source].hide();
+            sword[source].setPos(startPos);
+            sword[source].setRotation(0);
+            Rule::instance()->setDoing(false);
+            QJsonObject parameter;
+            parameter.insert("pickRequirement", AttackedRequirement);
+            parameter.insert("destination", -1);
+            parameter.insert("source", source);
+            QJsonObject object;
+            object.insert("request", "Effect");
+            object.insert("parameter", parameter);
+            Net::instance()->write(object);
+        });
+    }
+}
+
 void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动效果的卡！选好了卡牌，真正active，并发送Net
 {
     Card* card = qobject_cast<Card*>(sender());
@@ -159,7 +208,6 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
         battleDestinationCard = card;
         int destination = card->getIndex();
         int source = battleSourceCard->getIndex();
-        sword[source].canMove = false;
         QPropertyAnimation* animation = new QPropertyAnimation(&sword[source], "pos");
         animation->setDuration(300);
         QPointF startPos = sword[source].pos();
@@ -169,7 +217,6 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
         animation->start();
         connect(animation, &QPropertyAnimation::finished, [=]() {
             sword[source].hide();
-            sword[source].canMove = false;
             sword[source].setPos(startPos);
             sword[source].setRotation(0);
             Rule::instance()->setDoing(false);
@@ -178,7 +225,6 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
             parameter.insert("destination", destination);
             parameter.insert("source", source);
             QJsonObject object;
-            qDebug() << "I have actived some card's effect! The effect is : " << pickRequirement;
             object.insert("request", "Effect");
             object.insert("parameter", parameter);
             Net::instance()->write(object);
@@ -256,12 +302,20 @@ void RoomScene::doPickTarget() //注意：这是你选择的卡，不是发动�
 //            object.insert("parameter", parameter);
 //            Net::instance()->write(object);
         }
+        else if (pickRequirement == NyxAssassinRequirement1)
+        {
+            card->getLevel();
+        }
+        else if (pickRequirement == NyxAssassinRequirement2)
+        {
+            //
+        }
     }
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
-    if (battleSourceCard!=nullptr)
+    if (battleSourceCard!=nullptr && !EnemyFieldyardArea::instance()->getYourFieldyard().isEmpty())
     {
         QPointF p1 = sword[battleSourceCard->getIndex()].pos() + QPointF(25, 36);
         QPointF p2 = sword[battleSourceCard->getIndex()].pos() + QPointF(25, 0);
@@ -278,7 +332,6 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
     {
         Rule::instance()->setPickRequirement(NoRequirement);
         battleSourceCard->setOneTurnOneAttack(true);
-        sword[battleSourceCard->getIndex()].canMove = false;
         sword[battleSourceCard->getIndex()].setRotation(0);
         battleSourceCard = nullptr;
     }
@@ -299,10 +352,76 @@ void RoomScene::response_doAddCard(QJsonObject jsonObject)
     case Deck_Area:
     {
         Card* card = Engine::instance()->cloneCard(ISDN); //TODO: 现在方便调试，加入对方手牌的hover
-        connect(card, &Card::hover, [=]() {
+        connect(card, &Card::hoverEnter, [=]() {
             QString name = card->getName();
             QString description = card->getDescription();
             emit hover(name, description);
+
+            int area = card->getArea();
+            QPointF pos = card->scenePos()-QPointF(3,3);
+            if(area == Hand_Area)
+            {
+                HandArea::instance()->showFrame(card->getIndex());
+            }
+            if(area == EnemyHand_Area)
+            {
+                EnemyHandArea::instance()->showFrame(card->getIndex());
+            }
+            if(area == Deck_Area || area == Fieldground_Area || area == Graveyard_Area)
+            {
+                mySmallFrame.setPos(pos);
+                mySmallFrame.show();
+            }
+            if(area == Fieldyard_Area)
+            {
+                if(card->getStand())
+                {
+                    mySmallFrame.setRotation(0);
+                }
+                else
+                {
+                    mySmallFrame.setRotation(90);
+                }
+                mySmallFrame.setPos(pos);
+                mySmallFrame.show();
+            }
+            if(area == EnemyDeck_Area || area == EnemyFieldyard_Area || area == EnemyGraveyard_Area)
+            {
+                yourSmallFrame.setPos(pos);
+                yourSmallFrame.show();
+            }
+            if(area == EnemyFieldground_Area)
+            {
+                if(card->getStand())
+                {
+                    yourSmallFrame.setRotation(0);
+                }
+                else
+                {
+                    yourSmallFrame.setRotation(90);
+                }
+                yourSmallFrame.setPos(pos);
+                yourSmallFrame.show();
+            }
+        });
+        connect(card, &Card::hoverLeave, [=]() {
+            int area = card->getArea();
+            if(area == Hand_Area)
+            {
+                HandArea::instance()->hideFrame();
+            }
+            if(area == EnemyHand_Area)
+            {
+                EnemyHandArea::instance()->hideFrame();
+            }
+            if(area == Deck_Area || area == Fieldyard_Area || area == Fieldground_Area || area == Graveyard_Area)
+            {
+                mySmallFrame.hide();
+            }
+            if(area == EnemyDeck_Area || area == EnemyFieldyard_Area || area == EnemyFieldground_Area || area == EnemyGraveyard_Area)
+            {
+                yourSmallFrame.hide();
+            }
         });
         connect(card, SIGNAL(pickTarget()), this, SLOT(doPickTarget())); //选择对方卡牌时触
         EnemyDeckArea::instance()->response_addCard(card);
@@ -416,10 +535,77 @@ void RoomScene::response_setupDeck()
         Card* card = Engine::instance()->cloneCard(ISDN);
         DeckArea::instance()->addCard(card);
 
-        connect(card, &Card::hover, [=]() {
+        connect(card, &Card::hoverEnter, [=]() {
             QString name = card->getName();
             QString description = card->getDescription();
             emit hover(name, description);
+
+            int area = card->getArea();
+            QPointF pos = card->scenePos()-QPointF(3,3);
+            if(area == Hand_Area)
+            {
+                HandArea::instance()->showFrame(card->getIndex());
+            }
+            if(area == EnemyHand_Area)
+            {
+                EnemyHandArea::instance()->showFrame(card->getIndex());
+            }
+            if(area == Deck_Area || area == Fieldground_Area || area == Graveyard_Area)
+            {
+                mySmallFrame.setPos(pos);
+                mySmallFrame.show();
+            }
+            if(area == Fieldyard_Area)
+            {
+                if(card->getStand())
+                {
+                    mySmallFrame.setRotation(0);
+                }
+                else
+                {
+                    mySmallFrame.setRotation(90);
+                }
+                mySmallFrame.setPos(pos);
+                mySmallFrame.show();
+            }
+            if(area == EnemyDeck_Area || area == EnemyFieldyard_Area || area == EnemyGraveyard_Area)
+            {
+                yourSmallFrame.setPos(pos);
+                yourSmallFrame.show();
+            }
+            if(area == EnemyFieldground_Area)
+            {
+                if(card->getStand())
+                {
+                    yourSmallFrame.setRotation(0);
+                }
+                else
+                {
+                    yourSmallFrame.setRotation(90);
+                }
+                yourSmallFrame.setPos(pos);
+                yourSmallFrame.show();
+            }
+        });
+
+        connect(card, &Card::hoverLeave, [=]() {
+            int area = card->getArea();
+            if(area == Hand_Area)
+            {
+                HandArea::instance()->hideFrame();
+            }
+            if(area == EnemyHand_Area)
+            {
+                EnemyHandArea::instance()->hideFrame();
+            }
+            if(area == Deck_Area || area == Fieldyard_Area || area == Fieldground_Area || area == Graveyard_Area)
+            {
+                mySmallFrame.hide();
+            }
+            if(area == EnemyDeck_Area || area == EnemyFieldyard_Area || area == EnemyFieldground_Area || area == EnemyGraveyard_Area)
+            {
+                yourSmallFrame.hide();
+            }
         });
 
         connect(card, &Card::normalSummon, [=]() {
@@ -435,45 +621,7 @@ void RoomScene::response_setupDeck()
             GraveyardArea::instance()->addCard(card);
         });
         connect(card, SIGNAL(pickTarget()), this, SLOT(doPickTarget()));
-        connect(card, &Card::pressSword, [=]() {
-            qDebug() << "slot sword pressSword";
-            battleSourceCard = card;
-            int source = battleSourceCard->getIndex();
-
-            if(EnemyFieldyardArea::instance()->getYourFieldyard().isEmpty())
-            {
-                QPointF p1 = sword[source].pos() + QPointF(25, 36);
-                QPointF p2 = sword[source].pos() + QPointF(25, 0);
-                qreal angle = QLineF(p1, QPointF(width()/2,0)).angleTo(QLineF(p1, p2));
-                sword[source].setRotation(angle);
-                QPropertyAnimation* animation = new QPropertyAnimation(&sword[source], "pos");
-                animation->setDuration(300);
-                QPointF startPos = sword[source].pos();
-                animation->setStartValue(startPos);
-                animation->setEndValue(QPointF(width()/2,0));
-                animation->setEasingCurve(QEasingCurve::Linear);
-                animation->start();
-                connect(animation, &QPropertyAnimation::finished, [=]() {
-                    sword[source].hide();
-                    sword[source].setPos(startPos);
-                    sword[source].setRotation(0);
-                    Rule::instance()->setDoing(false);
-                    QJsonObject parameter;
-                    parameter.insert("pickRequirement", AttackedRequirement); //int型
-                    parameter.insert("destination", -1);
-                    parameter.insert("source", source);
-                    QJsonObject object;
-                    qDebug() << "I have actived some card's effect! The effect is : No destination AttackedRequirement.";
-                    object.insert("request", "Effect");
-                    object.insert("parameter", parameter);
-                    Net::instance()->write(object);
-                });
-            }
-            else
-            {
-                sword[source].canMove = true;
-            }
-        });
+        connect(card, SIGNAL(pressSword()), this, SLOT(doPressSword()));
     }
     file.close();
 
@@ -575,8 +723,8 @@ void RoomScene::response_tellForRequest()
             if (battleDestinationCard == nullptr)
             {
                 int addLP = 0 - battleSourceCard->getCurrentATK();
-                Net::instance()->doAddYourLP(addLP);
                 emit addYourLP(addLP);
+                Net::instance()->doAddYourLP(addLP);
             }
             else if (battleDestinationCard->getFace())
             {
@@ -584,6 +732,9 @@ void RoomScene::response_tellForRequest()
                 {
                     if (battleSourceCard->getCurrentATK() >= battleDestinationCard->getCurrentATK())
                     {
+                        int addLP = battleSourceCard->getCurrentATK()-battleDestinationCard->getCurrentATK();
+                        emit addYourLP(addLP);
+                        Net::instance()->doAddYourLP(addLP);
                         int index = battleDestinationCard->getIndex();
                         QJsonObject parameter;
                         parameter.insert("pickRequirement", lostTheBattle); //int型
@@ -595,6 +746,9 @@ void RoomScene::response_tellForRequest()
                     }
                     if (battleSourceCard->getCurrentATK() <= battleDestinationCard->getCurrentATK())
                     {
+                        int addLP = battleSourceCard->getCurrentATK()-battleDestinationCard->getCurrentATK();
+                        emit addMyLP(addLP);
+                        Net::instance()->doAddMyLP(addLP);
                         Card* card = FieldyardArea::instance()->takeCard(battleSourceCard->getIndex());
                         GraveyardArea::instance()->addCard(card);
                     }
@@ -606,6 +760,7 @@ void RoomScene::response_tellForRequest()
             }
             Rule::instance()->setPickRequirement(NoRequirement);
             battleSourceCard = nullptr;
+            battleDestinationCard = nullptr;
         }
     }
     else if (phase == Rule::myEP)

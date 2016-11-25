@@ -206,6 +206,10 @@ public:
     void setCurrentDEF(int value);
 
     void showCurrentFingerFlag();
+
+    int getLevel() const;
+    void setLevel(int value);
+
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent*);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent*);
@@ -257,7 +261,8 @@ private:
     int debuff; // 光之守卫 需要用到
 
 signals:
-    void hover();
+    void hoverEnter();
+    void hoverLeave();
     void normalSummon();
     void setCard();
     void tribute();

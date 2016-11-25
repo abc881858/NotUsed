@@ -298,11 +298,11 @@ void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
     {
         setY(0);
     }
+    emit hoverLeave();
 }
 
 void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
 {
-    emit hover();
     if (area == Hand_Area)
     {
         setY(-35);
@@ -311,6 +311,7 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     {
         setY(35);
     }
+    emit hoverEnter();
 
     if (Rule::instance()->getPickRequirement() != NoRequirement)
     {
@@ -520,15 +521,22 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         else if (currentFingerFlag == Attack)
         {
             qDebug() << "currentflag == Attack";
-            //setPickRequirement 和 getIsPickingSource 重复了，去除后者
-            Rule::instance()->setPickRequirement(AttackedRequirement);
-            setOneTurnOneAttack(false);
             emit pressSword();
         }
 
         currentFingerFlag = NoFlag;
         setCursor(cursorNoFlag);
     }
+}
+
+int Card::getLevel() const
+{
+    return level;
+}
+
+void Card::setLevel(int value)
+{
+    level = value;
 }
 
 int Card::getCurrentDEF() const

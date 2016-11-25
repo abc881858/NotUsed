@@ -76,6 +76,13 @@ MainWindow::MainWindow(QWidget* parent)
         if (Rule::instance()->getphase() == Rule::myBP)
         {
             Rule::instance()->setPhase(Rule::myM2);
+            for (Card* card : FieldyardArea::instance()->getMyFieldyard())
+            {
+                if (card->getFace() && card->getStand())
+                {
+                    roomScene->sword[card->getIndex()].hide();
+                }
+            }
             Rule::instance()->setDoing(false);
             Net::instance()->sendMessage(666); //询问对方是否连锁
         }

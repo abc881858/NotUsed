@@ -114,7 +114,7 @@ void HandArea::adjustCards() //TODO 非抽卡阶段addCard 需要flush
     int card_skip = (n > 5) ? (412 / (n - 1)) : 102;
     for (int i = 0; i < n; i++)
     {
-        myHand[i]->setZValue(0.1 * i);
+        myHand[i]->setZValue(Hand_Area + 0.1 * i);
         myHand[i]->setPos(QPointF(card_skip * i, 0));
         myHand[i]->setIndex(i);
     }
@@ -143,6 +143,25 @@ Card* HandArea::takeCard(int index)
 QList<Card*> HandArea::getMyHand() const
 {
     return myHand;
+}
+
+void HandArea::initializeBlue()
+{
+    myBigFrame.setPixmap(QPixmap(":/png/png/chooseBlue.png"));
+    myBigFrame.setParentItem(this);
+    myBigFrame.hide();
+}
+
+void HandArea::showFrame(int index)
+{
+    myBigFrame.setPos(myHand[index]->pos()-QPointF(3,3));
+    myBigFrame.setZValue(myHand[index]->zValue());
+    myBigFrame.show();
+}
+
+void HandArea::hideFrame()
+{
+    myBigFrame.hide();
 }
 
 ///////////////////////////////////////////////////////////////
@@ -282,6 +301,7 @@ void GraveyardArea::adjustCards()
     {
         myGraveyard[i]->setPos(0, 0);
         myGraveyard[i]->setIndex(i);
+        myGraveyard[i]->setZValue(Graveyard_Area+0.01*i);
     }
 }
 
@@ -334,8 +354,8 @@ void EnemyHandArea::adjustCards() //修改为从右往左排
     int card_skip = (n > 5) ? (412 / (n - 1)) : 102;
     for (int i = 0; i < n; i++)
     {
-        yourHand[i]->setZValue(0.1 * i);
-        yourHand[i]->setPos(QPointF(card_skip * i, 0));
+        yourHand[i]->setZValue(EnemyHand_Area + 0.1 * i);
+        yourHand[i]->setPos(QPointF(408 - card_skip * i, 0));
         yourHand[i]->setIndex(i);
     }
 }
@@ -360,6 +380,25 @@ Card* EnemyHandArea::response_takeCard(int index)
     Card* card = yourHand.takeAt(index);
     adjustCards();
     return card;
+}
+
+void EnemyHandArea::initializeRed()
+{
+    yourBigFrame.setPixmap(QPixmap(":/png/png/chooseRed.png"));
+    yourBigFrame.setParentItem(this);
+    yourBigFrame.hide();
+}
+
+void EnemyHandArea::showFrame(int index)
+{
+    yourBigFrame.setPos(yourHand[index]->pos()-QPointF(3,3));
+    yourBigFrame.setZValue(yourHand[index]->zValue());
+    yourBigFrame.show();
+}
+
+void EnemyHandArea::hideFrame()
+{
+    yourBigFrame.hide();
 }
 
 ///////////////////////////////////////////////////////////////
@@ -488,5 +527,6 @@ void EnemyGraveyardArea::adjustCards()
     {
         yourGraveyard[i]->setPos(0, 0);
         yourGraveyard[i]->setIndex(i);
+        yourGraveyard[i]->setZValue(EnemyGraveyard_Area+0.01*i);
     }
 }

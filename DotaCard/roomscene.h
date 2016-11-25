@@ -20,6 +20,8 @@ public:
     GraphicsPixmapObject* duifangxingdong;
 
 private:
+    QGraphicsPixmapItem mySmallFrame;
+    QGraphicsPixmapItem yourSmallFrame;
     Card* battleSourceCard;
     Card* battleDestinationCard;
 
@@ -42,6 +44,7 @@ public slots:
     void response_main1Phase();
     void response_askForResponse();
     void response_tellForRequest();
+    void doPressSword();
     void doPickTarget();
     void response_Effect(QJsonObject object);
 

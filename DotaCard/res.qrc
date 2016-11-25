@@ -23,6 +23,10 @@
         <file>png/fieldyard.png</file>
         <file>png/sword.png</file>
         <file>png/dfxd.png</file>
+        <file>png/chooseBlue.png</file>
+        <file>png/chooseRed.png</file>
+        <file>png/selectBlue.png</file>
+        <file>png/selectRed.png</file>
     </qresource>
     <qresource prefix="/">
         <file>hand/dota-CentaurWarrunner.jpg</file>
