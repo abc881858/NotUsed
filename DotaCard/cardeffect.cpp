@@ -61,7 +61,7 @@ bool CentaurWarrunner::testEffect()
  * 同时令自己场上名字带有“dota”的怪兽的攻击力（或防御力）上升自己原本攻击力（或防御力）的一半。
  *
  */
-void CentaurWarrunner::activeEffect()
+void CentaurWarrunner::effect()
 {
     QMessageBox::StandardButton ret;
     ret = QMessageBox::question(0, QString(tr("active CentaurWarrunner's effect")), QString(tr("Select all atk or all def?")), QMessageBox::Yes | QMessageBox::No);
@@ -149,7 +149,7 @@ bool KeeperoftheLight::testEffect()
  * ③一回合一次，选择对方场上的一只表侧表示怪兽发动，选择的怪兽在进行攻击宣言前必须丢弃一张手牌。
  *
  */
-void KeeperoftheLight::activeEffect()
+void KeeperoftheLight::effect()
 {
     int area = getArea();
     if (area == Fieldyard_Area) //发动场上的特效
@@ -162,7 +162,7 @@ void KeeperoftheLight::activeEffect()
     {
         setOneTurnHandEffect(false);
         QMessageBox::question(0, QString(tr("active KeeperoftheLight's effect")), QString(tr("Select fieldyard card.")), QMessageBox::Ok);
-        Rule::instance()->setPickRequirement(KeeperoftheLightRequiremented);
+        Rule::instance()->setPickRequirement(KeeperoftheLightRequirement2);
     }
 }
 
@@ -212,7 +212,7 @@ bool Lion::testEffect()
  * 当这张卡装备了“dota-阿哈利姆神杖”时，同时破坏选择怪兽两边的卡。
  *
  */
-void Lion::activeEffect()
+void Lion::effect()
 {
     QMessageBox::question(0, QString(tr("active Lion's effect")), QString(tr("Select enemyfieldyard card.")), QMessageBox::Ok);
     Rule::instance()->setPickRequirement(LionRequirement);
@@ -264,7 +264,7 @@ bool Magnus::testEffect()
  * 且在对方回合结束前不能进行攻击不能更变形式。
  *
  */
-void Magnus::activeEffect()
+void Magnus::effect()
 {
     QMessageBox::question(0, QString(tr("active Magnus's effect")), QString(tr("Select fieldyard card.")), QMessageBox::Ok);
     Rule::instance()->setPickRequirement(MagnusRequirement);
@@ -317,11 +317,22 @@ bool NyxAssassin::testEffect()
  * ③一回合一次，丢弃一张手卡发动，这张卡在下次攻击的伤害计算阶段结束前攻击力上升600，且不会成为攻击和卡的效果对象。
  *
  */
-void NyxAssassin::activeEffect()
+void NyxAssassin::effect()
 {
     QMessageBox messageBox;
     QPushButton *effect1 = messageBox.addButton(tr("active effect1"), QMessageBox::ActionRole);
     messageBox.addButton(tr("active effect2"), QMessageBox::ActionRole);
+    effect1->setDisabled(true);
+
+    for(Card* card : EnemyFieldyardArea::instance()->getYourFieldyard())
+    {
+        if(card->getFace())
+        {
+            effect1->setEnabled(true);
+            break;
+        }
+    }
+
     messageBox.exec();
     if (messageBox.clickedButton() == effect1)
     {
@@ -380,7 +391,7 @@ bool Rubick::testEffect()
  * 你的1、2效果可以同时发动且你的2效果1回合可以使用2次（覆盖上次获得的效果且该回合不能再次获得同一效果）
  *
  */
-void Rubick::activeEffect()
+void Rubick::effect()
 {
 //    QMessageBox messageBox;
 //    QPushButton *effect1 = messageBox.addButton(tr("active effect1"), QMessageBox::ActionRole);
@@ -432,7 +443,7 @@ bool Tusk::testEffect()
  * 一回合一次，这张卡攻击时，若目标怪兽的防御力低于你的攻击力，此次战斗对对方造成的战斗伤害翻倍。
  *
  */
-void Tusk::activeEffect()
+void Tusk::effect()
 {
 }
 
@@ -480,7 +491,7 @@ bool Undying::testEffect()
  * 每进行一次攻击，伤害计算后被攻击怪兽攻·守下降200至你下回合结束。）
  *
  */
-void Undying::activeEffect()
+void Undying::effect()
 {
 }
 
@@ -532,7 +543,7 @@ bool VengefulSpirit::testEffect()
  * ③一回合一次，你可以指定一名怪兽使其防御力降低800。
  *
  */
-void VengefulSpirit::activeEffect()
+void VengefulSpirit::effect()
 {
 }
 
@@ -581,6 +592,6 @@ bool Zeus::testEffect()
  * 若这张卡装备了“dota-阿哈利姆神杖”时，改为降低2000点守备力。
  *
  */
-void Zeus::activeEffect()
+void Zeus::effect()
 {
 }

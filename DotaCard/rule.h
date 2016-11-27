@@ -6,11 +6,12 @@
 #define AttackedRequirement 100
 #define CentaurWarrunnerEffect 601
 #define KeeperoftheLightRequirement 602
-#define KeeperoftheLightRequiremented 502
+#define KeeperoftheLightRequirement2 502
 #define LionRequirement 603
 #define MagnusRequirement 604
-#define NyxAssassinRequirement1 505
-#define NyxAssassinRequirement2 605
+#define NyxAssassinRequirement1 605
+#define NyxAssassinRequirement2 505
+#define NyxAssassinRequirement3 405
 
 #include <QHash>
 

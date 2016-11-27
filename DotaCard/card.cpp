@@ -8,6 +8,7 @@
 
 Card::Card()
 {
+//    setOpacity(0.8);
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     //setPixmap(QPixmap(":/png/png/NULL.jpg")); //卡牌会在Deck的AddCard时setPixmap
@@ -245,55 +246,12 @@ bool Card::testAttack()
     return false;
 }
 
-bool Card::testSelectable()
-{
-    int pickRequirement = Rule::instance()->getPickRequirement();
-
-    qDebug() << "Card::testSelectable() pickRequirement: " << pickRequirement;
-
-    if (pickRequirement == NoRequirement)
-    {
-        return false;
-    }
-    else if (pickRequirement == AttackedRequirement)
-    {
-        qDebug() << "if area == EnemyFieldyard_Area: " << (area == EnemyFieldyard_Area);
-        return (area == EnemyFieldyard_Area);
-        //无论表侧里侧，都可以选择作为目标target
-        //不再判断isMonster了，前排肯定是怪嘛
-    }
-    else if (pickRequirement == KeeperoftheLightRequirement)
-    {
-        return (area == EnemyFieldyard_Area && face && isMonstor());
-    }
-    else if (pickRequirement == KeeperoftheLightRequiremented)
-    {
-        return (area == Fieldyard_Area && face && isMonstor());
-    }
-    else if (pickRequirement == LionRequirement)
-    {
-        return (area == EnemyFieldyard_Area && isMonstor());
-    }
-    else if (pickRequirement == MagnusRequirement)
-    {
-        return (area == Fieldyard_Area && face && isMonstor());
-    }
-
-    return false;
-}
-
-//    if (currentflag == Selectable)
-//    {
-//        //高亮卡牌
-//        //其实不是高亮，而是一开始就是透明度高的，改成了不透明而已！
-//    }
-//    //TODO: 4角选择框
-//    if (myflags.testFlag(Selectable)) //测试是否满足选择条件
-
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
+    //高亮卡牌
+    //其实不是高亮，而是一开始就是透明度高的，改成了不透明而已！
     setCursor(cursorNoFlag);
-    //TODO: 移除 四角选择框
+//    setOpacity(0.8);
     if (area == Hand_Area || area == EnemyHand_Area)
     {
         setY(0);
@@ -402,6 +360,7 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     }
     else
     {
+//        setOpacity(1);
         currentFingerFlag = allFingerFlags.first();
         showCurrentFingerFlag();
     }
@@ -455,16 +414,10 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
         int currentIndex = allFingerFlags.indexOf(currentFingerFlag);
         currentFingerFlag = currentFingerFlag == allFingerFlags.last() ? allFingerFlags.first() : allFingerFlags.at(currentIndex + 1);
         showCurrentFingerFlag();
-        //        if (currentFingerFlag == Attack)
-        //        {
-        //            //这里不判断，在RoomScene里增加右键事件
-        //            //让宝剑居中，selectable为false
-        //            //并且让setPickRequirement(NoRequirement);
-        //        }
     }
     else if (event->button() == Qt::LeftButton)
     {
-        if (testSelectable())
+        if (Rule::instance()->getPickRequirement() != NoRequirement)
         {
             qDebug() << "emit pickTarget()";
             emit pickTarget();
@@ -480,15 +433,8 @@ void Card::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
         if (currentFingerFlag == Effect)
         {
-            if (area == Hand_Area)
-            {
-                setOneTurnOneEffect(false);
-            }
-            else if (area == Fieldyard_Area)
-            {
-                setOneTurnHandEffect(false);
-            }
-            activeEffect();
+            qDebug() << "currentflag == Effect";
+            emit activeEffect();
         }
         else if (currentFingerFlag == NormalSummon)
         {

@@ -24,6 +24,7 @@ private:
     QGraphicsPixmapItem yourSmallFrame;
     Card* battleSourceCard;
     Card* battleDestinationCard;
+    Card* activeEffectCard;
 
 signals:
     void hover(QString, QString);
@@ -47,6 +48,7 @@ public slots:
     void doPressSword();
     void doPickTarget();
     void response_Effect(QJsonObject object);
+    void doActiveEffect();
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);

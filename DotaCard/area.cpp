@@ -134,6 +134,7 @@ void HandArea::addCard(Card* card)
 
 Card* HandArea::takeCard(int index)
 {
+    myBigFrame.hide();
     Card* card = myHand.takeAt(index);
     Net::instance()->doTakeCard(Hand_Area, card->getIndex());
     adjustCards();

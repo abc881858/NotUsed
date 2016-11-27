@@ -30,6 +30,9 @@ void Engine::loadAllCards()
 Card* Engine::cloneCard(int ISDN)
 {
     const QMetaObject* meta = metaobjects.value(ISDN);
-    Q_ASSERT(meta != 0);
+    if(meta == nullptr)
+    {
+        return nullptr;
+    }
     return qobject_cast<Card*>(meta->newInstance());
 }

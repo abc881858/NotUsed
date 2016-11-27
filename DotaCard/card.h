@@ -164,10 +164,9 @@ public:
     bool testDefencePosition();
     bool testAttackPosition();
     bool testAttack();
-    bool testSelectable();
 
     virtual bool testEffect() { return false; }
-    virtual void activeEffect() {}
+    virtual void effect(){}
 
     bool getChangePosition() const;
     void setChangePosition(bool value); //area需要
@@ -268,6 +267,8 @@ signals:
     void tribute();
     void pickTarget();
     void pressSword();
+    void activeEffect();
+    void activeHandEffect();
 };
 
 //Q_DECLARE_OPERATORS_FOR_FLAGS(Card::CardFlags)
@@ -293,7 +294,7 @@ class CentaurWarrunner : public Card
 public:
     Q_INVOKABLE CentaurWarrunner();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -314,7 +315,7 @@ class KeeperoftheLight : public Card
 public:
     Q_INVOKABLE KeeperoftheLight();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -332,7 +333,7 @@ class Lion : public Card
 public:
     Q_INVOKABLE Lion();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -353,7 +354,7 @@ class Magnus : public Card
 public:
     Q_INVOKABLE Magnus();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -375,7 +376,7 @@ class NyxAssassin : public Card
 public:
     Q_INVOKABLE NyxAssassin();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -394,7 +395,7 @@ class Rubick : public Card
 public:
     Q_INVOKABLE Rubick();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -412,7 +413,7 @@ class Tusk : public Card
 public:
     Q_INVOKABLE Tusk();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -431,7 +432,7 @@ class Undying : public Card
 public:
     Q_INVOKABLE Undying();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -454,7 +455,7 @@ class VengefulSpirit : public Card
 public:
     Q_INVOKABLE VengefulSpirit();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 /*!
@@ -474,7 +475,7 @@ class Zeus : public Card
 public:
     Q_INVOKABLE Zeus();
     virtual bool testEffect();
-    virtual void activeEffect();
+    virtual void effect();
 };
 
 #endif // CARD_H
