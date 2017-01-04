@@ -1,0 +1,99 @@
+攻击宣言：攻 to 攻（无）【防】 1.点击我方前场怪 （2.点击对方前场怪） 进入连锁点①询问我方是否发动“特效”
+
+【翻转前，进入连锁点②询问我方是否“连锁”、进入连锁点③然后询问对方是否“连锁”】
+
+【翻转后，】进入连锁点④询问对方是否发动“特效”
+
+damage phase：计算伤害阶段，进入连锁点⑤询问我方是否“连锁”、进入连锁点⑥然后询问对方是否“连锁”
+
+若攻守方还存在，比较攻防大小，破坏
+进入墓地发动特殊效果并可以被连锁
+
+chain phase：当对方发动特效或使用魔法陷阱卡等事件发生时，可以发动
+
+1速：怪兽启动效果 魔法（除速攻）
+2速：怪兽诱发效果 速攻 陷阱（除反击）【速攻魔法set后具有陷阱性质 set回合不能发动】
+3速：反击陷阱
+
+
+选择我方前场1张卡，作为祭品
+选择一张手牌，丢弃
+
+doPressSword
+doPickTarget（如果对方场地有怪）
+“攻击宣言”请问对方是否发动魔法陷阱卡
+收到对方不发动的消息
+“伤害计算”请问对方是否发动魔法陷阱卡
+“攻击结束”
+
+http://immortalnova.hatenablog.com/entry/2016/06/11/123916
+
+doAddCard(QJsonObject)));
+doTakeCard(QJsonObject)));
+doSetPhase(QJsonObject)));
+doSetDoing(QJsonObject)));
+setupDeck()));
+startGame()));
+drawPhase()));
+standbyPhase()));
+main1Phase()));
+askForResponse()));
+tellForRequest()));
+CentaurWarrunnerEffect(QJsonObject)));
+Effect(QJsonObject)));
+
+[Hover Finger Tip]
+Effect//可以发动
+SpecialSummon//可以特招
+NormalSummon//可以召唤
+SetCard//可以放置
+FlipSummon//可以翻转召唤
+DefencePosition//可以防守表示
+AttackPosition//可以攻击表示
+Attack//可以攻击
+
+[Press Hardware Operation]
+LeftClick
+RightClick
+
+[Animation Software Operation]
+//zoom in
+//zoom out
+rotate
+flip
+move area
+
+[Net Command]
+void Function (json)
+
+[Phase]
+DP auto_trigger move(from area, from index, to...)
+SP auto_trigger effect(all fields)
+M1 manual_trigger (all finger tips except attack)
+BP manual_trigger attack(from.to)
+M2 manual_trigger (all finger tips except attack)
+EP auto_trigger effect(all fields)
+
+六个阶段，咒文速度，召唤方式，战斗卷回，苏生限制
+
+战斗阶段中的卷回：战斗阶段时，回合玩家做出攻击宣言之后，
+因为卡的效果而使攻击目标怪物离场、空场出现新的怪物、
+对方场上怪物的数量或种类发生改变，则回合玩家可以重新选择攻击目标，
+或者放弃此次攻击。这个行为被称为“卷回”。
+*攻击卷回不是第二次攻击宣言。
+*具有一回合进行两次攻击宣言能力的怪物进行第二次攻击宣言后，
+如果因为卡的效果而失去这效果或效果被无效，则发生卷回。
+例：《电子双生龙》第二次攻击宣言时，对手发动技能吸收。
+*具有在一定条件下能直接攻击对方玩家能力的怪物在利用这个效果对
+对方玩家进行攻击宣言后，因为卡的效果而不满足条件或效果被无效时，
+也发生卷回。
+例：在《海》存在时，《水陆两用战斗艇MK-3》进行直接攻击宣言后，
+《海》被《沙尘的大龙卷》破坏。
+*注意：发生卷回后，回合玩家如果放弃此怪物的攻击而由
+自己场上其他怪物攻击或停止攻击的话，等价于放弃此怪物的攻击权利。
+如果没有特殊效果影响，本回合内此怪物不能再进行攻击宣言。
+而且由于已经进行了攻击宣言，此怪物在主要阶段2也不能再改变表示形式。
+
+
+表示形式变更不能发生卷回，攻击怪兽本身表示形式变更是
+强制终止战斗【绝对防御将军例外】，并非卷回
