@@ -56,6 +56,10 @@ MainWindow::MainWindow(QWidget* parent)
         }
         if (Rule::instance()->getphase() == Rule::myM1)
         {
+            //如果场上没怪，应该setDisable按钮
+            roomScene->zhandouliucheng->show();
+            roomScene->zhandouliucheng->effect();
+            //music->play("music/battle_turn.wav");
             Rule::instance()->setPhase(Rule::myBP);
             for (Card* card : FieldyardArea::instance()->getMyFieldyard())
             {

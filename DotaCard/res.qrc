@@ -27,6 +27,14 @@
         <file>png/chooseRed.png</file>
         <file>png/selectBlue.png</file>
         <file>png/selectRed.png</file>
+        <file>phase_name/e_ba_b1.png</file>
+        <file>phase_name/e_ba_b2.png</file>
+        <file>phase_name/e_ba_b3.png</file>
+        <file>phase_name/e_ba_b4.png</file>
+        <file>phase_name/e_ba_b5.png</file>
+        <file>phase_name/e_ba_b6.png</file>
+        <file>phase_name/e_ba_b7.png</file>
+        <file>phase_name/e_ba_b8.png</file>
     </qresource>
     <qresource prefix="/">
         <file>hand/dota-CentaurWarrunner.jpg</file>

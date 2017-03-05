@@ -10,15 +10,20 @@ class GraphicsPixmapObject : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+
 public:
     GraphicsPixmapObject();
-};
+    void effect();
 
-//class GraphicsTextObject : public QGraphicsTextItem
-//{
-//    Q_OBJECT
-//public:
-//    GraphicsTextObject();
-//};
+protected:
+    void timerEvent(QTimerEvent*);
+
+private:
+    int z;
+    int id;
+
+signals:
+    void finish();
+};
 
 #endif // GRAPHICSPIXMAPOBJECT_H

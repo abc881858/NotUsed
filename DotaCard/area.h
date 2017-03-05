@@ -27,13 +27,13 @@ public:
     void addCard(Card* card);
     Card* takeCard(int index);
     QList<Card*> getMyHand() const;
-    void initializeBlue();
-    void showFrame(int index);
-    void hideFrame();
+//    void initializeBlue();
+//    void showFrame(int index);
+//    void hideFrame();
 
 private:
     QList<Card*> myHand;
-    QGraphicsPixmapItem myBigFrame;
+//    QGraphicsPixmapItem myBigFrame;
 };
 
 class FieldyardArea : public QObject, public QGraphicsPixmapItem
@@ -111,13 +111,13 @@ public:
     QList<Card*> getYourHand() const;
     void response_addCard(Card* card);
     Card* response_takeCard(int index);
-    void initializeRed();
-    void showFrame(int index);
-    void hideFrame();
+//    void initializeRed();
+//    void showFrame(int index);
+//    void hideFrame();
 
 private:
     QList<Card*> yourHand;
-    QGraphicsPixmapItem yourBigFrame;
+//    QGraphicsPixmapItem yourBigFrame;
 };
 
 class EnemyFieldyardArea : public QObject, public QGraphicsPixmapItem

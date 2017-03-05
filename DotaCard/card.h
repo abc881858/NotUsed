@@ -228,6 +228,7 @@ protected:
     bool buff_604; //猛犸分裂buff
     bool buff_602; //光法致盲buff
 
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:
     FingerFlag currentFingerFlag;
     QList<FingerFlag> allFingerFlags;
@@ -240,6 +241,8 @@ private:
     QCursor cursorDefencePosition;
     QCursor cursorAttackPosition;
     QCursor cursorAttack;
+    QPixmap lighterPixmap;
+    QPixmap originalPixmap;
 
     bool isRotate; //是否显示为横置
     bool isBack; //是否显示为背面

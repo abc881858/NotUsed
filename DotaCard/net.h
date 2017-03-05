@@ -43,12 +43,6 @@ signals:
     Q_INVOKABLE void request_askForResponse();
     Q_INVOKABLE void request_tellForRequest();
     Q_INVOKABLE void request_Effect(QJsonObject);
-
-    Q_INVOKABLE void request_attckStep1(QJsonObject); //攻击宣言
-    Q_INVOKABLE void request_attckStep2(QJsonObject); //发动攻击怪兽特效
-    Q_INVOKABLE void request_attckStep3(QJsonObject); //翻转被攻击怪兽，发动其特效
-    Q_INVOKABLE void request_attckStep4(QJsonObject); //伤害计算流程，计算攻击力防御力
-    Q_INVOKABLE void request_attckStep5(QJsonObject); //战败方进入墓地后，发动特效
 };
 
 #endif // NET_H

@@ -5,10 +5,15 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include <QMessageBox>
+#include <QImage>
+#include <QColor>
+#include <QPixmap>
+#include <QPainter>
+#include <QStyleOptionGraphicsItem>
+#include <QImage>
 
 Card::Card()
 {
-//    setOpacity(0.8);
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
     //setPixmap(QPixmap(":/png/png/NULL.jpg")); //卡牌会在Deck的AddCard时setPixmap
@@ -36,6 +41,50 @@ Card::Card()
     cursorDefencePosition = QCursor(QPixmap(":/png/png/6.cur"), 14, 21);
     cursorAttackPosition = QCursor(QPixmap(":/png/png/8.cur"), 14, 21);
     cursorAttack = QCursor(QPixmap(":/png/png/7.cur"), 14, 19);
+}
+
+void Card::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    Q_UNUSED(widget)
+    if(area==No_Area)
+    {
+        return;
+    }
+
+    QImage frameImage;
+
+    if(area == Hand_Area)
+    {
+        frameImage = QImage(":/png/png/chooseBlue.png");
+    }
+    else if(area == EnemyHand_Area)
+    {
+        frameImage = QImage(":/png/png/chooseRed.png");
+    }
+    else if(area == Deck_Area
+            || area == Fieldyard_Area
+            || area == Fieldground_Area
+            || area == Graveyard_Area)
+    {
+        frameImage = QImage(":/png/png/selectBlue.png");
+    }
+    else if(area == EnemyDeck_Area
+            || area == EnemyFieldyard_Area
+            || area == EnemyFieldground_Area
+            || area == EnemyGraveyard_Area)
+    {
+        frameImage = QImage(":/png/png/selectRed.png");
+    }
+
+    if (option->state & QStyle::State_MouseOver)
+    {
+        painter->drawPixmap(0, 0, lighterPixmap);
+        painter->drawPixmap(-3,-3,QPixmap::fromImage(frameImage));
+    }
+    else
+    {
+        painter->drawPixmap(0, 0, originalPixmap);
+    }
 }
 
 bool Card::testSpecialSummon()
@@ -249,9 +298,8 @@ bool Card::testAttack()
 void Card::hoverLeaveEvent(QGraphicsSceneHoverEvent*)
 {
     //高亮卡牌
-    //其实不是高亮，而是一开始就是透明度高的，改成了不透明而已！
     setCursor(cursorNoFlag);
-//    setOpacity(0.8);
+//    setPixmap(originalPixmap);
     if (area == Hand_Area || area == EnemyHand_Area)
     {
         setY(0);
@@ -360,7 +408,7 @@ void Card::hoverEnterEvent(QGraphicsSceneHoverEvent*)
     }
     else
     {
-//        setOpacity(1);
+//        setPixmap(lighterPixmap);
         currentFingerFlag = allFingerFlags.first();
         showCurrentFingerFlag();
     }
@@ -809,6 +857,17 @@ void Card::setArea(int value)
             }
         }
     }
+
+    originalPixmap = pixmap();
+    QImage image = pixmap().toImage();
+    for(int i=0;i<image.width();i++)
+    {
+        for(int j=0;j<image.height();j++)
+        {
+            image.setPixelColor(i,j,image.pixelColor(i,j).lighter(165));
+        }
+    }
+    lighterPixmap = QPixmap::fromImage(image);
 }
 
 bool Card::getStand() const

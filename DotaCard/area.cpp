@@ -134,7 +134,7 @@ void HandArea::addCard(Card* card)
 
 Card* HandArea::takeCard(int index)
 {
-    myBigFrame.hide();
+//    myBigFrame.hide();
     Card* card = myHand.takeAt(index);
     Net::instance()->doTakeCard(Hand_Area, card->getIndex());
     adjustCards();
@@ -144,25 +144,6 @@ Card* HandArea::takeCard(int index)
 QList<Card*> HandArea::getMyHand() const
 {
     return myHand;
-}
-
-void HandArea::initializeBlue()
-{
-    myBigFrame.setPixmap(QPixmap(":/png/png/chooseBlue.png"));
-    myBigFrame.setParentItem(this);
-    myBigFrame.hide();
-}
-
-void HandArea::showFrame(int index)
-{
-    myBigFrame.setPos(myHand[index]->pos()-QPointF(3,3));
-    myBigFrame.setZValue(myHand[index]->zValue());
-    myBigFrame.show();
-}
-
-void HandArea::hideFrame()
-{
-    myBigFrame.hide();
 }
 
 ///////////////////////////////////////////////////////////////
@@ -381,25 +362,6 @@ Card* EnemyHandArea::response_takeCard(int index)
     Card* card = yourHand.takeAt(index);
     adjustCards();
     return card;
-}
-
-void EnemyHandArea::initializeRed()
-{
-    yourBigFrame.setPixmap(QPixmap(":/png/png/chooseRed.png"));
-    yourBigFrame.setParentItem(this);
-    yourBigFrame.hide();
-}
-
-void EnemyHandArea::showFrame(int index)
-{
-    yourBigFrame.setPos(yourHand[index]->pos()-QPointF(3,3));
-    yourBigFrame.setZValue(yourHand[index]->zValue());
-    yourBigFrame.show();
-}
-
-void EnemyHandArea::hideFrame()
-{
-    yourBigFrame.hide();
 }
 
 ///////////////////////////////////////////////////////////////

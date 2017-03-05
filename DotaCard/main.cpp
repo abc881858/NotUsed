@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
     Engine::instance()->loadAllCards();
 
     MainWindow* mainwindow = new MainWindow;
+    mainwindow->setWindowIcon(QIcon("title/qtcreator.png"));
     mainwindow->setWindowTitle("Dota Card");
     mainwindow->show();
 

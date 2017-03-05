@@ -18,10 +18,11 @@ public:
     GraphicsPixmapObject sword[10];
     QGraphicsTextItem word[10];
     GraphicsPixmapObject* duifangxingdong;
+    GraphicsPixmapObject* zhandouliucheng;
 
 private:
-    QGraphicsPixmapItem mySmallFrame;
-    QGraphicsPixmapItem yourSmallFrame;
+//    QGraphicsPixmapItem mySmallFrame;
+//    QGraphicsPixmapItem yourSmallFrame;
     Card* battleSourceCard;
     Card* battleDestinationCard;
     Card* activeEffectCard;
